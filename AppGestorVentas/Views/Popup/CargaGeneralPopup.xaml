@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<toolkit:Popup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="AppGestorVentas.Views.Popup.CargaGeneralPopup"
+             CanBeDismissedByTappingOutsideOfPopup="False"
+    VerticalOptions="Center"
+               HorizontalOptions="Center">
+
+    <Border BackgroundColor="White"
+            Padding="20"
+            StrokeThickness="0"
+            VerticalOptions="Center"
+            HorizontalOptions="Center">
+
+        <!-- Definición de la sombra utilizando un objeto Shadow -->
+        <Border.Shadow>
+            <Shadow Brush="#80000000"
+                Offset="0,4"
+                Radius="10"
+                Opacity="0.5"/>
+        </Border.Shadow>
+
+        <StackLayout Orientation="Horizontal"
+                     VerticalOptions="Center"
+                     HorizontalOptions="Center"
+                     Spacing="10">
+            <ActivityIndicator IsRunning="True"
+                               Color="{StaticResource Primary}"
+                               WidthRequest="50"
+                               HeightRequest="50"/>
+            <Label Text="Cargando..."
+                   VerticalOptions="Center"
+                   HorizontalOptions="Center"
+                   FontSize="Medium"
+                   TextColor="Black"/>
+        </StackLayout>
+    </Border>
+</toolkit:Popup>

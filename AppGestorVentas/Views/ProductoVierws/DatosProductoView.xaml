@@ -1,0 +1,416 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentPage 
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="AppGestorVentas.Views.ProductoVierws.DatosProductoView"
+    xmlns:conv="clr-namespace:AppGestorVentas.Converters"
+    xmlns:helpers="clr-namespace:AppGestorVentas.Helpers"
+    Title="{Binding STituloPagina}"
+    x:Name="DatosProductoPage">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <!-- Declaración del converter -->
+            <conv:InvertBoolConverter x:Key="InvertBoolConverter" />
+            <conv:NumeroACadenaProductoConverter x:Key="NumeroACadenaProductoConverte" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <!-- ScrollView global que envuelve toda la página -->
+    <ScrollView>
+        
+        
+        <Grid RowDefinitions="Auto,Auto">
+
+
+            <!--======================================-->
+            <!--   VISTA DE ESCRITORIO (SIN CAMBIOS)  -->
+            <!--======================================-->
+            <Grid x:Name="VistaEscritorio" Grid.Row="0" Padding="20" RowSpacing="20" ColumnSpacing="20" HorizontalOptions="Center">
+                    <!-- Definición de las filas y columnas del Grid principal -->
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <!-- Título -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- Contenido principal (Campos e Imagen) -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- Variantes -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- Botones -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- Mensaje de error -->
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="800"/>
+                        <!-- Ancho máximo para centrar contenido -->
+                    </Grid.ColumnDefinitions>
+
+                    <!-- TÍTULO PRINCIPAL -->
+                    <Label Grid.Row="0" 
+                   Text="Crear Nuevo Producto"
+                   FontSize="26"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center" />
+
+                    <!-- Contenedor Principal con Grid para Campos e Imagen -->
+                    <Grid Grid.Row="1" 
+                  ColumnSpacing="20"
+                  RowSpacing="20">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <!-- Columna para los campos -->
+                            <ColumnDefinition Width="*"/>
+                            <!-- Columna para la imagen -->
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Sección de Imagen (Derecha) -->
+                        <Border Grid.Column="0" 
+                        Padding="15"
+                        BackgroundColor="White">
+                            <VerticalStackLayout Spacing="10">
+                                <Label Text="Imagen"
+                               FontAttributes="Bold"
+                               />
+
+                                <!-- Contenedor de Imagen + Botones -->
+                                <Grid 
+                              RowDefinitions="Auto,Auto"
+                              ColumnSpacing="20">
+
+
+                                    <!-- Botones Seleccionar/Quitar -->
+                                    <VerticalStackLayout Grid.Row="0"
+                                                 VerticalOptions="Center"
+                                                 Spacing="10">
+
+                                    <Label Text="Formatos de archivo permitidos: .jpg, .jpeg, .png, .gif, .bmp, .webp." 
+                                       HorizontalOptions="Center"
+                                       LineBreakMode="TailTruncation"
+                                       MaxLines="2"/>
+
+                                    <Button Text="Seleccionar"
+                                        Command="{Binding SeleccionarImagenCommand}"
+                                        IsEnabled="{Binding BHabilitarQuitarImagen, Converter={StaticResource InvertBoolConverter}}"
+                                        HorizontalOptions="FillAndExpand" />
+                                        <Button Text="Quitar"
+                                        Command="{Binding QuitarImagenCommand}"
+                                        IsEnabled="{Binding BHabilitarQuitarImagen}"
+                                        HorizontalOptions="FillAndExpand"
+                                        />
+                                    </VerticalStackLayout>
+
+                                    <!-- Vista Previa / Placeholder -->
+                                    <Image Grid.Row="1"
+                                   Margin="0,10,0,0"
+                                   Source="{Binding SImagenPreviewEscritorio}"
+                                   WidthRequest="200"
+                                   HeightRequest="200"
+                                   Aspect="AspectFill"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center" />
+
+                                </Grid>
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <!-- Sección de Campos (Izquierda) -->
+                        <Border Grid.Column="1" 
+                        Padding="15"
+                        BackgroundColor="White">
+                            <VerticalStackLayout Spacing="10">
+                                <!-- Nombre -->
+                                <Label Text="Nombre" 
+                               FontAttributes="Bold"/>
+                                <Entry Text="{Binding OProducto.sNombre}" 
+                               Placeholder="Ej. Tacos al Pastor" />
+
+                                <!-- Costo Real -->
+                                <Label Text="Costo Real (MXM)"
+                               FontAttributes="Bold"/>
+                                <Entry Text="{Binding OProducto.iCostoReal}"
+                               Keyboard="Numeric"
+                               Placeholder="Ej. 30" />
+
+                                <!-- Costo Público -->
+                                <Label Text="Costo Público (MXM)"
+                               FontAttributes="Bold"/>
+                                <Entry Text="{Binding OProducto.iCostoPublico}"
+                               Keyboard="Numeric"
+                               Placeholder="Ej. 50" />
+
+                                <!-- Tipo de Producto (Picker) -->
+                                <Label Text="Tipo de Producto"
+                               FontAttributes="Bold"/>
+                                <Picker ItemsSource="{Binding LstProductos, Mode=TwoWay}"
+                                SelectedItem="{Binding SProductoSeleccionado}"
+                                SelectedIndexChanged="OnCambioTipoProducto"
+                                />
+                            </VerticalStackLayout>
+                        </Border>
+
+
+                    </Grid>
+
+                    <!-- Frame para la sección VARIANTES -->
+                    <Border Grid.Row="2"
+                    Padding="15"
+                    IsEnabled="{Binding BHabilitaraAgregarVarientes}"
+                    BackgroundColor="White">
+                        <VerticalStackLayout Spacing="10">
+                            <Label Text="Variantes/Descripción"
+                           HorizontalTextAlignment="Center"
+                           FontAttributes="Bold"/>
+
+                            <!-- Ingreso de una variante (Entry + Botón) -->
+                            <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+
+                                <Editor Placeholder="Ingrese la descripción del producto"
+                                HeightRequest="100"
+                                WidthRequest="400"
+                                Text="{Binding SVarianteNueva}" />
+
+
+                                <Button Text="Agregar" 
+                                Command="{Binding AgregarVarianteCommand}"
+                                MaximumHeightRequest="50"
+                                TextColor="White"/>
+                            </HorizontalStackLayout>
+
+                            <!-- Lista de variantes -->
+                            <CollectionView ItemsSource="{Binding Variantes}"
+                                    HeightRequest="200"
+                                    SelectionMode="None">
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate>
+                                    <Border Stroke="{StaticResource Primary}" Padding="10">
+                                        <Grid ColumnDefinitions="*, Auto"
+                                      Padding="5">
+                                            <!-- Texto variante -->
+                                            <Label Text="{Binding sVariante}"
+                                           VerticalOptions="Center"
+                                           HorizontalOptions="Start"/>
+
+                                            <!-- Botón eliminar variante -->
+                                            <Button FontFamily="MaterialDesignIcons" 
+                                            Text="{x:Static helpers:MaterialDesignIcons.Delete}"
+                                            Grid.Column="1"
+                                            MaximumHeightRequest="50"
+                                            Command="{Binding Source={x:Reference DatosProductoPage}, Path=BindingContext.EliminarVarianteCommand}"
+                                            CommandParameter="{Binding .}"
+                                            TextColor="White"
+                                            HorizontalOptions="End"/>
+                                        </Grid>
+                                    </Border>
+
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Botones para CREAR y ACTUALIZAR -->
+                    <StackLayout Grid.Row="3" 
+                         Orientation="Horizontal" 
+                         HorizontalOptions="Center" 
+                         Spacing="20">
+                        <!-- Botón para CREAR (solo visible si NO es edición) -->
+                        <Button Text="Crear Producto"
+                        Command="{Binding CrearProductoCommand}"
+                        TextColor="White"
+                        IsVisible="{Binding BEsEdicion, Converter={StaticResource InvertBoolConverter}}" />
+
+                        <!-- Botón para ACTUALIZAR (solo visible si ES edición) -->
+                        <Button Text="Actualizar Producto"
+                        Command="{Binding ActualizarProductoCommand}"
+                        TextColor="White"
+                        IsVisible="{Binding BEsEdicion}" />
+                    </StackLayout>
+
+                    <!-- Mensaje de error -->
+                    <Label Grid.Row="4" 
+                   Text="{Binding SMensajeError}" 
+                   TextColor="Red"
+                   IsVisible="{Binding BHayError}"
+                   HorizontalOptions="Center"/>
+                </Grid>
+
+
+                <!--====================================-->
+            <!--    VISTA ANDROID (CORREGIDA)       -->
+            <!--====================================-->
+            <Grid x:Name="VistaAndroid"
+                  Grid.Row="1"
+                  Padding="20"
+                  RowSpacing="20"
+                  ColumnSpacing="20"
+                  HorizontalOptions="Center"
+                  MaximumWidthRequest="650">
+
+                <!-- Ajustamos las RowDefinitions para que no sean alturas fijas -->
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <!-- Imagen -->
+                    <RowDefinition Height="Auto"/>
+                    <!-- Campos -->
+                    <RowDefinition Height="Auto"/>
+                    <!-- Variantes -->
+                    <RowDefinition Height="Auto"/>
+                    <!-- Botones -->
+                    <RowDefinition Height="Auto"/>
+                    <!-- Mensaje de error -->
+                </Grid.RowDefinitions>
+
+                <!-- Sección de Imagen -->
+                <Border Grid.Row="0" 
+                        MaximumWidthRequest="500"
+                        Padding="15"
+                        BackgroundColor="White">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Imagen"
+                               FontAttributes="Bold"/>
+                        <Grid RowDefinitions="Auto,Auto"
+                              ColumnSpacing="20">
+                            <!-- Botones Seleccionar/Quitar -->
+                            <VerticalStackLayout Grid.Row="0"
+                                                 VerticalOptions="Center"
+                                                 Spacing="10">
+                                <Label Text="Formatos de archivo permitidos: .jpg, .jpeg, .png, .gif, .bmp, .webp." 
+                                       HorizontalOptions="Center"
+                                       LineBreakMode="TailTruncation"
+                                       MaxLines="2"/>
+                                <Button Text="Seleccionar"
+                                        Command="{Binding SeleccionarImagenCommand}"
+                                        IsEnabled="{Binding BHabilitarQuitarImagen, Converter={StaticResource InvertBoolConverter}}"
+                                        HorizontalOptions="FillAndExpand" />
+                                <Button Text="Quitar"
+                                        Command="{Binding QuitarImagenCommand}"
+                                        IsEnabled="{Binding BHabilitarQuitarImagen}"
+                                        HorizontalOptions="FillAndExpand"/>
+                            </VerticalStackLayout>
+
+                            <!-- Vista Previa / Placeholder -->
+                            <Image Grid.Row="1"
+                                   Margin="0,10,0,0"
+                                   Source="{Binding SImagenPreview}"
+                                   WidthRequest="200"
+                                   HeightRequest="200"
+                                   Aspect="AspectFill"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Sección de Campos -->
+                <Border Grid.Row="1" 
+                        Padding="15"
+                        BackgroundColor="White">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Nombre"
+                               FontAttributes="Bold"/>
+                        <Entry Text="{Binding OProducto.sNombre}" 
+                               Placeholder="Ej. Tacos al Pastor" />
+
+                        <Label Text="Costo Real (MXM)"
+                               FontAttributes="Bold"/>
+                        <Entry Text="{Binding OProducto.iCostoReal}"
+                               Keyboard="Numeric"
+                               Placeholder="Ej. 30" />
+
+                        <Label Text="Costo Público (MXM)"
+                               FontAttributes="Bold"/>
+                        <Entry Text="{Binding OProducto.iCostoPublico}"
+                               Keyboard="Numeric"
+                               Placeholder="Ej. 50" />
+
+                        <Label Text="Tipo de Producto"
+                               FontAttributes="Bold"/>
+                        <Picker ItemsSource="{Binding LstProductos, Mode=TwoWay}"
+                                SelectedItem="{Binding SProductoSeleccionado}"
+                                SelectedIndexChanged="OnCambioTipoProducto"/>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Sección Variantes -->
+                <Border Grid.Row="2"
+                        Padding="15"
+                        IsEnabled="{Binding BHabilitaraAgregarVarientes}"
+                        BackgroundColor="White">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Variantes/Descripción"
+                               HorizontalTextAlignment="Center"
+                               FontAttributes="Bold"/>
+
+                        <!-- Ingreso de variante -->
+                        <HorizontalStackLayout Spacing="10" 
+                                               HorizontalOptions="Center">
+                            <Grid RowDefinitions="50,200">
+                                <Button Grid.Row="0" 
+                                        Text="Agregar" 
+                                        Command="{Binding AgregarVarianteCommand}"
+                                        MaximumHeightRequest="50"
+                                        MaximumWidthRequest="200"
+                                        TextColor="White"/>
+                                <Editor Grid.Row="1" 
+                                        Placeholder="Ingrese la descripción del producto"
+                                        HeightRequest="200"
+                                        Text="{Binding SVarianteNueva}"/>
+                            </Grid>
+                        </HorizontalStackLayout>
+
+                        <!-- Lista de variantes -->
+                        <CollectionView ItemsSource="{Binding Variantes}"
+                                        SelectionMode="None">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Stroke="{StaticResource Primary}" Margin="0,5">
+                                        <Grid ColumnDefinitions="*, Auto"
+                                              Padding="5">
+                                            <Label Text="{Binding sVariante}"
+                                                   VerticalOptions="Center"
+                                                   HorizontalOptions="Start"/>
+                                            <Button FontFamily="MaterialDesignIcons" 
+                                                    Text="{x:Static helpers:MaterialDesignIcons.Delete}"
+                                                    Grid.Column="1"
+                                                    MaximumHeightRequest="50"
+                                                    VerticalOptions="Center"
+                                                    Command="{Binding Source={x:Reference DatosProductoPage}, Path=BindingContext.EliminarVarianteCommand}"
+                                                    CommandParameter="{Binding .}"
+                                                    TextColor="White"
+                                                    HorizontalOptions="End"/>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Botones CREAR / ACTUALIZAR -->
+                <StackLayout Grid.Row="3" 
+                             Orientation="Horizontal" 
+                             HorizontalOptions="Center" 
+                             Spacing="20">
+                    <!-- Botón para CREAR (solo visible si NO es edición) -->
+                    <Button Text="Crear Producto"
+                            Command="{Binding CrearProductoCommand}"
+                            TextColor="White"
+                            IsVisible="{Binding BEsEdicion, Converter={StaticResource InvertBoolConverter}}"/>
+
+                    <!-- Botón para ACTUALIZAR (solo visible si ES edición) -->
+                    <Button Text="Actualizar Producto"
+                            Command="{Binding ActualizarProductoCommand}"
+                            TextColor="White"
+                            IsVisible="{Binding BEsEdicion}"/>
+                </StackLayout>
+
+                <!-- Mensaje de error -->
+                <Label Grid.Row="4" 
+                       Text="{Binding SMensajeError}" 
+                       TextColor="Red"
+                       IsVisible="{Binding BHayError}"
+                       HorizontalOptions="Center"/>
+            </Grid>
+        </Grid>
+    </ScrollView>
+</ContentPage>

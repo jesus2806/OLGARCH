@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="AppGestorVentas.Views.HistoricoViews.HistoricoView"
+             xmlns:sys="clr-namespace:System;assembly=netstandard"
+             xmlns:conv="clr-namespace:AppGestorVentas.Converters.Orden"
+             xmlns:helpers="clr-namespace:AppGestorVentas.Helpers"
+             x:Name="HistorialPage">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <!-- Converters -->
+            <conv:NumeroAEstatusOrden x:Key="NumeroAEstatusOrden" />
+            <conv:NumeroATipoPagoConverter x:Key="NumeroATipoPagoConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <!-- Grid principal con dos filas: la primera autoajustada y la segunda llena el resto -->
+    <Grid RowDefinitions="Auto, *"
+          MaximumWidthRequest="550"
+          Padding="10">
+
+        <!-- 1) Sección superior (fecha, botones y totales) -->
+        <VerticalStackLayout Grid.Row="0"
+                             Spacing="10"
+                             HorizontalOptions="CenterAndExpand">
+
+            <Border Stroke="{StaticResource Primary}"
+                    Padding="10">
+                <HorizontalStackLayout Spacing="10">
+                    <DatePicker MaximumDate="{x:Static sys:DateTime.Today}"
+                                Date="{Binding DFechaConsulta}"
+                                WidthRequest="140"/>
+                    <Button Text="Consultar"
+                            Command="{Binding ConsultarHistoricoCommand}" 
+                            WidthRequest="100"/>
+                    <Button FontFamily="MaterialDesignIcons"
+                            FontSize="20"
+                            Text="{x:Static helpers:MaterialDesignIcons.Printer}"
+                            Command="{Binding ImprimirCorteCommand}"
+                            WidthRequest="50"/>
+                </HorizontalStackLayout>
+            </Border>
+
+            <VerticalStackLayout Spacing="6">
+                <Label Text="{Binding STituloDiaResumen}"
+                       FontAttributes="Bold"
+                       FontSize="20"
+                       HorizontalTextAlignment="Center" />
+
+                <Label Text="{Binding DTotalCostoPublico, StringFormat='Ingresos Totales: ${0} MXM'}" />
+                <Label Text="{Binding DTotalCostoReal, StringFormat='Costo de Ventas: ${0} MXM'}" />
+                <Label Text="{Binding DTotalGanancia, StringFormat='Total Ganancia: ${0} MXM'}" />
+                <Label Text="{Binding DTotalEfectivo, StringFormat='Fondos recibidos mediante efectivo: ${0} MXM'}" />
+                <Label Text="{Binding DTotalTransferencia, StringFormat='Fondos recibidos mediante transferencia: ${0} MXM'}" />
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+
+        <!-- 2) CollectionView que manejará su propio scroll y ocupa el espacio restante -->
+        <CollectionView Grid.Row="1"
+                        x:Name="historicoCollectionView"
+                        ItemsSource="{Binding ORegistrosHistorico}"
+                        Margin="0,10,0,0">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border Margin="10"
+                            Padding="10"
+                            Stroke="{StaticResource Primary}">
+                        <Grid ColumnDefinitions="*, Auto">
+                            <StackLayout Spacing="5"
+                                         Grid.Column="0">
+                                <StackLayout Orientation="Horizontal">
+                                    <Label Text="Mesa: "
+                                           FontAttributes="Bold"
+                                           Margin="0,0,8,0"/>
+                                    <Label Text="{Binding iMesa}" />
+                                </StackLayout>
+
+                                <StackLayout Orientation="Horizontal">
+                                    <Label Text="Número Orden: "
+                                           FontAttributes="Bold"
+                                           Margin="0,0,8,0"/>
+                                    <Label Text="{Binding iNumeroOrden}" />
+                                </StackLayout>
+
+                                <StackLayout Orientation="Horizontal">
+                                    <Label Text="Mesero: "
+                                           FontAttributes="Bold"
+                                           Margin="0,0,8,0"/>
+                                    <Label Text="{Binding sUsuarioMesero}" />
+                                </StackLayout>
+
+                                <StackLayout Orientation="Horizontal">
+                                    <Label Text="Fecha Alta: "
+                                           FontAttributes="Bold"
+                                           Margin="0,0,8,0"/>
+                                    <Label Text="{Binding DtFechaAltaMexico, StringFormat='{0:dd/MM/yyyy HH:mm}'}" />
+                                </StackLayout>
+
+                                <StackLayout Orientation="Horizontal">
+                                    <Label Text="Fecha Fin: "
+                                           FontAttributes="Bold"
+                                           Margin="0,0,8,0"/>
+                                    <Label Text="{Binding DtFechaFinMexico, StringFormat='{0:dd/MM/yyyy HH:mm}'}" />
+                                </StackLayout>
+
+                                <StackLayout Orientation="Horizontal">
+                                    <Label Text="Venta al Público: "
+                                           FontAttributes="Bold"
+                                           Margin="0,0,8,0"/>
+                                    <Label Text="{Binding iTotalCostoPublico, StringFormat='{}${0:N2} MXM'}" />
+                                </StackLayout>
+
+                                <StackLayout Orientation="Horizontal">
+                                    <Label Text="Costo Real: "
+                                           FontAttributes="Bold"
+                                           Margin="0,0,8,0"/>
+                                    <Label Text="{Binding iTotalCostoReal, StringFormat='{}${0:N2} MXM'}" />
+                                </StackLayout>
+
+                                <StackLayout Orientation="Horizontal">
+                                    <Label Text="Tipo Pago: "
+                                           FontAttributes="Bold"
+                                           Margin="0,0,8,0"/>
+                                    <Label Text="{Binding iTipoPago, Converter={StaticResource NumeroATipoPagoConverter}}" />
+                                </StackLayout>
+
+                                <StackLayout Orientation="Horizontal">
+                                    <Label Text="Estatus: "
+                                           FontAttributes="Bold"
+                                           Margin="0,0,8,0"/>
+                                    <Label Text="{Binding iEstatus, Converter={StaticResource NumeroAEstatusOrden}}" />
+                                </StackLayout>
+                            </StackLayout>
+
+                            <Button Grid.Column="1"
+                                    FontFamily="MaterialDesignIcons"
+                                    FontSize="25"
+                                    Text="{x:Static helpers:MaterialDesignIcons.Printer}"
+                                    Command="{Binding Source={x:Reference HistorialPage}, Path=BindingContext.ImprimirTicketOrdenCommand}"
+                                    CommandParameter="{Binding sIdMongoOrdenPrimaria}"
+                                    HorizontalOptions="End"
+                                    VerticalOptions="Center"
+                                    HeightRequest="50"
+                                    Margin="10,0,0,0" />
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="AppGestorVentas.Views.UsuariosViews.DatosUsuarioView"
+             Title="{Binding STituloPagina}">
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15" MaximumWidthRequest="500">
+
+            <!-- Nombre -->
+            <Entry 
+                Text="{Binding SNombre}" 
+                Placeholder="Nombre"
+                TextTransform="Uppercase"
+                x:Name="NombreEntry"/>
+            <Label 
+                TextColor="Crimson"
+                FontSize="14"
+                Text="{Binding SErrorNombre}" />
+
+            <!-- Apellido Paterno -->
+            <Entry 
+                Text="{Binding SApellidoPaterno}" 
+                Placeholder="Apellido Paterno"
+                TextTransform="Uppercase"
+                x:Name="ApellidoPaternoEntry"/>
+            <Label 
+                TextColor="Crimson"
+                FontSize="14"
+                Text="{Binding SErrorApellidoPaterno}" />
+
+            <!-- Apellido Materno -->
+            <Entry 
+                Text="{Binding SApellidoMaterno}" 
+                Placeholder="Apellido Materno"
+                TextTransform="Uppercase"
+                x:Name="ApellidoMaternoEntry"/>
+            <Label 
+                TextColor="Crimson"
+                FontSize="14"
+                Text="{Binding SErrorApellidoMaterno}" />
+
+            <Entry 
+                Text="{Binding SUsuario, Mode=TwoWay}" 
+                Placeholder="Usuario"
+                TextTransform="Uppercase"
+                x:Name="UsuarioEntry"/>
+            <Label 
+                TextColor="Crimson"
+                FontSize="14"
+                Text="{Binding SErrorUsuario}"
+                IsEnabled="False"/>
+
+            <!-- Picker de Rol -->
+            <Picker Title="Selecciona una opción"
+                ItemsSource="{Binding LstRoles, Mode=TwoWay}"
+                SelectedItem="{Binding SRolSeleccionado}"
+                HorizontalOptions="StartAndExpand"
+                WidthRequest="300"
+                Margin="0,0,0,20"/>
+
+
+            <!-- Contraseña (solo lectura, ya que se genera por defecto) -->
+            <Entry
+                Text="{Binding SPassword}"
+                IsReadOnly="{Binding BDesabilitarPass}"
+                Placeholder="Contraseña"
+                />
+            <Label 
+                TextColor="Crimson"
+                FontSize="14"
+                Text="{Binding SErrorPassword}" />
+
+            <!-- Botón para Registrar -->
+            <Button 
+                Text="Registrar"
+                Command="{Binding RegistrarCommand}"
+                IsEnabled="{Binding BProcesoRegistrar}"
+                IsVisible="{Binding BProcesoRegistrar}"/>
+
+            <!-- Botón para Actualizar -->
+            <Button 
+                Text="Actualizar"
+                Command="{Binding ActualizarCommand}"
+                IsEnabled="{Binding BProcesoActualizacion}"
+                IsVisible="{Binding BProcesoActualizacion}"/>
+
+            
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

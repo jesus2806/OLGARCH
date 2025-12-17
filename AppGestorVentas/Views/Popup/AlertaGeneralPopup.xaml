@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<toolkit:Popup 
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    x:Class="AppGestorVentas.Views.Popup.AlertaGeneralPopup"
+    CanBeDismissedByTappingOutsideOfPopup="False">
+    <!-- Fondo semi-transparente -->
+
+
+    <Border Stroke="{StaticResource Primary}">
+        <Grid RowDefinitions="180,70" HeightRequest="250" BackgroundColor="White" WidthRequest="300" HorizontalOptions="Center" VerticalOptions="Center">
+            <Label 
+                    Grid.Row="0"
+                    Text="{Binding SMensaje}"
+                    HorizontalTextAlignment="Center"
+                    VerticalTextAlignment="Center"
+                    Margin="15"
+                    FontSize="16"
+                    LineBreakMode="WordWrap" />
+            <!-- Botón para cerrar el Popup -->
+            <Button
+                    Grid.Row="1"
+                    Text="Aceptar"
+                    HeightRequest="50"
+                    Command="{Binding CerrarCommand}"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Start"/>
+        </Grid>
+    </Border>
+
+</toolkit:Popup>

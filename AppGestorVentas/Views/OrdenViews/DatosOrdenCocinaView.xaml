@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="AppGestorVentas.Views.OrdenViews.DatosOrdenCocinaView"
+             Title="Detalle Orden">
+
+    <ContentPage.Content>
+        <Grid RowDefinitions="60,*,90" MaximumWidthRequest="900" HorizontalOptions="Center" ZIndex="0">
+            
+            <!--INFORMACIÓN GENERAL-->
+
+            <Grid Grid.Row="0" ColumnDefinitions="*,*" RowDefinitions="30,30,30" ZIndex="1">
+
+                <HorizontalStackLayout                         
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        HorizontalOptions="Center"
+                        VerticalOptions="Center">
+
+                    <Label Text="No. Orden: " 
+                       Margin="0,0,5,0"
+                       FontAttributes="Bold"
+                       TextColor="Black" />
+
+                    <Label Text="{Binding OOrden.iNumeroOrden}" 
+                       TextColor="Black" />
+                </HorizontalStackLayout>
+
+
+                <HorizontalStackLayout  Grid.Row="0"
+                                    Grid.Column="1"
+                                    HorizontalOptions="Center"
+                                    VerticalOptions="Center">
+                    <Label Text="No. Mesa:" 
+                       Margin="0,0,5,0"
+                       FontAttributes="Bold"
+                       TextColor="Black" />
+
+                    <Label Text="{Binding OOrden.iMesa}" 
+                       TextColor="Black" />
+
+                </HorizontalStackLayout>
+
+                <HorizontalStackLayout Grid.Row="1"
+                                   Grid.Column="0"
+                                   Grid.ColumnSpan="2"
+                                   HorizontalOptions="Center">
+                    <Label  Text="Mesero:"
+                        Margin="0,0,5,0"
+                        FontAttributes="Bold"
+                        TextColor="Black" />
+                    <Label  LineBreakMode="TailTruncation"
+                        MaxLines="1"
+                        Text="{Binding SNombreMesaro}" 
+                        Margin="0,0,30,0"
+                        TextColor="Black" />
+
+                </HorizontalStackLayout>
+
+            </Grid>
+
+
+            <!--PEDIDO--> 
+            <CollectionView ItemsSource="{Binding LstOrdenProducto}"
+                            Grid.Row="1"
+                Margin="10"
+                BackgroundColor="Transparent"
+                SelectionMode="None">
+
+                <!-- Encabezado de la tabla -->
+                <CollectionView.Header>
+                    <Grid ColumnDefinitions="*,*,*"
+              Padding="5"
+              BackgroundColor="#2c3e50">
+                        <!-- Ajusta el color a tu preferencia -->
+
+                        <Label Grid.Column="0"
+                   Text="NOMBRE"
+                   TextColor="White"
+                   FontAttributes="Bold"
+                   HorizontalTextAlignment="Center"
+                   VerticalTextAlignment="Center" />
+
+                        <Label Grid.Column="1"
+                   Text="INDICACIONES"
+                   TextColor="White"
+                   FontAttributes="Bold"
+                   HorizontalTextAlignment="Center"
+                   VerticalTextAlignment="Center" />
+
+                        <Label Grid.Column="2"
+                   Text="EXTRAS"
+                   TextColor="White"
+                   FontAttributes="Bold"
+                   HorizontalTextAlignment="Center"
+                   VerticalTextAlignment="Center" />
+
+                    </Grid>
+                </CollectionView.Header>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <!-- Cada elemento en la lista, envuelto en un Frame con sombra y bordes redondeados -->
+                        <Border Margin="0"
+                   Padding="0">
+
+                            <!-- Grid con 3 columnas: Nombre (0), Extras (1), e Indicaciones (2) -->
+                            <Grid ColumnDefinitions="*,*,*"
+                      Padding="5,10">
+
+                                <!-- Columna 1: Nombre del platillo -->
+                                <Label Grid.Column="0"
+                           Text="{Binding sNombre}"
+                           FontSize="16"
+                           FontAttributes="Bold"
+                           VerticalTextAlignment="Center"
+                           HorizontalTextAlignment="Center"
+                           LineBreakMode="TailTruncation"
+                           MaxLines="10" />
+
+
+
+                                <!-- Columna 2: Indicaciones -->
+                                <Label Grid.Column="1"
+                           Text="{Binding sIndicaciones}"
+                           FontSize="14"
+                           VerticalTextAlignment="Center"
+                           HorizontalTextAlignment="Center"
+                           LineBreakMode="WordWrap"
+                           MaxLines="30" />
+
+
+                                <!-- Columna 2: Extras -->
+                                <StackLayout Grid.Column="2"
+                                 Spacing="5"
+                                 Padding="0"
+                                 VerticalOptions="Center">
+
+                                    <CollectionView ItemsSource="{Binding aExtras}"
+                                        VerticalScrollBarVisibility="Never"
+                                        >
+                                        <CollectionView.ItemTemplate>
+                                            <DataTemplate>
+                                                <Label Text="{Binding sNombre, StringFormat='* {0}'}"
+                                           FontSize="14"
+                                           Margin="20,0,0,0"
+                                           LineBreakMode="TailTruncation"
+                                           MaxLines="3"/>
+                                            </DataTemplate>
+                                        </CollectionView.ItemTemplate>
+                                    </CollectionView>
+                                </StackLayout>
+
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        
+        
+        <!--BOTONES ACCIONES-->
+            <HorizontalStackLayout Grid.Row="2" HorizontalOptions="Center" VerticalOptions="Start" Padding="0,10,0,0" InputTransparent="false">
+                <Button
+                x:Name="BotonTomar"
+                IsEnabled="{Binding BHabilitarBotonTomarOrden}"
+                IsVisible="{Binding BHabilitarBotonTomarOrden}"
+                Command="{Binding TomarOrdenCommand}"
+                CommandParameter="{Binding OOrden.sIdMongoDB}"
+                Text="Tomar orden"
+                HeightRequest="50"
+                />
+
+                <Button
+                x:Name="BotonPreparar"
+                IsEnabled="{Binding BHabilitarBotonPrepararOrden}"
+                IsVisible="{Binding BHabilitarBotonPrepararOrden}"
+                Command="{Binding ActualizarAEnpreparacionCommand}"
+                CommandParameter="{Binding OOrden.sIdMongoDB}"
+                Text="Preparar orden"
+                HeightRequest="50"
+                />
+
+
+                <Button
+                x:Name="BotonOrdenPreparada"
+                IsEnabled="{Binding BHabilitarBotonOrdenPreparada}"
+                IsVisible="{Binding BHabilitarBotonOrdenPreparada}"
+                Command="{Binding ActualizarAPreparadaCommand}"
+                CommandParameter="{Binding OOrden.sIdMongoDB}"
+                Text="Marcar como Preparada"
+                HeightRequest="50"
+                />
+
+
+            </HorizontalStackLayout>
+
+
+
+        </Grid>
+        
+    </ContentPage.Content>
+</ContentPage>

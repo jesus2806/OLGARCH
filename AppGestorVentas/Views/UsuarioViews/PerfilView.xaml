@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="AppGestorVentas.Views.UsuarioViews.PerfilView"
+             xmlns:helpers="clr-namespace:AppGestorVentas.Helpers"
+             Title="Perfil">
+
+    <ScrollView>
+        <VerticalStackLayout MaximumWidthRequest="500">
+            <Label 
+            Text="{Binding SNombreUsuario, StringFormat='Bienvenido {0}'}"
+            Margin="0,100,0,0"
+            FontAttributes="Bold"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center" />
+
+            <Grid Margin="0,50,0,0" RowDefinitions="60,60" ColumnDefinitions="*,50">
+                <Entry
+                x:Name="pass"
+                Grid.Column="0"
+                Grid.Row="0"
+                IsPassword="true"
+                Text="{Binding SPassword, Mode=TwoWay}"
+                Placeholder="Contraseña"
+                MaximumWidthRequest="250"
+                />
+
+                <Button 
+                Grid.Column="1"
+                Grid.Row="0"
+                Text="{x:Static helpers:MaterialDesignIcons.Eye}"
+                FontFamily="MaterialDesignIcons"
+                TextColor="#2e4347"
+                BackgroundColor="White"
+                HorizontalOptions="Start"
+                HeightRequest="20"
+                Padding="0"
+                Clicked="MostrarOcultarPass"
+                FontSize="35"/>
+
+
+                <Button 
+                Grid.Column="0"
+                Grid.Row="1"
+                MaximumWidthRequest="150"
+                Grid.ColumnSpan="2"
+                VerticalOptions="End"
+                Text="Actualizar"
+                Command="{Binding ActualizarPassCommand}"/>
+
+            </Grid>
+
+            <Button 
+                Margin="0,100,0,0"
+                MaximumWidthRequest="150"
+                Text="Regresar"
+                Command="{Binding RegresarCommand}"/>
+
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

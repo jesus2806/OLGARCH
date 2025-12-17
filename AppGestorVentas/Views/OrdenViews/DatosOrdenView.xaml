@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:helpers="clr-namespace:AppGestorVentas.Helpers"
+             xmlns:converters="clr-namespace:AppGestorVentas.Converters.Orden"
+             xmlns:conv="clr-namespace:AppGestorVentas.Converters"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:models="clr-namespace:AppGestorVentas.Models"
+             x:Class="AppGestorVentas.Views.OrdenViews.DatosOrdenView"
+             x:Name="DataOrdenPage"
+             Title="Detalle Orden">
+
+    <!-- =========  RESOURCES  ========= -->
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <!-- Converters & helpers -->
+            <converters:SelectedVarianteConverter x:Key="SelectedVarianteConverter" />
+            <converters:NumeroAEstatusOrden x:Key="NumeroAEstatusOrden" />
+            <converters:NumeroAColorEstatusOrden x:Key="NumeroAColorEstatusOrden" />
+            <conv:InvertBoolConverter x:Key="InvertBoolConverter" />
+
+            <!-- Simple palette -->
+            <Color x:Key="Primary500">#0B7A75</Color>
+            <Color x:Key="Primary100">#DCF4F3</Color>
+            <Color x:Key="Error500">#B3261E</Color>
+            <Color x:Key="Surface">#FFFFFF</Color>
+            <Color x:Key="OnSurface">#1C1B1F</Color>
+            <Color x:Key="Outline">#79747E</Color>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <!-- =========  PAGE LAYOUT  ========= -->
+    <Grid Padding="16"
+          RowDefinitions="Auto,Auto,*,Auto,Auto"
+          MaximumWidthRequest="650"
+          HorizontalOptions="Center">
+
+        <!-- ===== BOTONES SUPERIORES ===== -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,55" Margin="0,0,0,12">
+            <Button
+                Grid.Column="0"
+                Text="Agregar producto"
+                Command="{Binding IrAgregarProductoOrdenCommand}"
+                IsEnabled="{Binding BHabilitarAccionesEdicion}"
+                IsVisible="{Binding BHabilitarAccionesEdicion}"
+                HorizontalOptions="Start"
+                HeightRequest="44"/>
+            
+            <!-- Botón de indicaciones (Pantalla 6) -->
+            <Button
+                Grid.Column="1"
+                Text="✏️"
+                FontSize="20"
+                Command="{Binding MostrarIndicacionesCommand}"
+                IsEnabled="{Binding BHabilitarAccionesEdicion}"
+                IsVisible="{Binding BHabilitarAccionesEdicion}"
+                BackgroundColor="{StaticResource Primary100}"
+                TextColor="{StaticResource Primary500}"
+                WidthRequest="55"
+                HeightRequest="55"
+                CornerRadius="22"
+                HorizontalOptions="End"/>
+        </Grid>
+
+        <!-- ===== HEADER (Orden info) ===== -->
+        <Border Grid.Row="1" BackgroundColor="{StaticResource Primary100}" StrokeShape="RoundRectangle 8">
+            <Grid ColumnDefinitions="*,*"
+                  RowDefinitions="Auto,Auto,Auto"
+                  Padding="12">
+                <!-- Número de Orden -->
+                <HorizontalStackLayout Grid.Column="0" Spacing="4">
+                    <Label Text="No. Orden:" FontAttributes="Bold" TextColor="{StaticResource OnSurface}" />
+                    <Label Text="{Binding OOrden.iNumeroOrden}" TextColor="{StaticResource OnSurface}" />
+                </HorizontalStackLayout>
+                <!-- Mesa -->
+                <HorizontalStackLayout Grid.Column="1" Spacing="4">
+                    <Label Text="Mesa:" FontAttributes="Bold" TextColor="{StaticResource OnSurface}" />
+                    <Label Text="{Binding OOrden.iMesa}" TextColor="{StaticResource OnSurface}" />
+                </HorizontalStackLayout>
+                <!-- Estatus -->
+                <HorizontalStackLayout Grid.Row="1" Grid.ColumnSpan="2" Spacing="4" Margin="0,6,0,0">
+                    <Label Text="Estatus:" FontAttributes="Bold" TextColor="{StaticResource OnSurface}" />
+                    <Label Text="{Binding OOrden.iEstatus, Converter={StaticResource NumeroAEstatusOrden}}" TextColor="{StaticResource OnSurface}" />
+                </HorizontalStackLayout>
+                <!-- Mesero -->
+                <HorizontalStackLayout Grid.Row="2" Grid.ColumnSpan="2" Spacing="4" Margin="0,6,0,0">
+                    <Label Text="Mesero:" FontAttributes="Bold" TextColor="{StaticResource OnSurface}" />
+                    <Label Text="{Binding SNombreMesaro}" TextColor="{StaticResource OnSurface}" />
+                </HorizontalStackLayout>
+            </Grid>
+        </Border>
+
+        <!-- ===== PRODUCTOS ===== -->
+        <ScrollView Grid.Row="2">
+            <VerticalStackLayout
+              x:Name="slProductos"
+              Spacing="12"
+              Padding="0" />
+        </ScrollView>
+
+        <!-- ===== TOTALES ===== -->
+        <Border Grid.Row="3" BackgroundColor="{StaticResource Surface}" 
+                Stroke="{StaticResource Outline}"
+                StrokeShape="RoundRectangle 8"
+                Padding="12"
+                Margin="0,12,0,0">
+            <VerticalStackLayout Spacing="8">
+                <!-- Total Extras -->
+                <Grid ColumnDefinitions="*,Auto">
+                    <Label Grid.Column="0" Text="Total extras:" FontSize="14" TextColor="{StaticResource Outline}"/>
+                    <Label Grid.Column="1" Text="{Binding OOrden.iTotalExtrasOrden, StringFormat='${0:N2} MXN'}" 
+                           FontSize="14" TextColor="{StaticResource Primary500}"/>
+                </Grid>
+                <!-- Total General -->
+                <Grid ColumnDefinitions="*,Auto">
+                    <Label Grid.Column="0" Text="TOTAL:" FontSize="18" FontAttributes="Bold"/>
+                    <Label Grid.Column="1" Text="{Binding OOrden.iTotalOrden, StringFormat='${0:N2} MXN'}" 
+                           FontSize="18" FontAttributes="Bold" TextColor="{StaticResource Primary500}"/>
+                </Grid>
+            </VerticalStackLayout>
+        </Border>
+
+        <!-- ===== FOOTER ACTIONS ===== -->
+        <HorizontalStackLayout Grid.Row="4" HorizontalOptions="Center" Spacing="12" Margin="0,12,0,0">
+            <Button Text="Tomar orden" Command="{Binding TomarOrdenCommand}" CommandParameter="{Binding OOrden.sIdMongoDB}"
+                    IsEnabled="{Binding BHabilitarBotonTomarOrden}" IsVisible="{Binding BHabilitarBotonTomarOrden}" HeightRequest="46" />
+            <Button Text="Preparar" Command="{Binding ActualizarAEnpreparacionCommand}" CommandParameter="{Binding OOrden.sIdMongoDB}"
+                    IsEnabled="{Binding BHabilitarBotonPrepararOrden}" IsVisible="{Binding BHabilitarBotonPrepararOrden}" HeightRequest="46" />
+            <Button Text="Preparada" Command="{Binding ActualizarAPreparadaCommand}" CommandParameter="{Binding OOrden.sIdMongoDB}"
+                    IsEnabled="{Binding BHabilitarBotonOrdenPreparada}" IsVisible="{Binding BHabilitarBotonOrdenPreparada}" HeightRequest="46" />
+        </HorizontalStackLayout>
+
+    </Grid>
+</ContentPage>

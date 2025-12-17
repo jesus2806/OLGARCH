@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="AppGestorVentas.Views.OrdenViews.ImprimirTicketView"
+    Title="Imprimir Ticket">
+
+    <StackLayout Padding="20" Spacing="15" MaximumWidthRequest="550">
+        <Label 
+            Text="Conexión a Impresora Térmica"
+            FontSize="24"
+            HorizontalOptions="Center" />
+
+        <!-- Picker para mostrar los dispositivos disponibles por nombre -->
+        <Picker
+            Title="Seleccione una impresora"
+            ItemsSource="{Binding AvailableDeviceNames}"
+            SelectedItem="{Binding SelectedDeviceName}"
+            HorizontalOptions="FillAndExpand" />
+
+        <!-- Botón para escanear y actualizar la lista de dispositivos -->
+        <Button
+            Text="Escanear Dispositivos"
+            Command="{Binding ScanDevicesCommand}"
+            HorizontalOptions="FillAndExpand" />
+
+        <!-- Botón para conectar la impresora seleccionada -->
+        <Button
+            Text="Conectar a la impresora"
+            Command="{Binding ConnectPrinterCommand}"
+            IsEnabled="{Binding CanConnect}"
+            HorizontalOptions="FillAndExpand" />
+
+        <!-- Botón para imprimir el ticket -->
+        <Button
+            Text="Imprimir Ticket"
+            Command="{Binding ImprimirCommand}"
+            IsEnabled="{Binding IsPrinterConnected}"
+            HorizontalOptions="FillAndExpand" />
+
+        <!-- Label para mostrar mensajes de estado -->
+        <Label
+            Text="{Binding StatusMessage}"
+            TextColor="Blue"
+            HorizontalOptions="Center" />
+    </StackLayout>
+</ContentPage>

@@ -1,0 +1,625 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="AppGestorVentas.Views.OrdenViews.AdministracionOrdenView"
+            x:Name="AdministracionOrdenPage"
+             xmlns:conv="clr-namespace:AppGestorVentas.Converters.Orden"
+             xmlns:helpers="clr-namespace:AppGestorVentas.Helpers">
+
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <!-- Declaración del converter -->
+            <conv:NumeroAEstatusOrden x:Key="NumeroAEstatusOrden" />
+            <conv:NumeroAColorEstatusOrden x:Key="NumeroAColorEstatusOrden" />
+            <conv:NumeroATipoOrdenConverter x:Key="NumeroATipoOrdenConverter" />
+            <conv:NumeroABoolSubOrden x:Key="NumeroABoolSubOrden" />
+            <conv:EstatusEnPreparacionAValorBool x:Key="EstatusEnPreparacionAValorBool" />
+            <conv:VisibilidadBtnConfirmarConverter x:Key="VisibilidadBtnConfirmarConverter" />
+            <conv:VisibilidadBtnImprimirConverter x:Key="VisibilidadBtnImprimirConverter" />
+            <conv:VisibilidadBtnPagarConverter x:Key="VisibilidadBtnPagarConverter" />
+            <conv:VisibilidadBtnVerOrdenConverter x:Key="VisibilidadBtnVerOrdenConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    
+    <ScrollView Orientation="Vertical">
+    <!--<ScrollView Orientation="Vertical">-->
+        <Grid RowDefinitions="Auto, Auto">
+            <Grid x:Name="VistaEscritorio" Grid.Row="0" RowDefinitions="Auto,300,Auto" Padding="20" Margin="0,30,0,0">
+                <!-- Encabezado: Buscador y encabezados de la tabla -->
+                <StackLayout Grid.Row="0" Spacing="10" WidthRequest="1080">
+                    <StackLayout Orientation="Horizontal" Margin="5">
+                        <SearchBar Placeholder="Buscar por usuario o mesa"
+                                   WidthRequest="300"
+                                   Text="{Binding STextoBusqueda, Mode=TwoWay}"
+                                   SearchCommand="{Binding BuscarCommand}" />
+                        <Button Text="Limpiar"
+                                Margin="10,0"
+                                StyleClass="SecundaryButton"
+                                Command="{Binding LimpiarBusquedaCommand}" />
+
+                        <Button FontFamily="MaterialDesignIcons"
+                                Text="{x:Static helpers:MaterialDesignIcons.Sync}"
+                                Command="{Binding SincronizarDatosCommand}"
+                                Margin="0"
+                                StyleClass="SecundaryButton"
+                                FontSize="20"
+                                HorizontalOptions="EndAndExpand"/>
+
+                        <Button Text="Agregar Orden"
+                                IsEnabled="{Binding BMostrarBotonAgregarOrden}"
+                                IsVisible="{Binding BMostrarBotonAgregarOrden}"
+                                Clicked="AgregarOrden"
+                                HorizontalOptions="EndAndExpand" />
+                    </StackLayout>
+                    <Grid ColumnDefinitions="100,50,200,100,100,100,150,280"  BackgroundColor="{StaticResource Secondary}" Padding="5">
+                        <!--<Label Text="ID Orden" Grid.Column="0" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center"/>-->
+                        <Label Text="Número Orden" Grid.Column="0" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center"/>
+                        <Label Text="Mesa" Grid.Column="1" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center"/>
+                        <Label Text="Mesero" Grid.Column="2" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center"/>
+                        <Label Text="Fecha Alta" Grid.Column="3" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center"/>
+                        <Label Text="Total" Grid.Column="4" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center"/>
+                        <Label Text="Tipo" Grid.Column="5" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center"/>
+                        <Label Text="Estatus" Grid.Column="6" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center"/>
+                        <Label Text="Acciones" Grid.Column="7" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center"/>
+                    </Grid>
+
+                    <Label Text="Sin información." TextColor="Black" FontSize="14"
+             IsVisible="{Binding BNoHayResultados}" HorizontalTextAlignment="Center"/>
+                </StackLayout>
+
+                <!-- Cuerpo: CollectionView con listado de órdenes -->
+                <CollectionView Grid.Row="1" ItemsSource="{Binding OOrdenes}"
+                    WidthRequest="1080" HorizontalOptions="Center"
+                    SelectionMode="None" Margin="0,10,0,10">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid ColumnDefinitions="100,50,200,100,100,100,150,280" Padding="0,5">
+                                <!-- Mostramos algunos campos de la orden -->
+                                <!--<Label Text="{Binding IdentificadorOrden}" Grid.Column="0" TextColor="Black" HorizontalTextAlignment="Center" VerticalOptions="Center"/>-->
+                                <Label Text="{Binding iNumeroOrden}" Grid.Column="0" TextColor="Black" HorizontalTextAlignment="Center" VerticalOptions="Center"/>
+                                <Label Text="{Binding iMesa}" Grid.Column="1" TextColor="Black" HorizontalTextAlignment="Center" VerticalOptions="Center"/>
+                                <!-- Se asume que la propiedad oMesero tiene un campo sNombre -->
+                                <Label Text="{Binding sUsuarioMesero}" Grid.Column="2" TextColor="Black" HorizontalTextAlignment="Center" VerticalOptions="Center"/>
+                                <Label Text="{Binding DtFechaAltaMexico, StringFormat='{0:dd/MM/yyyy hh:mm:sss}'}" Grid.Column="3" TextColor="Black" HorizontalTextAlignment="Center" VerticalOptions="Center"/>
+                                <Label Text="{Binding iTotalOrden, StringFormat='{0:C}'}" Grid.Column="4" TextColor="Black" HorizontalTextAlignment="Center" VerticalOptions="Center"/>
+                                <Label Text="{Binding iTipoOrden, Converter={StaticResource NumeroATipoOrdenConverter}}" Grid.Column="5" TextColor="Black" HorizontalTextAlignment="Center" VerticalOptions="Center"/>
+                                <Label  Grid.Column="6" 
+                                        Text="{Binding iEstatus, Converter={StaticResource NumeroAEstatusOrden}}" 
+                                        BackgroundColor="{Binding iEstatus, Converter={StaticResource NumeroAColorEstatusOrden}}" 
+                                        TextColor="Black"
+                                        Padding="10"
+                                        HorizontalTextAlignment="Center" 
+                                        VerticalOptions="Center"/>
+                                <!-- Acciones: Actualizar y Eliminar -->
+                                <StackLayout Grid.Column="7" Orientation="Horizontal" HorizontalOptions="Center" VerticalOptions="Center">
+
+                                    <Border Stroke="Transparent"
+                                            Margin="0,0,-10,0"
+                                            IsEnabled="{Binding iTipoOrden, Converter={StaticResource NumeroABoolSubOrden}}"
+                                            IsVisible="{Binding iTipoOrden, Converter={StaticResource NumeroABoolSubOrden}}">
+                                        
+                                        <Border Stroke="Transparent"
+                                            IsEnabled="{Binding Source={x:Reference AdministracionOrdenPage}, Path=BindingContext.BMostrarBotonPagarOrden}" 
+                                            IsVisible="{Binding Source={x:Reference AdministracionOrdenPage}, Path=BindingContext.BMostrarBotonPagarOrden}">
+
+                                            <!-- PAGAR ORDEN -->
+                                            <Button x:Name="btnPagar"
+                                                    FontFamily="MaterialDesignIcons"
+                                                    BackgroundColor="#508BBF"
+                                                    IsEnabled="{Binding iEstatus, Converter={StaticResource VisibilidadBtnPagarConverter}}"
+                                                    IsVisible="{Binding iEstatus, Converter={StaticResource VisibilidadBtnPagarConverter}}"
+                                                    Text="{x:Static helpers:MaterialDesignIcons.CashMultiple}"
+                                                    Command="{Binding Source={x:Reference AdministracionOrdenPage}, Path=BindingContext.DefinirMetodoPagoCommand}"
+                                                    CommandParameter="{Binding .}"
+                                                    Padding="0" FontSize="20" Margin="0" />
+
+                                        </Border>
+                                    </Border>
+
+                                    <Border Stroke="Transparent"
+                                            IsEnabled="{Binding Source={x:Reference AdministracionOrdenPage}, Path=BindingContext.BMostrarAccionConfirmar}" 
+                                            IsVisible="{Binding Source={x:Reference AdministracionOrdenPage}, Path=BindingContext.BMostrarAccionConfirmar}">
+
+                                        <!--CONFIRMAR ENTREGA-->
+                                        <Button x:Name="btnConfirmar"
+                                        FontFamily="MaterialDesignIcons"
+                                        BackgroundColor="{StaticResource SecondaryDarkText}"
+                                        IsEnabled="{Binding iEstatus, Converter={StaticResource VisibilidadBtnConfirmarConverter}}"
+                                        IsVisible="{Binding iEstatus, Converter={StaticResource VisibilidadBtnConfirmarConverter}}"
+                                        Text="{x:Static helpers:MaterialDesignIcons.CheckBold}"
+                                        Command="{Binding Source={x:Reference AdministracionOrdenPage}, Path=BindingContext.ActualizarAEntregadaCommand}"
+                                        CommandParameter="{Binding sIdMongoDB}"
+                                        Padding="0" FontSize="20" Margin="5,0" />
+
+                                    </Border>
+                                    
+
+
+                                        <!--ACTUALIZAR-->
+                                    <Border Stroke="Transparent"
+                                            IsEnabled="{Binding Source={x:Reference AdministracionOrdenPage}, Path=BindingContext.BMostrarAccionActualizar}" 
+                                            IsVisible="{Binding Source={x:Reference AdministracionOrdenPage}, Path=BindingContext.BMostrarAccionActualizar}">
+                                        <Button x:Name="btnActualizar"
+                                            FontFamily="MaterialDesignIcons"
+                                                BackgroundColor="#508BBF"
+                                            IsEnabled="{Binding iEstatus, Converter={StaticResource EstatusEnPreparacionAValorBool}}"
+                                            IsVisible="{Binding iEstatus, Converter={StaticResource EstatusEnPreparacionAValorBool}}"
+                                            Text="{x:Static helpers:MaterialDesignIcons.NotebookEditOutline}"
+                                            Command="{Binding Source={x:Reference AdministracionOrdenPage}, Path=BindingContext.ActualizarOrdenCommand}"
+                                            CommandParameter="{Binding sIdMongoDB}"
+                                            Padding="0" FontSize="20" Margin="0" />
+                                    </Border>
+
+
+                                    <Border Stroke="Transparent"
+                                            IsEnabled="{Binding Source={x:Reference AdministracionOrdenPage}, Path=BindingContext.BMostrarAccionSubOrden}" 
+                                            IsVisible="{Binding Source={x:Reference AdministracionOrdenPage}, Path=BindingContext.BMostrarAccionSubOrden}">
+                                        <!--CREAR SUB-ORDEN -->
+                                        <Button x:Name="btnSubOrden"
+                                            FontFamily="MaterialDesignIcons"
+                                                BackgroundColor="#508BBF"
+                                            IsEnabled="{Binding iTipoOrden, Converter={StaticResource NumeroABoolSubOrden}}"
+                                            IsVisible="{Binding iTipoOrden, Converter={StaticResource NumeroABoolSubOrden}}"
+                                            Text="{x:Static helpers:MaterialDesignIcons.NotebookPlus}"
+                                            Command="{Binding Source={x:Reference AdministracionOrdenPage}, Path=BindingContext.CrearNuevaOrdenSecundariaCommand}"
+                                            CommandParameter="{Binding .}"
+                                            Padding="0" FontSize="20" Margin="5,0" />
+                                    </Border>
+
+                                    <Border Stroke="Transparent"
+                                            IsEnabled="{Binding Source={x:Reference AdministracionOrdenPage}, Path=BindingContext.BMostrarAccionEliminar}" 
+                                            IsVisible="{Binding Source={x:Reference AdministracionOrdenPage}, Path=BindingContext.BMostrarAccionEliminar}">
+                                        <!--ELIMINAR-->
+                                        <Button x:Name="btnEliminar"
+                                            FontFamily="MaterialDesignIcons"
+                                            StyleClass="DeleteButton"
+                                            Text="{x:Static helpers:MaterialDesignIcons.Delete}"
+                                            Command="{Binding Source={x:Reference AdministracionOrdenPage}, Path=BindingContext.EliminarOrdenCommand}"
+                                            CommandParameter="{Binding sIdMongoDB}"
+                                            Padding="0" FontSize="20" Margin="5,0" />
+                                    </Border>
+
+                                    
+                                    <!--VER ORDEN-->
+                                    <Button x:Name="btnVerOrden"
+                                            FontFamily="MaterialDesignIcons"
+                                            BackgroundColor="#508BBF"
+                                            IsEnabled="{Binding Source={x:Reference AdministracionOrdenPage}, Path=BindingContext.BMostrarBotonAccionVer}" 
+                                            IsVisible="{Binding Source={x:Reference AdministracionOrdenPage}, Path=BindingContext.BMostrarBotonAccionVer}"
+                                            Text="{x:Static helpers:MaterialDesignIcons.Eye}"
+                                            Command="{Binding Source={x:Reference AdministracionOrdenPage}, Path=BindingContext.VerOrdenCommand}"
+                                            CommandParameter="{Binding sIdMongoDB}"
+                                            Padding="0" FontSize="20" Margin="5,0" />
+                                     
+                                    <!--BORDER para controlar la visibilidad de cuando la orden se encuentre en estatus Entregada-->
+                                    <Border Stroke="Transparent"
+                                            IsEnabled="{Binding iEstatus, Converter={StaticResource VisibilidadBtnImprimirConverter}}" 
+                                            IsVisible="{Binding iEstatus, Converter={StaticResource VisibilidadBtnImprimirConverter}}">
+                                        
+                                        <!--BORDER para controlar la visibilidad de acuerdo al rol del usuario--> 
+                                        <Border Stroke="Transparent"
+                                            IsEnabled="{Binding Source={x:Reference AdministracionOrdenPage}, Path=BindingContext.BMostrarAccionImprimir}" 
+                                            IsVisible="{Binding Source={x:Reference AdministracionOrdenPage}, Path=BindingContext.BMostrarAccionImprimir}">
+                                           
+                                            <!--IMPRIMIR TICKET-->
+                                            <Button x:Name="btnImprimir"
+                                            FontFamily="MaterialDesignIcons"
+                                                    BackgroundColor="#508BBF"
+                                            IsEnabled="{Binding iTipoOrden, Converter={StaticResource NumeroABoolSubOrden}}"
+                                            IsVisible="{Binding iTipoOrden, Converter={StaticResource NumeroABoolSubOrden}}"
+                                            Text="{x:Static helpers:MaterialDesignIcons.Printer}"
+                                            Command="{Binding Source={x:Reference AdministracionOrdenPage}, Path=BindingContext.ImprimirTicketOrdenCommand}"
+                                            CommandParameter="{Binding sIdMongoDB}"
+                                            Padding="0" FontSize="20" Margin="5,0" />
+                                            
+                                        </Border>
+                                        
+                                    </Border>
+
+                                </StackLayout>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <!-- Pie de Página: Paginación -->
+                <HorizontalStackLayout Grid.Row="2" HorizontalOptions="Center" Margin="0,10,0,0">
+                    <Button Text="Anterior" StyleClass="SecundaryButton" Command="{Binding PaginaAnteriorCommand}" Margin="5,0" />
+                    <Label Text="{Binding SNumeroPaginaActual}" VerticalOptions="Center" HorizontalOptions="CenterAndExpand" />
+                    <Button Text="Siguiente" StyleClass="SecundaryButton" Command="{Binding PaginaSiguienteCommand}" Margin="5,0" />
+                </HorizontalStackLayout>
+            </Grid>
+
+            <Grid x:Name="VistaAndroid"
+                  Grid.Row="1"
+                  RowDefinitions="Auto,Auto,*,Auto"
+                  Padding="10"
+                  RowSpacing="10"
+                  MaximumWidthRequest="530">
+
+                <!--  =============  Fila 0: ENCABEZADO (Botón Agregar, SearchBar, Limpiar, Sync)  ============= -->
+                <Grid Grid.Row="0" 
+                      RowDefinitions="Auto,Auto" 
+                      ColumnDefinitions="Auto,*,Auto,Auto"
+                      Margin="0,5">
+                    
+                    <!-- Botón para AGREGAR ORDEN -->
+                    <Button Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"
+                            x:Name="btnAgregarOrden"
+                            Text="Agregar Orden"
+                            Clicked="AgregarOrden"
+                            MaximumWidthRequest="200"
+                            IsEnabled="{Binding BMostrarBotonAgregarOrden}"
+                            IsVisible="{Binding BMostrarBotonAgregarOrden}"
+                            Margin="30,10,0,10" />
+
+                    <!-- Botón SYNC (SincronizarDatosCommand) -->
+                    <Button Grid.Row="0" Grid.Column="3"
+                            FontFamily="MaterialDesignIcons"
+                            StyleClass="SecundaryButton"
+                            Text="{x:Static helpers:MaterialDesignIcons.Sync}"
+                            Command="{Binding SincronizarDatosCommand}"
+                            FontSize="20"
+                            Margin="10" />
+
+
+                    <!-- SearchBar -->
+                    <SearchBar Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
+                             Placeholder="Buscar por usuario o mesa"
+                             Text="{Binding STextoBusqueda, Mode=TwoWay}"
+                             SearchCommand="{Binding BuscarCommand}"
+                             HorizontalOptions="FillAndExpand"
+                             Margin="0" />
+
+                    <!-- Botón LIMPIAR búsqueda -->
+                    <Button Grid.Row="1" Grid.Column="3"
+                          Text="Limpiar"
+                           StyleClass="SecundaryButton"
+                          Command="{Binding LimpiarBusquedaCommand}"
+                          Margin="10,0" />
+
+
+                </Grid>
+
+
+                <!-- ============= Fila 1: LABEL "Sin información" ============= -->
+                <Label Grid.Row="1"
+                       Text="Sin información."
+                       TextColor="Black"
+                       FontSize="14"
+                       HorizontalTextAlignment="Center"
+                       IsVisible="{Binding BNoHayResultados}" />
+
+
+                <!-- ============= Fila 2: COLLECTIONVIEW ============= -->
+                <CollectionView Grid.Row="2"
+                                ItemsSource="{Binding OOrdenes}"
+                                SelectionMode="None"
+                                Margin="0,10">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <!-- Cada registro con un borde y un Grid interno -->
+                            <Border Stroke="{StaticResource Secondary}" StrokeThickness="1" Padding="5,20" Margin="5,0,0,40">
+                                <Grid RowSpacing="5" ColumnSpacing="5" Padding="5">
+                                    <!-- Definimos 11 filas (igual que antes) -->
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <!-- 4 Columnas -->
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- Fila 0: Encabezados para N°Orden / Mesa -->
+                                    <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                                           Text="Número de Orden"
+                                           BackgroundColor="{StaticResource Secondary}"
+                                           TextColor="White"
+                                           HorizontalTextAlignment="Center"
+                                           Padding="5" />
+                                    <Label Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2"
+                                           Text="Mesa"
+                                           BackgroundColor="{StaticResource Secondary}"
+                                           TextColor="White"
+                                           HorizontalTextAlignment="Center"
+                                           Padding="5" />
+
+                                    <!-- Fila 1: Datos N°Orden / Mesa -->
+                                    <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                                           Text="{Binding iNumeroOrden}"
+                                           BackgroundColor="#A9CF70"
+                                           TextColor="Black"
+                                           FontAttributes="Bold"
+                                           HorizontalTextAlignment="Center"
+                                           Padding="5" />
+                                    <Label Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2"
+                                           Text="{Binding iMesa}"
+                                           BackgroundColor="#A9CF70"
+                                           TextColor="Black"
+                                           FontAttributes="Bold"
+                                           HorizontalTextAlignment="Center"
+                                           Padding="5" />
+
+                                    <!-- Fila 2: Encabezado Acciones -->
+                                    <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4"
+                                           Text="Acciones"
+                                           BackgroundColor="{StaticResource Secondary}"
+                                           TextColor="White"
+                                           HorizontalTextAlignment="Center"
+                                           Padding="5" />
+
+                                    <!-- Fila 3: Botones de Acción: replicamos la lógica de escritorio -->
+                                    <Grid Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4"
+                                          ColumnSpacing="2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+
+
+
+                                        <Border Stroke="Transparent"
+                                            Margin="0,0,-10,0"
+                                            Grid.Column="0"
+                                            IsEnabled="{Binding iTipoOrden, Converter={StaticResource NumeroABoolSubOrden}}"
+                                            IsVisible="{Binding iTipoOrden, Converter={StaticResource NumeroABoolSubOrden}}">
+
+                                            <Border Stroke="Transparent"
+                                            IsEnabled="{Binding Source={x:Reference AdministracionOrdenPage}, Path=BindingContext.BMostrarBotonPagarOrden}" 
+                                            IsVisible="{Binding Source={x:Reference AdministracionOrdenPage}, Path=BindingContext.BMostrarBotonPagarOrden}">
+
+                                                <!-- PAGAR ORDEN -->
+                                                <Button x:Name="btnPagar"
+                                                        
+                                                        FontFamily="MaterialDesignIcons"
+                                                        BackgroundColor="#508BBF"
+                                                        Text="{x:Static helpers:MaterialDesignIcons.CashMultiple}"
+                                                        Command="{Binding Source={x:Reference AdministracionOrdenPage}, Path=BindingContext.DefinirMetodoPagoCommand}"
+                                                        CommandParameter="{Binding .}"
+                                                        FontSize="20"
+                                                        Padding="0"
+                                                        IsEnabled="{Binding iEstatus, Converter={StaticResource VisibilidadBtnPagarConverter}}"
+                                                        IsVisible="{Binding iEstatus, Converter={StaticResource VisibilidadBtnPagarConverter}}"
+                                                        Margin="0" />
+
+                                            </Border>
+                                        </Border>
+
+                                        <Border Stroke="Transparent"
+                                                Grid.Column="1"
+                                                IsEnabled="{Binding Source={x:Reference AdministracionOrdenPage}, Path=BindingContext.BMostrarAccionConfirmar}" 
+                                                IsVisible="{Binding Source={x:Reference AdministracionOrdenPage}, Path=BindingContext.BMostrarAccionConfirmar}">
+
+
+                                            <!-- CONFIRMAR ENTREGA -->
+                                            <Button x:Name="btnConfirmar"
+                                                    FontFamily="MaterialDesignIcons"
+                                                    BackgroundColor="{StaticResource SecondaryDarkText}"
+                                                    Text="{x:Static helpers:MaterialDesignIcons.CheckBold}"
+                                                    Command="{Binding Source={x:Reference AdministracionOrdenPage}, Path=BindingContext.ActualizarAEntregadaCommand}"
+                                                    CommandParameter="{Binding sIdMongoDB}"
+                                                    FontSize="20"
+                                                    IsEnabled="{Binding iEstatus, Converter={StaticResource VisibilidadBtnConfirmarConverter}}"
+                                                    IsVisible="{Binding iEstatus, Converter={StaticResource VisibilidadBtnConfirmarConverter}}"
+                                                    Margin="0" />
+                                            
+
+                                        </Border>
+
+                                        <!--ACTUALIZAR-->
+                                        <Border Stroke="Transparent"
+                                                Grid.Column="2"
+                                                IsEnabled="{Binding Source={x:Reference AdministracionOrdenPage}, Path=BindingContext.BMostrarAccionActualizar}" 
+                                                IsVisible="{Binding Source={x:Reference AdministracionOrdenPage}, Path=BindingContext.BMostrarAccionActualizar}">
+                                            <!-- ACTUALIZAR -->
+                                                <Button x:Name="btnActualizar"
+                                                    FontFamily="MaterialDesignIcons"
+                                                    BackgroundColor="#508BBF"
+                                                    Text="{x:Static helpers:MaterialDesignIcons.NotebookEditOutline}"
+                                                    Command="{Binding Source={x:Reference AdministracionOrdenPage}, Path=BindingContext.ActualizarOrdenCommand}"
+                                                    CommandParameter="{Binding sIdMongoDB}"
+                                                    FontSize="20"
+                                                    Margin="0"
+                                                    IsEnabled="{Binding iEstatus, Converter={StaticResource EstatusEnPreparacionAValorBool}}"
+                                                    IsVisible="{Binding iEstatus, Converter={StaticResource EstatusEnPreparacionAValorBool}}" />
+                                        </Border>
+
+                                        <Border Stroke="Transparent"
+                                                Grid.Column="3"
+                                                IsEnabled="{Binding Source={x:Reference AdministracionOrdenPage}, Path=BindingContext.BMostrarAccionSubOrden}" 
+                                                IsVisible="{Binding Source={x:Reference AdministracionOrdenPage}, Path=BindingContext.BMostrarAccionSubOrden}">
+                                            <!--CREAR SUB-ORDEN -->
+                                                <Button x:Name="btnSubOrden"
+                                                    FontFamily="MaterialDesignIcons"
+                                                    BackgroundColor="#508BBF"
+                                                    Text="{x:Static helpers:MaterialDesignIcons.NotebookPlus}"
+                                                    Command="{Binding Source={x:Reference AdministracionOrdenPage}, Path=BindingContext.CrearNuevaOrdenSecundariaCommand}"
+                                                    CommandParameter="{Binding .}"
+                                                    FontSize="20"
+                                                    Margin="0"
+                                                    IsEnabled="{Binding iTipoOrden, Converter={StaticResource NumeroABoolSubOrden}}"
+                                                    IsVisible="{Binding iTipoOrden, Converter={StaticResource NumeroABoolSubOrden}}" />
+                                        </Border>
+
+
+                                        <Border Stroke="Transparent"
+                                                Grid.Column="4"
+                                                IsEnabled="{Binding Source={x:Reference AdministracionOrdenPage}, Path=BindingContext.BMostrarAccionEliminar}" 
+                                                IsVisible="{Binding Source={x:Reference AdministracionOrdenPage}, Path=BindingContext.BMostrarAccionEliminar}">
+                                            <!-- ELIMINAR -->
+                                                <Button x:Name="btnEliminar"
+                                                        FontFamily="MaterialDesignIcons"
+                                                        StyleClass="DeleteButton"
+                                                        Text="{x:Static helpers:MaterialDesignIcons.Delete}"
+                                                        Command="{Binding Source={x:Reference AdministracionOrdenPage}, Path=BindingContext.EliminarOrdenCommand}"
+                                                        CommandParameter="{Binding sIdMongoDB}"
+                                                        FontSize="20"
+                                                        Margin="0"
+                                                        IsEnabled="{Binding Source={x:Reference AdministracionOrdenPage}, Path=BindingContext.BMostrarAccionEliminar}"
+                                                        IsVisible="{Binding Source={x:Reference AdministracionOrdenPage}, Path=BindingContext.BMostrarAccionEliminar}" />
+                                        </Border>
+                                        
+                                        <!-- VER ORDEN -->
+                                        <Button x:Name="btnVerOrden"
+                                                Grid.Column="5"
+                                                IsEnabled="{Binding Source={x:Reference AdministracionOrdenPage}, Path=BindingContext.BMostrarBotonAccionVer}" 
+                                                IsVisible="{Binding Source={x:Reference AdministracionOrdenPage}, Path=BindingContext.BMostrarBotonAccionVer}"
+                                                FontFamily="MaterialDesignIcons"
+                                                BackgroundColor="#508BBF"
+                                                Text="{x:Static helpers:MaterialDesignIcons.Eye}"
+                                                Command="{Binding Source={x:Reference AdministracionOrdenPage}, Path=BindingContext.VerOrdenCommand}"
+                                                CommandParameter="{Binding sIdMongoDB}"
+                                                FontSize="20"
+                                                Margin="0" />
+
+
+                                        <!--BORDER para controlar la visibilidad de cuando la orden se encuentre en estatus Entregada-->
+                                        <Border Stroke="Transparent"
+                                                Grid.Column="6"
+                                                IsEnabled="{Binding iEstatus, Converter={StaticResource VisibilidadBtnImprimirConverter}}" 
+                                                IsVisible="{Binding iEstatus, Converter={StaticResource VisibilidadBtnImprimirConverter}}">
+
+                                            <!--BORDER para controlar la visibilidad de acuerdo al rol del usuario-->
+                                            <Border Stroke="Transparent"
+                                                    IsEnabled="{Binding Source={x:Reference AdministracionOrdenPage}, Path=BindingContext.BMostrarAccionImprimir}" 
+                                                    IsVisible="{Binding Source={x:Reference AdministracionOrdenPage}, Path=BindingContext.BMostrarAccionImprimir}">
+
+                                                <!-- IMPRIMIR -->
+                                                <Button x:Name="btnImprimir"
+                                                        FontFamily="MaterialDesignIcons"
+                                                        Text="{x:Static helpers:MaterialDesignIcons.Printer}"
+                                                        Command="{Binding Source={x:Reference AdministracionOrdenPage}, Path=BindingContext.ImprimirTicketOrdenCommand}"
+                                                        CommandParameter="{Binding sIdMongoDB}"
+                                                        BackgroundColor="#508BBF"
+                                                        FontSize="20"
+                                                        Margin="0"
+                                                        IsEnabled="{Binding iTipoOrden, Converter={StaticResource NumeroABoolSubOrden}}"
+                                                        IsVisible="{Binding iEstatus, Converter={StaticResource VisibilidadBtnImprimirConverter}}" />
+
+                                            </Border>
+
+                                        </Border>
+
+                                    </Grid>
+
+                                    <!-- Fila 4: Encabezado Mesero -->
+                                    <Label Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="4"
+                                           Text="Mesero"
+                                           BackgroundColor="{StaticResource Secondary}"
+                                           TextColor="White"
+                                           HorizontalTextAlignment="Center"
+                                           Padding="5" />
+
+                                    <!-- Fila 5: Valor Mesero -->
+                                    <Label Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="4"
+                                           Text="{Binding sUsuarioMesero}"
+                                           TextColor="Black"
+                                           HorizontalTextAlignment="Center"
+                                           Padding="5" />
+
+                                    <!-- Fila 6: Encabezado Fecha Alta -->
+                                    <Label Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="4"
+                                           Text="Fecha Alta"
+                                           BackgroundColor="{StaticResource Secondary}"
+                                           TextColor="White"
+                                           HorizontalTextAlignment="Center"
+                                           Padding="5" />
+
+                                    <!-- Fila 7: Valor Fecha Alta -->
+                                    <Label Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="4"
+                                           Text="{Binding DtFechaAltaMexico, StringFormat='{0:dd/MM/yyyy hh:mm:ss}'}"
+                                           TextColor="Black"
+                                           HorizontalTextAlignment="Center"
+                                           Padding="5" />
+
+
+                                    <!-- Fila 8: Encabezado Tipo orden -->
+                                    <Label Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="4"
+                                           Text="Tipo Orden"
+                                           BackgroundColor="{StaticResource Secondary}"
+                                           TextColor="White"
+                                           HorizontalTextAlignment="Center"
+                                           Padding="5" />
+
+                                    <!-- Fila 9: Valor Tipo Orden -->
+                                    <Label Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="4"
+                                           Text="{Binding iTipoOrden, Converter={StaticResource NumeroATipoOrdenConverter}}"
+                                           TextColor="Black"
+                                           HorizontalTextAlignment="Center"
+                                           Padding="5" />
+
+
+                                    <!-- Fila 8: Encabezado Estatus -->
+                                    <Label Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="4"
+                                           Text="Estatus"
+                                           BackgroundColor="{StaticResource Secondary}"
+                                           TextColor="White"
+                                           HorizontalTextAlignment="Center"
+                                           Padding="5" />
+
+                                    <!-- Fila 9: Valor Estatus -->
+                                    <Label Grid.Row="11" Grid.Column="0" Grid.ColumnSpan="4"
+                                           Text="{Binding iEstatus, Converter={StaticResource NumeroAEstatusOrden}}"
+                                           BackgroundColor="{Binding iEstatus, Converter={StaticResource NumeroAColorEstatusOrden}}" 
+                                           TextColor="Black"
+                                           FontAttributes="Bold"
+                                           HorizontalTextAlignment="Center"
+                                           Padding="5" />
+
+                                    <!-- Fila 10: Total Orden -->
+                                    <Label Grid.Row="12" Grid.Column="0" Grid.ColumnSpan="4"
+                                           Text="{Binding iTotalOrden, StringFormat='Total: {0:C}'}"
+                                           BackgroundColor="{StaticResource Secondary}"
+                                           TextColor="White"
+                                           HorizontalTextAlignment="Center"
+                                           Padding="5" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <!-- ============= Fila 3: PAGINACIÓN ============= -->
+                <Grid Grid.Row="3" ColumnDefinitions="Auto,*,Auto" Padding="10">
+                    <Button Grid.Column="0"
+                            Text="Anterior"
+                            StyleClass="SecundaryButton"
+                            Command="{Binding PaginaAnteriorCommand}" />
+                    <Label Grid.Column="1"
+                           Text="{Binding SNumeroPaginaActual}" 
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center" />
+                    <Button Grid.Column="2"
+                            Text="Siguiente"
+                            StyleClass="SecundaryButton"
+                            Command="{Binding PaginaSiguienteCommand}" />
+                </Grid>
+
+            </Grid>
+
+
+        </Grid>
+    </ScrollView>
+    
+</ContentPage>

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:conv="clr-namespace:AppGestorVentas.Converters"
+    xmlns:helpers="clr-namespace:AppGestorVentas.Helpers"
+    x:Class="AppGestorVentas.Views.OrdenViews.ProductoOrdenView"
+    xmlns:dtos="clr-namespace:AppGestorVentas.Models"
+    Title="{Binding PageTitle}"
+    x:Name="ProductoOrdenPage"
+    Shell.TabBarIsVisible="False"
+    Shell.FlyoutBehavior="Disabled">
+
+    <!-- ============ RESOURCES ============ -->
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <!-- Converters -->
+            <conv:NullToBoolConverter x:Key="NullToBoolConverter" />
+            <conv:BoolToStringConverter x:Key="BoolToStringConverter" />
+            <conv:CountToBoolConverter x:Key="CountToBoolConverter" />
+
+            <!-- 🔹 Headline label style -->
+            <Style x:Key="HeadlineLabel" TargetType="Label">
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="FontSize" Value="16" />
+            </Style>
+
+            <!-- 🔹 Border (card) style -->
+            <Style x:Key="CardBorder" TargetType="Border">
+                <Setter Property="Stroke" Value="LightGray" />
+                <Setter Property="StrokeThickness" Value="1" />
+                <Setter Property="StrokeShape">
+                    <Setter.Value>
+                        <RoundRectangle CornerRadius="12" />
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="Padding" Value="12" />
+                <Setter Property="Margin" Value="0,6" />
+            </Style>
+
+            <!-- 🔹 Template: product / extra card -->
+            <DataTemplate x:Key="ProductoCardTemplate" x:DataType="dtos:Producto">
+                <Border Style="{StaticResource CardBorder}">
+                    <Grid ColumnDefinitions="80,*" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="12">
+                        <Image Grid.RowSpan="3"
+                               WidthRequest="70"
+                               HeightRequest="70"
+                               Aspect="AspectFill"
+                               Source="{Binding ImagenPrincipalUrl}" />
+
+                        <Label Grid.Column="1"
+                               Text="{Binding sNombre}"
+                               FontAttributes="Bold" />
+
+                        <Label Grid.Column="1" Grid.Row="1"
+                               Text="{Binding iCostoPublico, StringFormat='Costo al público: ${0}'}"
+                               FontSize="12" />
+
+                        <Button Grid.Column="1" Grid.Row="2"
+                                HorizontalOptions="End"
+                                WidthRequest="110"
+                                Text="{Binding isSeleccionado, Converter={StaticResource BoolToStringConverter}, ConverterParameter='Quitar|Seleccionar'}"
+                                Command="{Binding Source={x:Reference ProductoOrdenPage}, Path=BindingContext.SeleccionarProductoCommand}"
+                                CommandParameter="{Binding .}" />
+                    </Grid>
+                </Border>
+            </DataTemplate>
+
+            <!-- 🔹 Template: extra search result -->
+            <DataTemplate x:Key="ExtraCardTemplate">
+                <Border Style="{StaticResource CardBorder}">
+                    <Grid ColumnDefinitions="80,*" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="12">
+                        <Image Grid.RowSpan="3" WidthRequest="70" HeightRequest="70" Aspect="AspectFill" Source="{Binding aImagenes[0].sURLImagen}" />
+                        <Label Grid.Column="1" Text="{Binding sNombre}" FontAttributes="Bold" />
+                        <Label Grid.Column="1" Grid.Row="1" FontSize="12" Text="{Binding iCostoPublico, StringFormat='Costo al público: ${0}'}" />
+                        <Button Grid.Column="1" Grid.Row="2" HorizontalOptions="End" WidthRequest="110" Text="Seleccionar" Command="{Binding Source={x:Reference ProductoOrdenPage}, Path=BindingContext.SeleccionarExtraCommand}" CommandParameter="{Binding .}" />
+                    </Grid>
+                </Border>
+            </DataTemplate>
+
+            <!-- 🔹 Template: selected extra list -->
+            <DataTemplate x:Key="SelectedExtraTemplate">
+                <Border Style="{StaticResource CardBorder}">
+                    <Grid ColumnDefinitions="60,*,40">
+                        <Image WidthRequest="50" HeightRequest="50" Aspect="AspectFill" Source="{Binding aImagenes[0].sURLImagen}" />
+                        <Label Grid.Column="1" VerticalOptions="Center" Text="{Binding sNombre}" />
+                        <Button Grid.Column="2" VerticalOptions="Center" FontFamily="MaterialDesignIcons" StyleClass="DeleteButton" Text="{x:Static helpers:MaterialDesignIcons.Delete}" Command="{Binding Source={x:Reference ProductoOrdenPage}, Path=BindingContext.EliminarExtraCommand}" CommandParameter="{Binding .}" />
+                    </Grid>
+                </Border>
+            </DataTemplate>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <!-- ============ UI ============ -->
+    <ScrollView>
+        <VerticalStackLayout Padding="24" Spacing="20" MaximumWidthRequest="600" HorizontalOptions="Center">
+
+            <!-- 🔸 1. Buscador de Productos -->
+            <VerticalStackLayout IsVisible="{Binding BNoHayUnoProductoSeleccionado}">
+                <Label Style="{StaticResource HeadlineLabel}" Text="Buscar platillo o bebida" />
+
+                <Entry Placeholder="Mínimo 3 caracteres" Text="{Binding SBusquedaPrincipal}" TextChanged="BusquedaEntry_TextChanged" />
+
+                <CollectionView HeightRequest="220"
+                                ItemsSource="{Binding LstResultadosProductos}"
+                                ItemTemplate="{StaticResource ProductoCardTemplate}" />
+            </VerticalStackLayout>
+
+            <!-- 🔸 2. Producto Seleccionado + Variante -->
+            <Border IsVisible="{Binding OProductoSeleccionado, Converter={StaticResource NullToBoolConverter}}" Style="{StaticResource CardBorder}">
+                <VerticalStackLayout Spacing="16">
+                    <!-- Card del producto -->
+                    <Grid ColumnDefinitions="80,*" RowDefinitions="Auto,25,Auto" ColumnSpacing="12" BindingContext="{Binding OProductoSeleccionado}">
+                        <Image Grid.RowSpan="3" WidthRequest="70" HeightRequest="70" Aspect="AspectFill" Source="{Binding aImagenes[0].sURLImagen}" />
+                        <Label Grid.Column="1" Text="{Binding sNombre}" FontAttributes="Bold" />
+                        <Label Grid.Column="1" Grid.Row="1" FontSize="12" Text="{Binding iCostoPublico, StringFormat='Costo al público: ${0}'}" />
+                        <Button Grid.Column="1" Grid.Row="2" Text="Quitar Producto" Command="{Binding Source={x:Reference ProductoOrdenPage}, Path=BindingContext.QuitarProductoCommand}" HorizontalOptions="End" WidthRequest="130" />
+                    </Grid>
+
+                    <!-- Picker variante -->
+                    <Label Text="Variante" FontAttributes="Bold" MaximumHeightRequest="25" />
+                    <Picker Title="Seleccione la variante"
+                            ItemsSource="{Binding OProductoSeleccionado.aVariantes}"
+                            SelectedItem="{Binding VarianteSeleccionada}"
+                            ItemDisplayBinding="{Binding sVariante}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- 🔸 3. Buscador de Extras -->
+            <VerticalStackLayout Spacing="12" IsVisible="{Binding OProductoSeleccionado, Converter={StaticResource NullToBoolConverter}}">
+                <Label Style="{StaticResource HeadlineLabel}" Text="Agregar extras (opcional)" MaximumHeightRequest="25" />
+                <Entry Placeholder="Mínimo 3 caracteres" Text="{Binding SBusquedaExtras}" TextChanged="BusquedaEntry_ExtrasTextChanged" />
+                <CollectionView HeightRequest="220" ItemsSource="{Binding LstResultadosExtras}" ItemTemplate="{StaticResource ExtraCardTemplate}" />
+            </VerticalStackLayout>
+
+            <!-- 🔸 4. Extras seleccionados -->
+            <Label Style="{StaticResource HeadlineLabel}" Text="Extras seleccionados" MaximumHeightRequest="25" IsVisible="{Binding LstExtrasSeleccionados.Count, Converter={StaticResource CountToBoolConverter}}" />
+            <CollectionView HeightRequest="180"
+                            ItemsSource="{Binding LstExtrasSeleccionados}"
+                            ItemTemplate="{StaticResource SelectedExtraTemplate}"
+                            IsVisible="{Binding LstExtrasSeleccionados.Count, Converter={StaticResource CountToBoolConverter}}" />
+
+            <!-- 🔸 5. Indicaciones -->
+            <VerticalStackLayout IsVisible="{Binding OProductoSeleccionado, Converter={StaticResource NullToBoolConverter}}">
+                <Label Style="{StaticResource HeadlineLabel}" Text="Indicaciones adicionales (opcional)" MaximumHeightRequest="25" />
+                <Editor HeightRequest="100" Text="{Binding SIndicaciones}" Placeholder="Ej: Sin cebolla, extra salsa picante..." />
+            </VerticalStackLayout>
+
+            <!-- 🔸 6. Confirmar -->
+            <Button Text="{Binding ConfirmButtonText}"
+                    Command="{Binding ConfirmarCommand}"
+                    IsEnabled="{Binding OProductoSeleccionado, Converter={StaticResource NullToBoolConverter}}"
+                    IsVisible="{Binding OProductoSeleccionado, Converter={StaticResource NullToBoolConverter}}"
+                    Margin="0,24,0,0" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

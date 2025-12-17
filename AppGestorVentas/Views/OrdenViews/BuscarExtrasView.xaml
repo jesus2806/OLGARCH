@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:helpers="clr-namespace:AppGestorVentas.Helpers"
+             xmlns:viewmodels="clr-namespace:AppGestorVentas.ViewModels.OrdenViewModels"
+             xmlns:models="clr-namespace:AppGestorVentas.Models"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="AppGestorVentas.Views.OrdenViews.BuscarExtrasView"
+             x:DataType="viewmodels:BuscarExtrasViewModel"
+             Title="Buscar Extras">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Color x:Key="Primary500">#0B7A75</Color>
+            <Color x:Key="Primary100">#DCF4F3</Color>
+            <Color x:Key="Error500">#B3261E</Color>
+            <Color x:Key="Surface">#FFFFFF</Color>
+            <Color x:Key="OnSurface">#1C1B1F</Color>
+            <Color x:Key="Outline">#79747E</Color>
+            <Color x:Key="ModalBackground">#80000000</Color>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid>
+        <!-- Contenido principal -->
+        <Grid RowDefinitions="Auto,*,Auto" Padding="16" MaximumWidthRequest="650" HorizontalOptions="Center">
+            
+            <!-- Buscador -->
+            <Border Grid.Row="0" 
+                    BackgroundColor="{StaticResource Surface}"
+                    Stroke="{StaticResource Outline}"
+                    StrokeThickness="1"
+                    StrokeShape="RoundRectangle 8"
+                    Padding="8"
+                    Margin="0,0,0,16">
+                <Grid ColumnDefinitions="Auto,*">
+                    <Label Grid.Column="0" 
+                           Text="🔍" 
+                           FontSize="20"
+                           VerticalOptions="Center"
+                           Margin="8,0"/>
+                    <Entry Grid.Column="1"
+                           Placeholder="Buscar extra..."
+                           Text="{Binding SBusqueda}"
+                           FontSize="16"
+                           VerticalOptions="Center"/>
+                </Grid>
+            </Border>
+
+            <!-- Lista de resultados -->
+            <ScrollView Grid.Row="1">
+                <VerticalStackLayout Spacing="8">
+                    <!-- Mensaje sin resultados -->
+                    <Label Text="No se encontraron extras"
+                           IsVisible="{Binding NoHayResultados}"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"
+                           TextColor="{StaticResource Outline}"
+                           FontAttributes="Italic"
+                           Margin="0,50,0,0"/>
+
+                    <!-- Lista de extras -->
+                    <CollectionView ItemsSource="{Binding LstExtras}"
+                                    SelectionMode="None">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="models:Extra">
+                                <Border BackgroundColor="{StaticResource Surface}"
+                                        Stroke="{StaticResource Outline}"
+                                        StrokeThickness="1"
+                                        StrokeShape="RoundRectangle 8"
+                                        Padding="12"
+                                        Margin="0,0,0,8">
+                                    <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+                                        <!-- Imagen -->
+                                        <Border Grid.Column="0"
+                                                WidthRequest="50"
+                                                HeightRequest="50"
+                                                StrokeShape="RoundRectangle 8">
+                                            <Image Source="{Binding sURLImagen}"
+                                                   Aspect="AspectFill"
+                                                   WidthRequest="50"
+                                                   HeightRequest="50"/>
+                                        </Border>
+
+                                        <!-- Nombre -->
+                                        <Label Grid.Column="1"
+                                               Text="{Binding sNombre}"
+                                               FontSize="16"
+                                               VerticalOptions="Center"
+                                               Margin="12,0,0,0"/>
+
+                                        <!-- Precio -->
+                                        <Label Grid.Column="2"
+                                               Text="{Binding sPrecioFormateado}"
+                                               FontSize="14"
+                                               FontAttributes="Bold"
+                                               TextColor="{StaticResource Primary500}"
+                                               VerticalOptions="Center"
+                                               Margin="0,0,12,0"/>
+
+                                        <!-- Botón agregar -->
+                                        <Button Grid.Column="3"
+                                                Text="+"
+                                                FontSize="24"
+                                                FontAttributes="Bold"
+                                                BackgroundColor="{StaticResource Primary500}"
+                                                TextColor="White"
+                                                WidthRequest="48"
+                                                HeightRequest="48"
+                                                CornerRadius="24"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:BuscarExtrasViewModel}}, Path=SeleccionarExtraCommand}"
+                                                CommandParameter="{Binding .}"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </ScrollView>
+
+            <!-- Botón Regresar -->
+            <Button Grid.Row="2"
+                    Text="Regresar"
+                    Command="{Binding RegresarCommand}"
+                    BackgroundColor="{StaticResource Outline}"
+                    TextColor="White"
+                    HeightRequest="48"
+                    Margin="0,16,0,0"
+                    CornerRadius="8"/>
+        </Grid>
+
+        <!-- Modal para selección de consumos (Pantalla 4) -->
+        <Grid IsVisible="{Binding MostrarModalConsumos}" 
+              BackgroundColor="{StaticResource ModalBackground}">
+            <Border BackgroundColor="{StaticResource Surface}"
+                    StrokeShape="RoundRectangle 16"
+                    Padding="20"
+                    Margin="32"
+                    VerticalOptions="Center"
+                    HorizontalOptions="Center"
+                    MaximumWidthRequest="400">
+                <VerticalStackLayout Spacing="16">
+                    <!-- Título -->
+                    <Label Text="¿A qué consumos aplicar el extra?"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center"/>
+
+                    <!-- Nombre del extra seleccionado -->
+                    <Label Text="{Binding ExtraSeleccionado.sNombre}"
+                           FontSize="16"
+                           TextColor="{StaticResource Primary500}"
+                           HorizontalOptions="Center"/>
+
+                    <!-- Lista de consumos con checkboxes -->
+                    <VerticalStackLayout Spacing="8" 
+                                         BindableLayout.ItemsSource="{Binding LstConsumosSeleccion}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="viewmodels:ConsumoSeleccion">
+                                <Border BackgroundColor="#F5F5F5"
+                                        StrokeShape="RoundRectangle 8"
+                                        Padding="12">
+                                    <HorizontalStackLayout Spacing="12">
+                                        <CheckBox IsChecked="{Binding IsSelected}"
+                                                  Color="{StaticResource Primary500}"/>
+                                        <Label Text="{Binding sNombre}"
+                                               VerticalOptions="Center"
+                                               FontSize="16"/>
+                                    </HorizontalStackLayout>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+
+                    <!-- Botones -->
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                        <Button Grid.Column="0"
+                                Text="Cancelar"
+                                Command="{Binding CerrarModalCommand}"
+                                BackgroundColor="{StaticResource Outline}"
+                                TextColor="White"
+                                HeightRequest="44"
+                                CornerRadius="8"/>
+                        <Button Grid.Column="1"
+                                Text="Agregar"
+                                Command="{Binding ConfirmarAgregarExtraCommand}"
+                                BackgroundColor="{StaticResource Primary500}"
+                                TextColor="White"
+                                HeightRequest="44"
+                                CornerRadius="8"/>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
+
+        <!-- Indicador de carga -->
+        <ActivityIndicator IsRunning="{Binding IsLoading}"
+                           IsVisible="{Binding IsLoading}"
+                           Color="{StaticResource Primary500}"
+                           VerticalOptions="Center"
+                           HorizontalOptions="Center"/>
+    </Grid>
+</ContentPage>

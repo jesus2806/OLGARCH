@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<toolkit:Popup 
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:viewmodels="clr-namespace:AppGestorVentas.ViewModels.Popup"
+    x:Class="AppGestorVentas.Views.Popup.IndicacionesOrdenPopup"
+    x:DataType="viewmodels:IndicacionesOrdenPopupViewModel"
+    CanBeDismissedByTappingOutsideOfPopup="True"
+    Color="Transparent">
+
+    <Border BackgroundColor="White" 
+            StrokeShape="RoundRectangle 16,16,0,0"
+            Stroke="#E0E0E0"
+            StrokeThickness="1"
+            WidthRequest="400"
+            VerticalOptions="End"
+            Padding="20">
+        <VerticalStackLayout Spacing="16">
+            
+            <!-- Título -->
+            <Label Text="{Binding STitulo}"
+                   FontSize="20"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"
+                   TextColor="#1C1B1F"/>
+
+            <!-- Indicador de arrastre -->
+            <BoxView WidthRequest="40"
+                     HeightRequest="4"
+                     CornerRadius="2"
+                     Color="#CCCCCC"
+                     HorizontalOptions="Center"
+                     Margin="0,-10,0,0"/>
+
+            <!-- Campo de texto para indicaciones -->
+            <Border BackgroundColor="#F5F5F5"
+                    StrokeShape="RoundRectangle 8"
+                    Stroke="#E0E0E0"
+                    Padding="8">
+                <Editor Placeholder="Escribe las indicaciones aquí..."
+                        Text="{Binding SIndicaciones}"
+                        HeightRequest="150"
+                        FontSize="16"
+                        AutoSize="TextChanges"/>
+            </Border>
+
+            <!-- Contador de caracteres -->
+            <Label HorizontalOptions="End"
+                   TextColor="#79747E"
+                   FontSize="12">
+                <Label.FormattedText>
+                    <FormattedString>
+                        <Span Text="{Binding SIndicaciones.Length}"/>
+                        <Span Text=" / 500"/>
+                    </FormattedString>
+                </Label.FormattedText>
+            </Label>
+
+            <!-- Botones -->
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                <Button Grid.Column="0"
+                        Text="Cancelar"
+                        Command="{Binding CancelarCommand}"
+                        BackgroundColor="#79747E"
+                        TextColor="White"
+                        HeightRequest="48"
+                        CornerRadius="8"/>
+                <Button Grid.Column="1"
+                        Text="Guardar"
+                        Command="{Binding GuardarCommand}"
+                        BackgroundColor="#0B7A75"
+                        TextColor="White"
+                        HeightRequest="48"
+                        CornerRadius="8"/>
+            </Grid>
+        </VerticalStackLayout>
+    </Border>
+</toolkit:Popup>

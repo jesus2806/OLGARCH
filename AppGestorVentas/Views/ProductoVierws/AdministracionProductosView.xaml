@@ -1,0 +1,714 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage 
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:helpers="clr-namespace:AppGestorVentas.Helpers"
+    x:Name="AdministracionProductosPage"
+    x:Class="AppGestorVentas.Views.ProductoVierws.AdministracionProductosView"
+    Title="Administración de Productos">
+
+    <ScrollView>
+
+        <Grid>
+            
+            <!--ESCRITORIO-->
+
+            <StackLayout x:Name="VistaEscritorio" Padding="20" Spacing="20">
+
+                <!-- Botón Agregar Producto (global) -->
+                <StackLayout Orientation="Horizontal" HorizontalOptions="Center" Margin="0,0,0,-30">
+                    <Button Text="Agregar Producto" Command="{Binding IrAgregarProductoCommand}" />
+                </StackLayout>
+
+                <!-- Sección: Platillos -->
+                <Border Padding="10" Stroke="Transparent">
+                    <StackLayout WidthRequest="850">
+
+                        <Label Text="Platillos" FontSize="20" FontAttributes="Bold" />
+
+                        <HorizontalStackLayout Margin="0,20">
+                            <SearchBar Placeholder="Buscar Platillos"
+                               WidthRequest="200"
+                     Text="{Binding PlatillosVM.TextoBusqueda, Mode=TwoWay}"
+                     SearchCommand="{Binding PlatillosVM.BuscarCommand}" />
+                            <Button Text="Limpiar" WidthRequest="150" StyleClass="SecundaryButton" Margin="30,0,0,0" Command="{Binding PlatillosVM.LimpiarBusquedaCommand}" />
+                        </HorizontalStackLayout>
+
+
+                        <!-- Encabezado de columnas -->
+                        <Grid ColumnDefinitions="180,120,220,80,80,80,80"  BackgroundColor="{StaticResource Secondary}"  Padding="5">
+                            <Label Text="Nombre" Grid.Column="0" FontAttributes="Bold" TextColor="White" 
+                                HorizontalOptions="Center" VerticalOptions="Center" />
+                            <Label Text="Imagen" Grid.Column="1" FontAttributes="Bold" TextColor="White" 
+                                HorizontalOptions="Center" VerticalOptions="Center" />
+                            <Label Text="Descripción" Grid.Column="2" FontAttributes="Bold" TextColor="White" 
+                                HorizontalOptions="Center" VerticalOptions="Center" />
+                            <Label Text="Costo Real" Grid.Column="3" FontAttributes="Bold" TextColor="White" 
+                                HorizontalOptions="Center" VerticalOptions="Center" />
+                            <Label Text="Costo Público" Grid.Column="4" FontAttributes="Bold" TextColor="White" 
+                                HorizontalOptions="Center" VerticalOptions="Center" />
+                            <Label Text="Acciones" Grid.Column="5" Grid.ColumnSpan="2" FontAttributes="Bold" TextColor="White" 
+                                HorizontalOptions="Center" VerticalOptions="Center" />
+                        </Grid>
+                        <Grid RowDefinitions="450,Auto">
+                            <!-- Lista de productos -->
+                            <CollectionView Grid.Row="0" ItemsSource="{Binding PlatillosVM.Productos}" SelectionMode="None">
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid ColumnDefinitions="180,120,220,80,80,80,80" Padding="0,5">
+                                            <!-- Nombre -->
+                                            <Label  Text="{Binding sNombre}"
+                                                Grid.Column="0"
+                                                TextColor="Black"
+                                                LineBreakMode="TailTruncation"
+                                                MaxLines="2"
+                                                MaximumHeightRequest="60"
+                                                HorizontalTextAlignment="Center"
+                                                VerticalOptions="Center" />
+                                            <!-- Imagen principal -->
+                                            <Image  Grid.Column="1"
+                                                HorizontalOptions="Center"
+                                                VerticalOptions="Center"
+                                                WidthRequest="70"
+                                                HeightRequest="70"
+                                                Aspect="AspectFill"
+                                                Source="{Binding aImagenes[0].sURLImagen}" />
+                                            <!-- Descripción (primer variante) -->
+                                            <Label  Text="{Binding aVariantes[0].sVariante}"
+                                                Grid.Column="2"
+                                                TextColor="Black"
+                                                LineBreakMode="TailTruncation"
+                                                MaxLines="2"
+                                                MaximumHeightRequest="60"
+                                                HorizontalTextAlignment="Center"
+                                                VerticalOptions="Center" />
+                                            <!-- Costo Real -->
+                                            <Label  Text="{Binding iCostoReal, StringFormat='${0} MXM'}"
+                                                Grid.Column="3"
+                                                TextColor="Black"
+                                                LineBreakMode="TailTruncation"
+                                                MaxLines="2"
+                                                HorizontalTextAlignment="Center"
+                                                VerticalOptions="Center" />
+                                            <!-- Costo Público -->
+                                            <Label Text="{Binding iCostoPublico, StringFormat='${0} MXM'}"
+                                                Grid.Column="4"
+                                                TextColor="Black"
+                                                LineBreakMode="TailTruncation"
+                                                MaxLines="2"
+                                                HorizontalTextAlignment="Center"
+                                                VerticalOptions="Center" />
+                                            <!-- Botón Editar -->
+                                            <Button Text="{x:Static helpers:MaterialDesignIcons.PencilOutline}"
+                                                FontFamily="MaterialDesignIcons"
+                                                Command="{Binding Source={x:Reference AdministracionProductosPage}, Path=BindingContext.ActualizarProductoCommand}"
+                                                CommandParameter="{Binding .}"
+                                                Grid.Column="5"
+                                                Padding="0"
+                                                FontSize="20"
+                                                     BackgroundColor="{StaticResource Secondary}" 
+                                                HorizontalOptions="Center"
+                                                VerticalOptions="Center"
+                                                Margin="5,0" />
+                                            <!-- Botón Eliminar -->
+                                            <Button Text="{x:Static helpers:MaterialDesignIcons.Delete}"
+                                                FontFamily="MaterialDesignIcons"
+                                                Command="{Binding Source={x:Reference AdministracionProductosPage}, Path=BindingContext.EliminarProductoCommand}"
+                                                CommandParameter="{Binding .}"
+                                                Grid.Column="6"
+                                                Padding="0"
+                                                    StyleClass="DeleteButton"
+                                                FontSize="20"
+                                                HorizontalOptions="Center"
+                                                VerticalOptions="Center"
+                                                Margin="5,0" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                            <!-- Paginación -->
+                            <StackLayout Grid.Row="1" Orientation="Horizontal" HorizontalOptions="Center">
+                                <Button Text="Anterior" StyleClass="SecundaryButton" Command="{Binding PlatillosVM.PaginaAnteriorCommand}" />
+                                <Label Text="{Binding PlatillosVM.NumeroPaginaActual}" VerticalOptions="Center" Margin="20,0"
+                                    HorizontalOptions="CenterAndExpand"/>
+                                <Button Text="Siguiente" StyleClass="SecundaryButton" Command="{Binding PlatillosVM.PaginaSiguienteCommand}" />
+                            </StackLayout>
+                        </Grid>
+
+                    </StackLayout>
+                </Border>
+
+                <!-- Sección: Bebidas -->
+                <Border Padding="10" Stroke="Transparent">
+                    <StackLayout WidthRequest="850">
+                        <Label Text="Bebidas" FontSize="20" FontAttributes="Bold" />
+                        <HorizontalStackLayout Margin="0,20">
+                            <SearchBar Placeholder="Buscar Bebidas"
+                                   WidthRequest="200"
+                         Text="{Binding BebidasVM.TextoBusqueda, Mode=TwoWay}"
+                         SearchCommand="{Binding BebidasVM.BuscarCommand}" />
+                            <Button Text="Limpiar" WidthRequest="150" StyleClass="SecundaryButton" Margin="30,0,0,0" Command="{Binding BebidasVM.LimpiarBusquedaCommand}" />
+                        </HorizontalStackLayout>
+
+                        <!-- Encabezado de columnas -->
+                        <Grid ColumnDefinitions="180,120,220,80,80,80,80"  BackgroundColor="{StaticResource Secondary}"  Padding="5">
+                            <Label Text="Nombre" Grid.Column="0" FontAttributes="Bold" TextColor="White" 
+                                HorizontalOptions="Center" VerticalOptions="Center" />
+                            <Label Text="Imagen" Grid.Column="1" FontAttributes="Bold" TextColor="White" 
+                                HorizontalOptions="Center" VerticalOptions="Center" />
+                            <Label Text="Descripción" Grid.Column="2" FontAttributes="Bold" TextColor="White" 
+                                HorizontalOptions="Center" VerticalOptions="Center" />
+                            <Label Text="Costo Real" Grid.Column="3" FontAttributes="Bold" TextColor="White" 
+                                HorizontalOptions="Center" VerticalOptions="Center" />
+                            <Label Text="Costo Público" Grid.Column="4" FontAttributes="Bold" TextColor="White" 
+                                HorizontalOptions="Center" VerticalOptions="Center" />
+                            <Label Text="Acciones" Grid.Column="5" Grid.ColumnSpan="2" FontAttributes="Bold" TextColor="White" 
+                                HorizontalOptions="Center" VerticalOptions="Center" />
+                        </Grid>
+
+
+                        <Grid RowDefinitions="450,Auto">
+                            <!-- Lista de productos -->
+                            <CollectionView Grid.Row="0" ItemsSource="{Binding BebidasVM.Productos}" SelectionMode="None">
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid ColumnDefinitions="180,120,220,80,80,80,80" Padding="0,5">
+                                            <!-- Nombre -->
+                                            <Label  Text="{Binding sNombre}"
+                                                Grid.Column="0"
+                                                TextColor="Black"
+                                                LineBreakMode="TailTruncation"
+                                                MaxLines="2"
+                                                MaximumHeightRequest="60"
+                                                HorizontalTextAlignment="Center"
+                                                VerticalOptions="Center" />
+                                            <!-- Imagen principal -->
+                                            <Image  Grid.Column="1"
+                                                HorizontalOptions="Center"
+                                                VerticalOptions="Center"
+                                                WidthRequest="70"
+                                                HeightRequest="70"
+                                                Aspect="AspectFill"
+                                                Source="{Binding aImagenes[0].sURLImagen}" />
+                                            <!-- Descripción (primer variante) -->
+                                            <Label Text="{Binding aVariantes[0].sVariante}"
+                                                Grid.Column="2"
+                                                TextColor="Black"
+                                                LineBreakMode="TailTruncation"
+                                                MaxLines="2"
+                                                MaximumHeightRequest="60"
+                                                HorizontalTextAlignment="Center"
+                                                VerticalOptions="Center" />
+                                            <!-- Costo Real -->
+                                            <Label Text="{Binding iCostoReal, StringFormat='${0} MXM'}"
+                                                Grid.Column="3"
+                                                TextColor="Black"
+                                                LineBreakMode="TailTruncation"
+                                                MaxLines="2"
+                                                HorizontalTextAlignment="Center"
+                                                VerticalOptions="Center" />
+                                            <!-- Costo Público -->
+                                            <Label Text="{Binding iCostoPublico, StringFormat='${0} MXM'}"
+                                                Grid.Column="4"
+                                                TextColor="Black"
+                                                LineBreakMode="TailTruncation"
+                                                MaxLines="2"
+                                                HorizontalTextAlignment="Center"
+                                                VerticalOptions="Center" />
+                                            <!-- Botón Editar -->
+                                            <Button Text="{x:Static helpers:MaterialDesignIcons.PencilOutline}"
+                                                FontFamily="MaterialDesignIcons"
+                                                Command="{Binding Source={x:Reference AdministracionProductosPage}, Path=BindingContext.ActualizarProductoCommand}"
+                                                CommandParameter="{Binding .}"
+                                                Grid.Column="5"
+                                                Padding="0"
+                                                FontSize="20"
+                                                     BackgroundColor="{StaticResource Secondary}" 
+                                                HorizontalOptions="Center"
+                                                VerticalOptions="Center"
+                                                Margin="5,0" />
+                                            <!-- Botón Eliminar -->
+                                            <Button Text="{x:Static helpers:MaterialDesignIcons.Delete}"
+                                                FontFamily="MaterialDesignIcons"
+                                                Command="{Binding Source={x:Reference AdministracionProductosPage}, Path=BindingContext.EliminarProductoCommand}"
+                                                CommandParameter="{Binding .}"
+                                                Grid.Column="6"
+                                                Padding="0"
+                                                StyleClass="DeleteButton"
+                                                FontSize="20"
+                                                HorizontalOptions="Center"
+                                                VerticalOptions="Center"
+                                                Margin="5,0" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                            <!-- Paginación -->
+                            <StackLayout Grid.Row="1"  Orientation="Horizontal" HorizontalOptions="Center">
+                                <Button Text="Anterior" StyleClass="SecundaryButton" Command="{Binding BebidasVM.PaginaAnteriorCommand}" />
+
+                                <Label  Text="{Binding BebidasVM.NumeroPaginaActual}" 
+                                    VerticalOptions="Center" 
+                                    Margin="20,0"
+                                    HorizontalOptions="CenterAndExpand"/>
+
+                                <Button Text="Siguiente" StyleClass="SecundaryButton" Command="{Binding BebidasVM.PaginaSiguienteCommand}" />
+                            </StackLayout>
+
+                        </Grid>
+                    </StackLayout>
+                </Border>
+
+                <!-- Sección: Extras -->
+                <Border Padding="10" Stroke="Transparent">
+                    <StackLayout WidthRequest="670">
+                        <Label Text="Extras" FontSize="20" FontAttributes="Bold" />
+
+                        <HorizontalStackLayout Margin="0,20">
+
+                            <SearchBar  Placeholder="Buscar Extras"
+                                    WidthRequest="200"
+                                    Text="{Binding ExtrasVM.TextoBusqueda, Mode=TwoWay}"
+                                    SearchCommand="{Binding ExtrasVM.BuscarCommand}" />
+                            <Button Text="Limpiar" StyleClass="SecundaryButton" WidthRequest="150" Margin="30,0,0,0" Command="{Binding ExtrasVM.LimpiarBusquedaCommand}" />
+                        </HorizontalStackLayout>
+
+                        <!-- Encabezado de columnas -->
+                        <Grid ColumnDefinitions="180,120,100,100,80,80"  BackgroundColor="{StaticResource Secondary}"  Padding="5">
+                            <Label Text="Nombre" Grid.Column="0" FontAttributes="Bold" TextColor="White" 
+                                HorizontalOptions="Center" VerticalOptions="Center" />
+                            <Label Text="Imagen" Grid.Column="1" FontAttributes="Bold" TextColor="White" 
+                                HorizontalOptions="Center" VerticalOptions="Center" />
+                            <!--<Label Text="Descripción" Grid.Column="2" FontAttributes="Bold" TextColor="White" 
+                                HorizontalOptions="Center" VerticalOptions="Center" />-->
+                            <Label Text="Costo Real" Grid.Column="2" FontAttributes="Bold" TextColor="White" 
+                                HorizontalOptions="Center" VerticalOptions="Center" />
+                            <Label Text="Costo Público" Grid.Column="3" FontAttributes="Bold" TextColor="White" 
+                                HorizontalOptions="Center" VerticalOptions="Center" />
+                            <Label Text="Acciones" Grid.Column="4" Grid.ColumnSpan="2" FontAttributes="Bold" TextColor="White" 
+                                HorizontalOptions="Center" VerticalOptions="Center" />
+                        </Grid>
+
+                        <Grid RowDefinitions="450,Auto">
+
+                            <!-- Lista de productos -->
+                            <CollectionView Grid.Row="0"  ItemsSource="{Binding ExtrasVM.Productos}" SelectionMode="None">
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid ColumnDefinitions="180,120,100,100,80,80" Padding="0,5">
+                                            <!-- Nombre -->
+                                            <Label Text="{Binding sNombre}"
+                                                    Grid.Column="0"
+                                                    TextColor="Black"
+                                                    LineBreakMode="TailTruncation"
+                                                    MaxLines="2"
+                                                    MaximumHeightRequest="60"
+                                                    HorizontalTextAlignment="Center"
+                                                    VerticalOptions="Center" />
+                                            <!-- Imagen principal -->
+                                            <Image Grid.Column="1"
+                                                    HorizontalOptions="Center"
+                                                    VerticalOptions="Center"
+                                                    WidthRequest="70"
+                                                    HeightRequest="70"
+                                                    Aspect="AspectFill"
+                                                    Source="{Binding aImagenes[0].sURLImagen}" />
+                                            <!-- Descripción (primer variante) -->
+                                            <!--<Label Text="{Binding aVariantes[0].sVariante}"
+                                                    Grid.Column="2"
+                                                    TextColor="Black"
+                                                    LineBreakMode="TailTruncation"
+                                                    MaxLines="2"
+                                                    MaximumHeightRequest="60"
+                                                    HorizontalTextAlignment="Center"
+                                                    VerticalOptions="Center" />-->
+                                            <!-- Costo Real -->
+                                            <Label Text="{Binding iCostoReal, StringFormat='${0} MXM'}"
+                                                    Grid.Column="2"
+                                                    TextColor="Black"
+                                                    LineBreakMode="TailTruncation"
+                                                    MaxLines="2"
+                                                    HorizontalTextAlignment="Center"
+                                                    VerticalOptions="Center" />
+                                            <!-- Costo Público -->
+                                            <Label Text="{Binding iCostoPublico, StringFormat='${0} MXM'}"
+                                                    Grid.Column="3"
+                                                    TextColor="Black"
+                                                    LineBreakMode="TailTruncation"
+                                                    MaxLines="2"
+                                                    HorizontalTextAlignment="Center"
+                                                    VerticalOptions="Center" />
+                                            <!-- Botón Editar -->
+                                            <Button Text="{x:Static helpers:MaterialDesignIcons.PencilOutline}"
+                                                    FontFamily="MaterialDesignIcons"
+                                                    Command="{Binding Source={x:Reference AdministracionProductosPage}, Path=BindingContext.ActualizarProductoCommand}"
+                                                    CommandParameter="{Binding .}"
+                                                    Grid.Column="4"
+                                                    Padding="0"
+                                                    FontSize="20"
+                                                     BackgroundColor="{StaticResource Secondary}" 
+                                                    HorizontalOptions="Center"
+                                                    VerticalOptions="Center"
+                                                    Margin="5,0" />
+                                            <!-- Botón Eliminar -->
+                                            <Button Text="{x:Static helpers:MaterialDesignIcons.Delete}"
+                                                    FontFamily="MaterialDesignIcons"
+                                                    Command="{Binding Source={x:Reference AdministracionProductosPage}, Path=BindingContext.EliminarProductoCommand}"
+                                                    CommandParameter="{Binding .}"
+                                                    Grid.Column="5"
+                                                    StyleClass="DeleteButton"
+                                                    Padding="0"
+                                                    FontSize="20"
+                                                    HorizontalOptions="Center"
+                                                    VerticalOptions="Center"
+                                                    Margin="5,0" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                            <!-- Paginación -->
+                            <StackLayout Grid.Row="1" Orientation="Horizontal" HorizontalOptions="Center">
+                                <Button Text="Anterior" StyleClass="SecundaryButton" Command="{Binding ExtrasVM.PaginaAnteriorCommand}" />
+                                <Label Text="{Binding ExtrasVM.NumeroPaginaActual}" VerticalOptions="Center" Margin="20,0"
+                                        HorizontalOptions="CenterAndExpand"/>
+                                <Button Text="Siguiente" StyleClass="SecundaryButton" Command="{Binding ExtrasVM.PaginaSiguienteCommand}" />
+                            </StackLayout>
+                        </Grid>
+                    </StackLayout>
+                </Border>
+
+            </StackLayout>
+
+            <!--MOVIL-->
+
+            <Grid x:Name="VistaAndroid" MaximumWidthRequest="650" RowDefinitions="*">
+                <!-- Encabezado opcional de la página -->
+                <!--<StackLayout VerticalOptions="Start" Padding="20">
+                    <Label Text="Administración de Productos"
+                             FontSize="24"
+                             HorizontalOptions="Center"/>
+                </StackLayout>-->
+
+                <!-- Bottom sheet fijo -->
+                <Border    x:Name="ContenedorProductos" 
+                           VerticalOptions="FillAndExpand"
+                           BackgroundColor="White"
+                           Padding="10"
+                           Margin="10">
+                    <Grid RowDefinitions="Auto,*">
+                        <!-- Selector de pestañas (fijo) -->
+                        <Grid Grid.Row="0" ColumnDefinitions="Auto,Auto,Auto" HorizontalOptions="Center" Margin="0,0,0,20">
+                            <Button x:Name="btnPlatillos" Grid.Column="0" Text="Platillos" Clicked="OnPlatillosClicked"/>
+                            <Button x:Name="btnBebidas" Grid.Column="1" Margin="10,0" Text="Bebidas" Clicked="OnBebidasClicked"/>
+                            <Button x:Name="btnExtras" Grid.Column="2" Text="Extras" Clicked="OnExtrasClicked"/>
+                        </Grid>
+
+                        <!-- Área de contenido (cambia según la pestaña) -->
+                        <Grid Grid.Row="1">
+                            <!-- Pestaña Platillos -->
+                            <ContentView x:Name="viewPlatillos" IsVisible="True">
+                                <Grid RowDefinitions="Auto,*,Auto" RowSpacing="10">
+                                    <!-- Encabezado: Agregar Platillo, Buscador y Limpiar -->
+                                    <Grid Grid.Row="0" ColumnDefinitions="*,Auto" ColumnSpacing="10" VerticalOptions="Center">
+
+                                        <SearchBar Grid.Column="0"
+                                                   Placeholder="Buscar Platillos"
+                                                   Text="{Binding PlatillosVM.TextoBusqueda, Mode=TwoWay}"
+                                                   SearchCommand="{Binding PlatillosVM.BuscarCommand}"
+                                                   HorizontalOptions="FillAndExpand"/>
+                                        <Button Grid.Column="1"
+                                                Text="Limpiar"
+                                                StyleClass="SecundaryButton"
+                                                Command="{Binding PlatillosVM.LimpiarBusquedaCommand}"/>
+                                    </Grid>
+                                    <!-- Listado de productos (scrollable) -->
+                                    <CollectionView Grid.Row="1"
+                                                    ItemsSource="{Binding PlatillosVM.Productos}"
+                                                    SelectionMode="None">
+                                        <CollectionView.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border BackgroundColor="White"
+                                                        Padding="10"
+                                                        Margin="0,0,0,10">
+                                                    <StackLayout Spacing="10">
+                                                        <!-- Fila de acciones -->
+                                                        <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                                                            <Button FontFamily="MaterialDesignIcons"
+                                                                    Text="{x:Static helpers:MaterialDesignIcons.PencilOutline}"
+                                                                    Command="{Binding Source={x:Reference AdministracionProductosPage}, Path=BindingContext.ActualizarProductoCommand}"
+                                                                    CommandParameter="{Binding .}"
+                                                                    FontSize="20"
+                                                                    BackgroundColor="#508BBF"
+                                                                    TextColor="White"/>
+                                                            <Button FontFamily="MaterialDesignIcons"
+                                                                    Text="{x:Static helpers:MaterialDesignIcons.Delete}"
+                                                                    Command="{Binding Source={x:Reference AdministracionProductosPage}, Path=BindingContext.EliminarProductoCommand}"
+                                                                    CommandParameter="{Binding .}"
+                                                                    FontSize="20"
+                                                                    StyleClass="DeleteButton"/>
+                                                        </HorizontalStackLayout>
+                                                        <!-- Detalles del producto -->
+                                                        <StackLayout Spacing="5">
+                                                            <Label Text="Nombre:" 
+                                                                    FontAttributes="Bold"
+                                                                    BackgroundColor="{StaticResource Secondary}"
+                                                                    TextColor="White"
+                                                                    Padding="5"/>
+                                                            <Label Text="{Binding sNombre}" FontAttributes="Bold" Padding="5"/>
+                                                        </StackLayout>
+                                                        <StackLayout Spacing="0" HorizontalOptions="Center">
+                                                            <Image Source="{Binding aImagenes[0].sURLImagen}"
+                                                                    WidthRequest="70"
+                                                                    HeightRequest="70"
+                                                                    Aspect="AspectFill"/>
+                                                        </StackLayout>
+                                                        <StackLayout Spacing="5">
+                                                            <Label Text="Descripción:" 
+                                                                    FontAttributes="Bold"
+                                                                    BackgroundColor="{StaticResource Secondary}"
+                                                                    TextColor="White"
+                                                                    Padding="5"/>
+                                                            <Label Text="{Binding aVariantes[0].sVariante}" Padding="5"/>
+                                                        </StackLayout>
+                                                        <StackLayout Spacing="5" Orientation="Horizontal">
+                                                            <StackLayout Spacing="2" HorizontalOptions="FillAndExpand">
+                                                                <Label Text="Costo Real:" 
+                                                                       FontAttributes="Bold"
+                                                                       BackgroundColor="{StaticResource Secondary}"
+                                                                       TextColor="White"
+                                                                       Padding="5"/>
+                                                                <Label Text="{Binding iCostoReal, StringFormat='${0} MXM'}" Padding="5"/>
+                                                            </StackLayout>
+                                                            <StackLayout Spacing="2" HorizontalOptions="FillAndExpand">
+                                                                <Label Text="Costo Público:" 
+                                                                        FontAttributes="Bold"
+                                                                        BackgroundColor="{StaticResource Secondary}"
+                                                                        TextColor="White"
+                                                                        Padding="5"/>
+                                                                <Label Text="{Binding iCostoPublico, StringFormat='${0} MXM'}" Padding="5"/>
+                                                            </StackLayout>
+                                                        </StackLayout>
+                                                    </StackLayout>
+                                                </Border>
+                                            </DataTemplate>
+                                        </CollectionView.ItemTemplate>
+                                    </CollectionView>
+                                    <!-- Paginación (fija) -->
+                                    <HorizontalStackLayout Grid.Row="2" HorizontalOptions="Center" Spacing="20">
+                                        <Button Text="Anterior" StyleClass="SecundaryButton" Command="{Binding PlatillosVM.PaginaAnteriorCommand}"/>
+                                        <Label Text="{Binding PlatillosVM.NumeroPaginaActual}" VerticalOptions="Center"/>
+                                        <Button Text="Siguiente" StyleClass="SecundaryButton" Command="{Binding PlatillosVM.PaginaSiguienteCommand}"/>
+                                    </HorizontalStackLayout>
+                                </Grid>
+                            </ContentView>
+
+                            <!-- Pestaña Bebidas -->
+                            <ContentView x:Name="viewBebidas" IsVisible="False">
+                                <Grid RowDefinitions="Auto,*,Auto" RowSpacing="10">
+                                    <!-- Encabezado: Buscador y Limpiar -->
+                                    <Grid Grid.Row="0" ColumnDefinitions="*,Auto" ColumnSpacing="10" VerticalOptions="Center">
+                                        <SearchBar Grid.Column="0"
+                                                   Placeholder="Buscar Bebidas"
+                                                   Text="{Binding BebidasVM.TextoBusqueda, Mode=TwoWay}"
+                                                   SearchCommand="{Binding BebidasVM.BuscarCommand}"
+                                                   HorizontalOptions="FillAndExpand"/>
+                                        <Button Grid.Column="1"
+                                                Text="Limpiar"
+                                                StyleClass="SecundaryButton"
+                                                Command="{Binding BebidasVM.LimpiarBusquedaCommand}"/>
+                                    </Grid>
+                                    <!-- Listado de productos -->
+                                    <CollectionView Grid.Row="1"
+                                                    ItemsSource="{Binding BebidasVM.Productos}"
+                                                    SelectionMode="None">
+                                        <CollectionView.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border BackgroundColor="White"
+                                                        Padding="10"
+                                                        Margin="0,0,0,10">
+                                                    <StackLayout Spacing="10">
+                                                        <!-- Acciones -->
+                                                        <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                                                            <Button FontFamily="MaterialDesignIcons"
+                                                                    Text="{x:Static helpers:MaterialDesignIcons.PencilOutline}"
+                                                                    Command="{Binding Source={x:Reference AdministracionProductosPage}, Path=BindingContext.ActualizarProductoCommand}"
+                                                                    CommandParameter="{Binding .}"
+                                                                    FontSize="20"
+                                                                    BackgroundColor="#508BBF"
+                                                                    TextColor="White"/>
+                                                            <Button FontFamily="MaterialDesignIcons"
+                                                                    Text="{x:Static helpers:MaterialDesignIcons.Delete}"
+                                                                    Command="{Binding Source={x:Reference AdministracionProductosPage}, Path=BindingContext.EliminarProductoCommand}"
+                                                                    CommandParameter="{Binding .}"
+                                                                    FontSize="20"
+                                                                    StyleClass="DeleteButton"/>
+                                                        </HorizontalStackLayout>
+                                                        <!-- Detalles del producto -->
+                                                        <StackLayout Spacing="5">
+                                                            <Label Text="Nombre:" 
+                                                                    FontAttributes="Bold"
+                                                                    BackgroundColor="{StaticResource Secondary}"
+                                                                    TextColor="White"
+                                                                    Padding="5"/>
+                                                            <Label Text="{Binding sNombre}" FontAttributes="Bold" Padding="5"/>
+                                                        </StackLayout>
+                                                        <StackLayout Spacing="0" HorizontalOptions="Center">
+                                                            <Image Source="{Binding aImagenes[0].sURLImagen}"
+                                                                    WidthRequest="70"
+                                                                    HeightRequest="70"
+                                                                    Aspect="AspectFill"/>
+                                                        </StackLayout>
+                                                        <StackLayout Spacing="5">
+                                                            <Label Text="Descripción:" 
+                                                                    FontAttributes="Bold"
+                                                                    BackgroundColor="{StaticResource Secondary}"
+                                                                    TextColor="White"
+                                                                    Padding="5"/>
+                                                            <Label Text="{Binding aVariantes[0].sVariante}" Padding="5"/>
+                                                        </StackLayout>
+                                                        <StackLayout Spacing="5" Orientation="Horizontal">
+                                                            <StackLayout Spacing="2" HorizontalOptions="FillAndExpand">
+                                                                <Label Text="Costo Real:" 
+                                                                        FontAttributes="Bold"
+                                                                        BackgroundColor="{StaticResource Secondary}"
+                                                                        TextColor="White"
+                                                                        Padding="5"/>
+                                                                <Label Text="{Binding iCostoReal, StringFormat='${0} MXM'}" Padding="5"/>
+                                                            </StackLayout>
+                                                            <StackLayout Spacing="2" HorizontalOptions="FillAndExpand">
+                                                                <Label Text="Costo Público:" 
+                                                                        FontAttributes="Bold"
+                                                                        BackgroundColor="{StaticResource Secondary}"
+                                                                        TextColor="White"
+                                                                        Padding="5"/>
+                                                                <Label Text="{Binding iCostoPublico, StringFormat='${0} MXM'}" Padding="5"/>
+                                                            </StackLayout>
+                                                        </StackLayout>
+                                                    </StackLayout>
+                                                </Border>
+                                            </DataTemplate>
+                                        </CollectionView.ItemTemplate>
+                                    </CollectionView>
+                                    <!-- Paginación -->
+                                    <HorizontalStackLayout Grid.Row="2" HorizontalOptions="Center" Spacing="20">
+                                        <Button Text="Anterior" StyleClass="SecundaryButton" Command="{Binding BebidasVM.PaginaAnteriorCommand}"/>
+                                        <Label Text="{Binding BebidasVM.NumeroPaginaActual}" VerticalOptions="Center"/>
+                                        <Button Text="Siguiente" StyleClass="SecundaryButton" Command="{Binding BebidasVM.PaginaSiguienteCommand}"/>
+                                    </HorizontalStackLayout>
+                                </Grid>
+                            </ContentView>
+
+                            <!-- Pestaña Extras -->
+                            <ContentView x:Name="viewExtras" IsVisible="False">
+                                <Grid RowDefinitions="Auto,*,Auto" RowSpacing="10">
+                                    <!-- Encabezado: Buscador y Limpiar -->
+                                    <Grid Grid.Row="0" ColumnDefinitions="*,Auto" ColumnSpacing="10" VerticalOptions="Center">
+                                        <SearchBar Grid.Column="0"
+                                                    Placeholder="Buscar Extras"
+                                                    Text="{Binding ExtrasVM.TextoBusqueda, Mode=TwoWay}"
+                                                    SearchCommand="{Binding ExtrasVM.BuscarCommand}"
+                                                    HorizontalOptions="FillAndExpand"/>
+                                        <Button Grid.Column="1"
+                                                Text="Limpiar"
+                                                StyleClass="SecundaryButton"
+                                                Command="{Binding ExtrasVM.LimpiarBusquedaCommand}"/>
+                                    </Grid>
+                                    <!-- Listado de productos -->
+                                    <CollectionView Grid.Row="1"
+                                                    ItemsSource="{Binding ExtrasVM.Productos}"
+                                                    SelectionMode="None">
+                                        <CollectionView.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border BackgroundColor="White"
+                                                        Padding="10"
+                                                        Margin="0,0,0,10">
+                                                    <StackLayout Spacing="10">
+                                                        <!-- Acciones -->
+                                                        <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                                                            <Button FontFamily="MaterialDesignIcons"
+                                                                    Text="{x:Static helpers:MaterialDesignIcons.PencilOutline}"
+                                                                    Command="{Binding Source={x:Reference AdministracionProductosPage}, Path=BindingContext.ActualizarProductoCommand}"
+                                                                    CommandParameter="{Binding .}"
+                                                                    FontSize="20"
+                                                                    BackgroundColor="#508BBF"
+                                                                    TextColor="White"/>
+                                                            <Button FontFamily="MaterialDesignIcons"
+                                                                    Text="{x:Static helpers:MaterialDesignIcons.Delete}"
+                                                                    Command="{Binding Source={x:Reference AdministracionProductosPage}, Path=BindingContext.EliminarProductoCommand}"
+                                                                    CommandParameter="{Binding .}"
+                                                                    FontSize="20"
+                                                                    StyleClass="DeleteButton"/>
+                                                        </HorizontalStackLayout>
+                                                        <!-- Detalles del producto -->
+                                                        <StackLayout Spacing="5">
+                                                            <Label Text="Nombre:" 
+                                                                    FontAttributes="Bold"
+                                                                    BackgroundColor="{StaticResource Secondary}"
+                                                                    TextColor="White"
+                                                                    Padding="5"/>
+                                                            <Label Text="{Binding sNombre}" FontAttributes="Bold" Padding="5"/>
+                                                        </StackLayout>
+                                                        <StackLayout Spacing="0" HorizontalOptions="Center">
+                                                            <Image Source="{Binding aImagenes[0].sURLImagen}"
+                                                                    WidthRequest="70"
+                                                                    HeightRequest="70"
+                                                                    Aspect="AspectFill"/>
+                                                        </StackLayout>
+                                                        
+                                                        <StackLayout Spacing="5" Orientation="Horizontal">
+                                                            <StackLayout Spacing="2" HorizontalOptions="FillAndExpand">
+                                                                <Label Text="Costo Real:" 
+                                                                        FontAttributes="Bold"
+                                                                        BackgroundColor="{StaticResource Secondary}"
+                                                                        TextColor="White"
+                                                                        Padding="5"/>
+                                                                <Label Text="{Binding iCostoReal, StringFormat='${0} MXM'}" Padding="5"/>
+                                                            </StackLayout>
+                                                            <StackLayout Spacing="2" HorizontalOptions="FillAndExpand">
+                                                                <Label Text="Costo Público:" 
+                                                                       FontAttributes="Bold"
+                                                                       BackgroundColor="{StaticResource Secondary}"
+                                                                       TextColor="White"
+                                                                       Padding="5"/>
+                                                                <Label Text="{Binding iCostoPublico, StringFormat='${0} MXM'}" Padding="5"/>
+                                                            </StackLayout>
+                                                        </StackLayout>
+                                                    </StackLayout>
+                                                </Border>
+                                            </DataTemplate>
+                                        </CollectionView.ItemTemplate>
+                                    </CollectionView>
+                                    <!-- Paginación -->
+                                    <HorizontalStackLayout Grid.Row="2" HorizontalOptions="Center" Spacing="20">
+                                        <Button Text="Anterior" StyleClass="SecundaryButton" Command="{Binding ExtrasVM.PaginaAnteriorCommand}"/>
+                                        <Label Text="{Binding ExtrasVM.NumeroPaginaActual}" VerticalOptions="Center"/>
+                                        <Button Text="Siguiente" StyleClass="SecundaryButton" Command="{Binding ExtrasVM.PaginaSiguienteCommand}"/>
+                                    </HorizontalStackLayout>
+                                </Grid>
+                            </ContentView>
+                        </Grid>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <AbsoluteLayout x:Name="btnFlotante">
+                <!-- Botón Agregar (fijo en la esquina inferior derecha) -->
+            <Button x:Name="btnAgregar"
+                    
+                Text="Agregar Producto"
+                Command="{Binding IrAgregarProductoCommand}"
+                BackgroundColor="#508BBF"
+                TextColor="White"
+                CornerRadius="25"
+                Padding="15"
+                AbsoluteLayout.LayoutBounds="0.95,0.80,AutoSize,AutoSize"
+                AbsoluteLayout.LayoutFlags="PositionProportional"/>
+
+            </AbsoluteLayout>
+            
+        </Grid>
+        
+
+    </ScrollView>
+</ContentPage>
