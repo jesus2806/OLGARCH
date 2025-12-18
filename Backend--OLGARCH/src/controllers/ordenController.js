@@ -342,89 +342,165 @@ export const updateOrden = async (req, res) => {
  * Eliminar una orden por ID
  */
 export const deleteOrden = async (req, res) => {
-  // Inicia una sesión
-  const session = await mongoose.startSession();
+  const { id } = req.params;
 
+  // ✅ log base
+  console.log("[deleteOrden] INICIO", {
+    id,
+    time: new Date().toISOString(),
+    isValidObjectId: mongoose.Types.ObjectId.isValid(id),
+  });
+
+  // Si el id no es ObjectId, evita reventar en el driver
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    console.warn("[deleteOrden] ID inválido (no ObjectId)", { id });
+    return res.status(400).json({
+      success: false,
+      message: "ID inválido",
+      error: { code: 400, details: "El id no es un ObjectId válido" },
+    });
+  }
+
+  let session;
   try {
-    const { id } = req.params;
-    
-    // Inicia la transacción
-    session.startTransaction();
+    session = await mongoose.startSession();
+    console.log("[deleteOrden] session creada");
 
-    // Eliminar la orden utilizando la sesión de transacción
+    session.startTransaction();
+    console.log("[deleteOrden] transaction START");
+
+    // 1) Eliminar orden principal
+    console.log("[deleteOrden] findByIdAndDelete orden", { id });
+
     const ordenEliminada = await Orden.findByIdAndDelete(id, { session });
+
+    console.log("[deleteOrden] ordenEliminada", {
+      existe: !!ordenEliminada,
+      _id: ordenEliminada?._id?.toString(),
+      iTipoOrden: ordenEliminada?.iTipoOrden,
+      sIdentificadorOrden: ordenEliminada?.sIdentificadorOrden,
+    });
+
     if (!ordenEliminada) {
-      // Si no se encontró la orden, aborta la transacción y cierra la sesión
+      console.warn("[deleteOrden] NO encontrada -> abort");
       await session.abortTransaction();
       session.endSession();
       return res.status(404).json({
         success: false,
-        message: 'Orden no encontrada',
-        error: {
-          code: 404,
-          details: 'La orden no existe',
-        },
+        message: "Orden no encontrada",
+        error: { code: 404, details: "La orden no existe" },
       });
     }
 
-    // Eliminar todos los productos asociados a la orden eliminada
-    await OrdenProducto.deleteMany(
+    // 2) Eliminar productos de esa orden
+    console.log("[deleteOrden] deleteMany productos de orden", {
+      sIdOrdenMongoDB: ordenEliminada._id?.toString(),
+    });
+
+    const delProductosMain = await OrdenProducto.deleteMany(
       { sIdOrdenMongoDB: ordenEliminada._id },
       { session }
     );
 
-    // Si la orden eliminada es primaria, eliminar también sus órdenes secundarias
+    console.log("[deleteOrden] productos eliminados (main)", {
+      deletedCount: delProductosMain?.deletedCount,
+      acknowledged: delProductosMain?.acknowledged,
+    });
+
+    // 3) Si es primaria, borrar secundarias y sus productos
     if (ordenEliminada.iTipoOrden === 1) {
-      // Buscar las órdenes secundarias que tengan el mismo identificador y iTipoOrden: 2
+      console.log("[deleteOrden] orden primaria => buscar secundarias", {
+        sIdentificadorOrden: ordenEliminada.sIdentificadorOrden,
+      });
+
       const ordenesSecundarias = await Orden.find(
-        { 
-          sIdentificadorOrden: ordenEliminada.sIdentificadorOrden, 
-          iTipoOrden: 2 
+        {
+          sIdentificadorOrden: ordenEliminada.sIdentificadorOrden,
+          iTipoOrden: 2,
         },
-        '_id',
+        "_id",
         { session }
       );
 
-      if (ordenesSecundarias && ordenesSecundarias.length > 0) {
+      console.log("[deleteOrden] secundarias encontradas", {
+        count: ordenesSecundarias?.length ?? 0,
+        ids: (ordenesSecundarias ?? []).map(o => o._id.toString()),
+      });
+
+      if (ordenesSecundarias?.length) {
         const idsOrdenesSecundarias = ordenesSecundarias.map(o => o._id);
-        
-        // Eliminar los productos asociados a las órdenes secundarias
-        await OrdenProducto.deleteMany(
+
+        console.log("[deleteOrden] deleteMany productos secundarias", {
+          ids: idsOrdenesSecundarias.map(x => x.toString()),
+        });
+
+        const delProductosSec = await OrdenProducto.deleteMany(
           { sIdOrdenMongoDB: { $in: idsOrdenesSecundarias } },
           { session }
         );
-        
-        // Eliminar las órdenes secundarias
-        await Orden.deleteMany(
+
+        console.log("[deleteOrden] productos eliminados (sec)", {
+          deletedCount: delProductosSec?.deletedCount,
+          acknowledged: delProductosSec?.acknowledged,
+        });
+
+        console.log("[deleteOrden] deleteMany ordenes secundarias");
+
+        const delOrdenesSec = await Orden.deleteMany(
           { _id: { $in: idsOrdenesSecundarias } },
           { session }
         );
+
+        console.log("[deleteOrden] ordenes secundarias eliminadas", {
+          deletedCount: delOrdenesSec?.deletedCount,
+          acknowledged: delOrdenesSec?.acknowledged,
+        });
       }
     }
 
-    // Si todo salió bien, se comete (confirma) la transacción
     await session.commitTransaction();
+    console.log("[deleteOrden] transaction COMMIT OK");
+
     session.endSession();
+    console.log("[deleteOrden] session END OK");
 
     return res.status(200).json({
       success: true,
-      message: 'Orden y productos asociados eliminados exitosamente',
-      data: {
-        orden: ordenEliminada,
-      }
+      message: "Orden y productos asociados eliminados exitosamente",
+      data: { orden: ordenEliminada },
     });
   } catch (error) {
-    // En caso de error, se revierte la transacción
-    await session.abortTransaction();
-    session.endSession();
+    console.error("[deleteOrden] ERROR", {
+      name: error?.name,
+      message: error?.message,
+      code: error?.code,
+      stack: error?.stack,
+    });
+
+    // 🔥 Si el error es por transacciones / replica set, lo verás aquí
+    // Ejemplos típicos:
+    // - "Transaction numbers are only allowed on a replica set member or mongos"
+    // - "This MongoDB deployment does not support retryable writes"
+    // - "Cannot call abortTransaction after calling commitTransaction" (si ya se cerró)
+    try {
+      if (session) {
+        console.log("[deleteOrden] abortTransaction...");
+        await session.abortTransaction();
+        console.log("[deleteOrden] abortTransaction OK");
+        session.endSession();
+        console.log("[deleteOrden] session END (error) OK");
+      }
+    } catch (abortErr) {
+      console.error("[deleteOrden] ERROR abortTransaction/endSession", {
+        message: abortErr?.message,
+        stack: abortErr?.stack,
+      });
+    }
 
     return res.status(500).json({
       success: false,
-      message: 'Error al eliminar la orden',
-      error: {
-        code: 500,
-        details: error.message,
-      },
+      message: "Error al eliminar la orden",
+      error: { code: 500, details: error.message },
     });
   }
 };

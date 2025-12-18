@@ -9,18 +9,16 @@ import {
   login,
 } from '../controllers/usuarioController.js';
 
-import { authMiddleware } from '../middlewares/auth.middleware.js';
-
 const router = Router();
 
 // Ruta de autenticación (login)
 router.post('/login', login);
 
 // Rutas protegidas del CRUD
-router.post('/usuarios', authMiddleware, createUser);
-router.get('/usuarios', authMiddleware, getUsers);
-router.get('/usuarios/:id', authMiddleware, getUserById);
-router.put('/usuarios/:id', authMiddleware, updateUser);
-router.delete('/usuarios/:id', authMiddleware, deleteUser);
+router.post('/usuarios', createUser);
+router.get('/usuarios', getUsers);
+router.get('/usuarios/:id', getUserById);
+router.put('/usuarios/:id', updateUser);
+router.delete('/usuarios/:id', deleteUser);
 
 export default router;

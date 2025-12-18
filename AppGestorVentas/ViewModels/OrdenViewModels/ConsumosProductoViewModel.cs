@@ -1,6 +1,5 @@
 using AppGestorVentas.Models;
 using AppGestorVentas.Services;
-using AppGestorVentas.ViewModels.Popup;
 using CommunityToolkit.Maui.Core;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -176,7 +175,9 @@ namespace AppGestorVentas.ViewModels.OrdenViewModels
                     {
                         consumoDisplay.Extras.Add(new ExtraConsumoDisplay
                         {
-                            sIdExtra = extra.sIdExtra ?? extra.sIdMongo ?? string.Empty,
+                            iIndexConsumo = i,
+                            sIdExtraSubdoc = extra.sIdMongo, 
+                            sIdExtra = extra.sIdExtra,
                             sNombre = extra.sNombre,
                             iCostoPublico = extra.iCostoPublico,
                             sURLImagen = extra.sURLImagen
@@ -232,33 +233,29 @@ namespace AppGestorVentas.ViewModels.OrdenViewModels
         }
 
         [RelayCommand]
-        private async Task EliminarExtra(ExtraConsumoParams param)
+        private async Task EliminarExtra(ExtraConsumoDisplay extra)
         {
-            if (param == null) return;
+            if (extra == null) return;
 
             bool confirmar = await Shell.Current.DisplayAlert(
                 "Confirmar eliminación",
-                $"¿Deseas eliminar el extra '{param.sNombreExtra}' del Consumo {param.iIndexConsumo}?",
+                $"¿Deseas eliminar el extra '{extra.sNombre}' del Consumo {extra.iIndexConsumo}?",
                 "Sí", "No");
 
             if (!confirmar) return;
 
             IsLoading = true;
-
             try
             {
                 var response = await _httpApiService.DeleteAsync(
-                    $"api/orden-productos/{_sIdOrdenProducto}/consumos/{param.iIndexConsumo}/extras/{param.sIdExtra}");
+                    $"api/orden-productos/{_sIdOrdenProducto}/consumos/{extra.iIndexConsumo}/extras/{extra.sIdExtraSubdoc}",
+                    true
+                );
 
                 if (response != null && response.IsSuccessStatusCode)
-                {
-                    // Recargar datos para reflejar los cambios
                     await LoadDataAsync();
-                }
                 else
-                {
                     await MostrarError("Error al eliminar el extra.");
-                }
             }
             catch (Exception ex)
             {
@@ -275,6 +272,53 @@ namespace AppGestorVentas.ViewModels.OrdenViewModels
         {
             await Shell.Current.GoToAsync("..");
         }
+
+        [ObservableProperty]
+        private bool bModoDecremento; // opcional (para saber si vienes de “bajar cantidad”)
+
+        [RelayCommand]
+        private async Task EliminarConsumo(ConsumoDisplay consumo)
+        {
+            if (consumo == null) return;
+
+            string msg = consumo.TieneExtras
+                ? $"El Consumo {consumo.iIndex} tiene extras. Al eliminar el consumo se eliminarán también sus extras. ¿Continuar?"
+                : $"¿Deseas eliminar el Consumo {consumo.iIndex}?";
+
+            bool confirmar = await Shell.Current.DisplayAlert("Eliminar consumo", msg, "Sí", "No");
+            if (!confirmar) return;
+
+            IsLoading = true;
+            try
+            {
+                // ✅ ENDPOINT IDEAL (ver sección Back):
+                var resp = await _httpApiService.DeleteAsync(
+                    $"api/orden-productos/{_sIdOrdenProducto}/consumos/{consumo.iIndex}");
+
+                if (resp != null && resp.IsSuccessStatusCode)
+                {
+                    // recarga lista (ya debe venir con cantidad - 1)
+                    await LoadDataAsync();
+
+                    // si venías desde “decrementar”, normalmente quieres volver al detalle
+                    if (BModoDecremento)
+                        await Shell.Current.GoToAsync("..");
+                }
+                else
+                {
+                    await MostrarError("No se pudo eliminar el consumo.");
+                }
+            }
+            catch (Exception ex)
+            {
+                await MostrarError($"Error: {ex.Message}");
+            }
+            finally
+            {
+                IsLoading = false;
+            }
+        }
+
 
         #endregion
 
@@ -313,6 +357,10 @@ namespace AppGestorVentas.ViewModels.OrdenViewModels
     /// </summary>
     public partial class ExtraConsumoDisplay : ObservableObject
     {
+        public int iIndexConsumo { get; set; } // <-- NUEVO
+
+        public string sIdExtraSubdoc { get; set; } = string.Empty;
+
         public string sIdExtra { get; set; } = string.Empty;
         public string sNombre { get; set; } = string.Empty;
         public decimal iCostoPublico { get; set; }

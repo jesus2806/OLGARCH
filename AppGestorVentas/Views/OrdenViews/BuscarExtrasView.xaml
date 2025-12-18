@@ -130,68 +130,80 @@
         </Grid>
 
         <!-- Modal para selección de consumos (Pantalla 4) -->
-        <Grid IsVisible="{Binding MostrarModalConsumos}" 
-              BackgroundColor="{StaticResource ModalBackground}">
+        <Grid IsVisible="{Binding MostrarModalConsumos}"
+          BackgroundColor="{StaticResource ModalBackground}">
+
             <Border BackgroundColor="{StaticResource Surface}"
-                    StrokeShape="RoundRectangle 16"
-                    Padding="20"
-                    Margin="32"
-                    VerticalOptions="Center"
-                    HorizontalOptions="Center"
-                    MaximumWidthRequest="400">
-                <VerticalStackLayout Spacing="16">
-                    <!-- Título -->
-                    <Label Text="¿A qué consumos aplicar el extra?"
+                StrokeShape="RoundRectangle 16"
+                Padding="20"
+                Margin="32"
+                VerticalOptions="Center"
+                HorizontalOptions="Center"
+                MaximumWidthRequest="400">
+
+                <!-- ✅ Layout del modal: header / body scrolleable / footer -->
+                <Grid RowDefinitions="Auto,*,Auto" RowSpacing="16">
+
+                    <!-- ===== Header ===== -->
+                    <VerticalStackLayout Grid.Row="0" Spacing="8">
+                        <Label Text="¿A qué consumos aplicar el extra?"
                            FontSize="18"
                            FontAttributes="Bold"
                            HorizontalOptions="Center"/>
 
-                    <!-- Nombre del extra seleccionado -->
-                    <Label Text="{Binding ExtraSeleccionado.sNombre}"
+                        <Label Text="{Binding ExtraSeleccionado.sNombre}"
                            FontSize="16"
                            TextColor="{StaticResource Primary500}"
                            HorizontalOptions="Center"/>
-
-                    <!-- Lista de consumos con checkboxes -->
-                    <VerticalStackLayout Spacing="8" 
-                                         BindableLayout.ItemsSource="{Binding LstConsumosSeleccion}">
-                        <BindableLayout.ItemTemplate>
-                            <DataTemplate x:DataType="viewmodels:ConsumoSeleccion">
-                                <Border BackgroundColor="#F5F5F5"
-                                        StrokeShape="RoundRectangle 8"
-                                        Padding="12">
-                                    <HorizontalStackLayout Spacing="12">
-                                        <CheckBox IsChecked="{Binding IsSelected}"
-                                                  Color="{StaticResource Primary500}"/>
-                                        <Label Text="{Binding sNombre}"
-                                               VerticalOptions="Center"
-                                               FontSize="16"/>
-                                    </HorizontalStackLayout>
-                                </Border>
-                            </DataTemplate>
-                        </BindableLayout.ItemTemplate>
                     </VerticalStackLayout>
 
-                    <!-- Botones -->
-                    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                    <!-- ===== Body (SCROLL) ===== -->
+                    <ScrollView Grid.Row="1"
+                            MaximumHeightRequest="320"
+                            VerticalScrollBarVisibility="Always">
+                        <VerticalStackLayout Spacing="8"
+                                         BindableLayout.ItemsSource="{Binding LstConsumosSeleccion}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="viewmodels:ConsumoSeleccion">
+                                    <Border BackgroundColor="#F5F5F5"
+                                        StrokeShape="RoundRectangle 8"
+                                        Padding="12">
+                                        <HorizontalStackLayout Spacing="12">
+                                            <CheckBox IsChecked="{Binding IsSelected}"
+                                                  Color="{StaticResource Primary500}"/>
+                                            <Label Text="{Binding sNombre}"
+                                               VerticalOptions="Center"
+                                               FontSize="16"/>
+                                        </HorizontalStackLayout>
+                                    </Border>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+                    </ScrollView>
+
+                    <!-- ===== Footer (botones fijos) ===== -->
+                    <Grid Grid.Row="2" ColumnDefinitions="*,*" ColumnSpacing="12">
                         <Button Grid.Column="0"
-                                Text="Cancelar"
-                                Command="{Binding CerrarModalCommand}"
-                                BackgroundColor="{StaticResource Outline}"
-                                TextColor="White"
-                                HeightRequest="44"
-                                CornerRadius="8"/>
+                            Text="Cancelar"
+                            Command="{Binding CerrarModalCommand}"
+                            BackgroundColor="{StaticResource Outline}"
+                            TextColor="White"
+                            HeightRequest="44"
+                            CornerRadius="8"/>
+
                         <Button Grid.Column="1"
-                                Text="Agregar"
-                                Command="{Binding ConfirmarAgregarExtraCommand}"
-                                BackgroundColor="{StaticResource Primary500}"
-                                TextColor="White"
-                                HeightRequest="44"
-                                CornerRadius="8"/>
+                            Text="Agregar"
+                            Command="{Binding ConfirmarAgregarExtraCommand}"
+                            BackgroundColor="{StaticResource Primary500}"
+                            TextColor="White"
+                            HeightRequest="44"
+                            CornerRadius="8"/>
                     </Grid>
-                </VerticalStackLayout>
+
+                </Grid>
             </Border>
         </Grid>
+
 
         <!-- Indicador de carga -->
         <ActivityIndicator IsRunning="{Binding IsLoading}"

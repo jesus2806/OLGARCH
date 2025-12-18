@@ -5,7 +5,7 @@
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="AppGestorVentas.Views.OrdenViews.ConsumosProductoView"
              x:DataType="viewmodels:ConsumosProductoViewModel"
-             
+             x:Name="ConsumosPage"
              Title="Administrar Extras">
 
     <ContentPage.Resources>
@@ -103,7 +103,16 @@
                                                    FontAttributes="Bold"
                                                    TextColor="White"/>
                                         </Border>
-                                        
+
+                                        <Button Grid.Column="1"
+                                            Text="Eliminar consumo"
+                                            FontSize="12"
+                                            BackgroundColor="Transparent"
+                                            TextColor="{StaticResource Error500}"
+                                            HorizontalOptions="End"
+                                            Command="{Binding Source={x:Reference ConsumosPage}, Path=BindingContext.EliminarConsumoCommand}"
+                                            CommandParameter="{Binding .}" />
+
                                         <!-- Subtotal del consumo -->
                                         <HorizontalStackLayout Grid.Column="2" 
                                                                Spacing="4"
@@ -118,6 +127,7 @@
                                                    TextColor="{StaticResource Primary500}"
                                                    VerticalOptions="Center"/>
                                         </HorizontalStackLayout>
+                                        
                                     </Grid>
 
                                     <!-- Lista de extras del consumo -->
@@ -160,14 +170,17 @@
 
                                                         <!-- Botón eliminar extra -->
                                                         <Button Grid.Column="3"
-                                                                Text="🗑️"
-                                                                FontSize="16"
-                                                                BackgroundColor="Transparent"
-                                                                TextColor="{StaticResource Error500}"
-                                                                WidthRequest="40"
-                                                                HeightRequest="40"
-                                                                Padding="0"
-                                                                VerticalOptions="Center"/>
+                                                            Text="🗑️"
+                                                            FontSize="16"
+                                                            BackgroundColor="Transparent"
+                                                            TextColor="{StaticResource Error500}"
+                                                            WidthRequest="40"
+                                                            HeightRequest="40"
+                                                            Padding="0"
+                                                            VerticalOptions="Center"
+                                                            Command="{Binding Source={x:Reference ConsumosPage}, Path=BindingContext.EliminarExtraCommand}"
+                                                            CommandParameter="{Binding .}" />
+
                                                     </Grid>
                                                 </Border>
                                             </DataTemplate>

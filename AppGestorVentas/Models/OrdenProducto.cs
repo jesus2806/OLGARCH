@@ -65,4 +65,5 @@ namespace AppGestorVentas.Models
         public string sURLImagen { get; set; } = string.Empty;
 
     }
+
 }
