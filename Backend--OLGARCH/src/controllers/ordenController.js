@@ -894,6 +894,7 @@ export const updateIndicaciones = async (req, res) => {
   }
 };
 
+
 /**
  * Obtener resumen de orden para Pantalla 1
  * GET /api/orden/:id/resumen
@@ -904,12 +905,14 @@ export const getOrdenResumen = async (req, res) => {
   try {
     const { id } = req.params;
     
+    // Usar .lean() para obtener objetos JS planos (incluye subdocumentos anidados)
     const orden = await Orden.findById(id)
       .populate('aProductos')
       .populate({
         path: 'ordenesSecundarias',
         populate: { path: 'aProductos' }
-      });
+      })
+      .lean();
 
     if (!orden) {
       return res.status(404).json({
@@ -927,12 +930,18 @@ export const getOrdenResumen = async (req, res) => {
     
     // Total de productos (sin extras)
     const iTotalProductos = productos.reduce((total, p) => {
-      return total + (p.iCostoPublico * p.iCantidad);
+      return total + ((p.iCostoPublico || 0) * (p.iCantidad || 1));
     }, 0);
 
-    // Total de extras
+    // Total de extras (desde consumos)
     const iTotalExtras = productos.reduce((total, p) => {
-      return total + (p.iTotalPublicoExtrasOrden || 0);
+      if (!p.aConsumos || p.aConsumos.length === 0) return total;
+      return total + p.aConsumos.reduce((subtotal, consumo) => {
+        if (!consumo.aExtras || consumo.aExtras.length === 0) return subtotal;
+        return subtotal + consumo.aExtras.reduce((extraTotal, extra) => {
+          return extraTotal + (extra.iCostoPublico || 0);
+        }, 0);
+      }, 0);
     }, 0);
 
     // Total general
@@ -947,20 +956,32 @@ export const getOrdenResumen = async (req, res) => {
         iNumeroOrden: orden.iNumeroOrden,
         iMesa: orden.iMesa,
         sUsuarioMesero: orden.sUsuarioMesero,
+        sIdMongoDBMesero: orden.sIdMongoDBMesero,
         sIndicaciones: orden.sIndicaciones,
         iEstatus: orden.iEstatus,
+        iTipoOrden: orden.iTipoOrden,
         dtFechaAlta: orden.dtFechaAlta,
         aProductos: productos.map(p => ({
           _id: p._id,
           sNombre: p.sNombre,
+          iCostoReal: p.iCostoReal,
           iCostoPublico: p.iCostoPublico,
           iCantidad: p.iCantidad,
           sURLImagen: p.sURLImagen,
-          aVariantes: p.aVariantes,
+          sIndicaciones: p.sIndicaciones,
+          aVariantes: p.aVariantes || [],
           iIndexVarianteSeleccionada: p.iIndexVarianteSeleccionada,
-          bTieneExtras: p.bTieneExtras,
-          iTotalExtras: p.iTotalPublicoExtrasOrden,
-          iTotalProducto: p.iTotalGeneralPublicoOrdenProducto
+          iTipoProducto: p.iTipoProducto,
+          bTieneExtras: (p.aConsumos || []).some(c => c.aExtras && c.aExtras.length > 0),
+          aExtras: p.aExtras || [],
+          aConsumos: p.aConsumos || [],
+          iTotalExtras: (p.aConsumos || []).reduce((total, c) => {
+            return total + (c.aExtras || []).reduce((st, e) => st + (e.iCostoPublico || 0), 0);
+          }, 0),
+          iTotalProducto: ((p.iCostoPublico || 0) * (p.iCantidad || 1)) + 
+            (p.aConsumos || []).reduce((total, c) => {
+              return total + (c.aExtras || []).reduce((st, e) => st + (e.iCostoPublico || 0), 0);
+            }, 0)
         })),
         iTotalProductos,
         iTotalExtras,

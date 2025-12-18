@@ -69,6 +69,13 @@ namespace AppGestorVentas
             mauiAppBuilder.Services.AddSingleton<SocketIoService>();
             mauiAppBuilder.Services.AddSingleton<IAudioManager, AudioManager>();
             mauiAppBuilder.Services.AddSingleton<NotificationService>();
+            
+            // Servicio de sincronización offline-first
+            mauiAppBuilder.Services.AddSingleton<SyncService>();
+            
+            // Servicio de borrador de orden (gestión local)
+            mauiAppBuilder.Services.AddSingleton<OrdenDraftService>();
+            
 #if ANDROID
             mauiAppBuilder.Services.AddSingleton<BluetoothClassicPrinterConnector>();
 #endif
@@ -129,6 +136,10 @@ namespace AppGestorVentas
             
             mauiAppBuilder.Services.AddTransient<LoginView>();
             mauiAppBuilder.Services.AddTransient<LoginViewModel>();
+            
+            // ViewModel de sincronización (singleton para compartir estado)
+            mauiAppBuilder.Services.AddSingleton<AppGestorVentas.ViewModels.SyncViewModel>();
+            
             // More views - view models registered here.
 
             return mauiAppBuilder;

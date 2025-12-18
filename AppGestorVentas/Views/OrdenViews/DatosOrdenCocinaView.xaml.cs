@@ -41,7 +41,7 @@ public partial class DatosOrdenCocinaView : ContentPage
             // Llama al m�todo de carga de datos en el ViewModel
             if (BindingContext is DatosOrdenViewModel viewModel)
             {
-                await viewModel.LoadDataApi();
+                //await viewModel.LoadDataApi();
             }
         }
         catch (Exception ex)

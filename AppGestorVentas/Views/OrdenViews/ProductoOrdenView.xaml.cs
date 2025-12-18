@@ -16,7 +16,7 @@ public partial class ProductoOrdenView : ContentPage
     {
         if (BindingContext is ProductoOrdenViewModel vm)
         {
-            await vm.OnBusquedaProductosTextChanged(e.NewTextValue);
+            //await vm.OnBusquedaProductosTextChanged(e.NewTextValue);
         }
     }
 
@@ -24,7 +24,7 @@ public partial class ProductoOrdenView : ContentPage
     {
         if (BindingContext is ProductoOrdenViewModel vm)
         {
-            await vm.OnBusquedaExtrasTextChanged(e.NewTextValue);
+            //await vm.OnBusquedaExtrasTextChanged(e.NewTextValue);
         }
     }
 

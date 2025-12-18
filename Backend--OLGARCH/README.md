@@ -473,3 +473,204 @@ Body:
 - El nuevo campo `aConsumos` permite gestionar extras por consumo individual
 - Los virtuals calculan totales considerando ambos sistemas
 - El middleware `pre-save` sincroniza automáticamente `aConsumos` con `iCantidad`
+
+---
+
+## Sistema de Sincronización Unificada ⭐ NUEVO
+
+El sistema de sincronización permite acumular operaciones en el frontend (SQLite local) y enviarlas en batch al backend, reduciendo llamadas innecesarias y optimizando el rendimiento.
+
+### Flujo de Sincronización
+
+```
+┌─────────────────┐     Operaciones      ┌──────────────────┐
+│    Frontend     │ ──────────────────►  │  SQLite Local    │
+│  (MAUI App)     │     locales          │  (Acumuladas)    │
+└─────────────────┘                      └────────┬─────────┘
+                                                  │
+                                          Botón "Sync"
+                                                  │
+                                                  ▼
+                                    ┌─────────────────────────┐
+                                    │   POST /api/sync/ordenes │
+                                    │   (Batch de operaciones) │
+                                    └────────────┬────────────┘
+                                                 │
+                                                 ▼
+                                    ┌─────────────────────────┐
+                                    │      Backend            │
+                                    │  Procesa en transacción │
+                                    │     → MongoDB           │
+                                    └─────────────────────────┘
+```
+
+### Endpoint Principal
+
+```
+POST /api/sync/ordenes
+```
+
+**Headers requeridos:**
+```
+Authorization: Bearer <token>
+Content-Type: application/json
+```
+
+**Body:**
+```json
+{
+  "operaciones": [
+    {
+      "tipoOperacion": "CREAR_ORDEN",
+      "idLocal": "uuid-local-orden-001",
+      "datos": {
+        "sIdentificadorOrden": "ORD-2024-001",
+        "iMesa": 5,
+        "iTipoOrden": 1,
+        "sUsuarioMesero": "Juan Pérez",
+        "sIdMongoDBMesero": "64a5b3c2d1e0f9..."
+      },
+      "timestampLocal": "2024-01-15T10:30:00.000Z"
+    },
+    {
+      "tipoOperacion": "CREAR_PRODUCTO",
+      "idLocal": "uuid-local-producto-001",
+      "datos": {
+        "sIdOrdenMongoDB": "uuid-local-orden-001",
+        "sNombre": "Enchiladas Suizas",
+        "iCostoReal": 50,
+        "iCostoPublico": 85,
+        "iCantidad": 3,
+        "iIndexVarianteSeleccionada": 0,
+        "aVariantes": [{"sVariante": "Normal"}],
+        "iTipoProducto": 1
+      },
+      "timestampLocal": "2024-01-15T10:30:05.000Z"
+    },
+    {
+      "tipoOperacion": "AGREGAR_EXTRA_CONSUMOS",
+      "idLocal": "uuid-op-extra-001",
+      "datos": {
+        "sIdProductoMongoDB": "uuid-local-producto-001",
+        "extra": {
+          "sNombre": "Pollo extra",
+          "iCostoReal": 25,
+          "iCostoPublico": 35
+        },
+        "aIndexConsumos": [1, 2]
+      },
+      "timestampLocal": "2024-01-15T10:30:10.000Z"
+    }
+  ]
+}
+```
+
+**Respuesta exitosa:**
+```json
+{
+  "success": true,
+  "message": "Sincronización completada. 3 exitosas, 0 fallidas.",
+  "data": {
+    "syncLogId": "64a5b3c2d1e0f9...",
+    "resumen": {
+      "totalOperaciones": 3,
+      "exitosas": 3,
+      "fallidas": 0
+    },
+    "estadoGeneral": "COMPLETADO",
+    "resultados": [
+      {
+        "idLocal": "uuid-local-orden-001",
+        "tipoOperacion": "CREAR_ORDEN",
+        "resultado": "EXITOSO",
+        "idMongoDB": "64a5b3c2d1e0f9..."
+      }
+    ],
+    "idMapping": {
+      "uuid-local-orden-001": "64a5b3c2d1e0f9...",
+      "uuid-local-producto-001": "64b6c4d3e2f1a0..."
+    }
+  }
+}
+```
+
+### Tipos de Operación Soportados
+
+| Tipo | Descripción | Datos Requeridos |
+|------|-------------|------------------|
+| `CREAR_ORDEN` | Crear nueva orden | sIdentificadorOrden, iMesa, sUsuarioMesero, sIdMongoDBMesero |
+| `ACTUALIZAR_ORDEN` | Actualizar orden existente | sIdMongoDB, campos a actualizar |
+| `ELIMINAR_ORDEN` | Eliminar orden y productos | sIdMongoDB |
+| `ACTUALIZAR_INDICACIONES_ORDEN` | Cambiar indicaciones | sIdMongoDB, sIndicaciones |
+| `CREAR_PRODUCTO` | Agregar producto a orden | sIdOrdenMongoDB, sNombre, costos, etc. |
+| `ACTUALIZAR_PRODUCTO` | Modificar producto | sIdMongoDB, campos a actualizar |
+| `ELIMINAR_PRODUCTO` | Quitar producto de orden | sIdMongoDB |
+| `ACTUALIZAR_CANTIDAD_PRODUCTO` | Cambiar cantidad | sIdMongoDB, iCantidad |
+| `AGREGAR_EXTRA_CONSUMOS` | Agregar extras a consumos | sIdProductoMongoDB, extra, aIndexConsumos |
+| `ELIMINAR_EXTRA_CONSUMO` | Quitar extra de consumo | sIdProductoMongoDB, indexConsumo, idExtra |
+| `ELIMINAR_CONSUMO` | Eliminar consumo específico | sIdProductoMongoDB, indexConsumo |
+
+### Mapeo de IDs Locales
+
+El sistema resuelve automáticamente las referencias entre IDs locales:
+
+```json
+{
+  "tipoOperacion": "CREAR_PRODUCTO",
+  "datos": {
+    "sIdOrdenMongoDB": "uuid-local-orden-001"
+  }
+}
+```
+
+Después de crear la orden, el backend mapea `uuid-local-orden-001` al ID real de MongoDB para las operaciones subsecuentes.
+
+### Endpoints Auxiliares
+
+**Verificar estado del servicio:**
+```
+GET /api/sync/status
+```
+
+**Obtener historial de sincronizaciones:**
+```
+GET /api/sync/historial?limite=10&pagina=1
+```
+
+**Obtener detalle de una sincronización:**
+```
+GET /api/sync/:id
+```
+
+### Modelo SyncLog
+
+```javascript
+{
+  sIdUsuario: String,
+  sNombreUsuario: String,
+  dtFechaSincronizacion: Date,
+  operaciones: [{
+    tipoOperacion: String,
+    idLocal: String,
+    idMongoDB: String,
+    datos: Mixed,
+    timestampLocal: Date,
+    resultado: 'PENDIENTE' | 'EXITOSO' | 'ERROR',
+    errorDetalle: String
+  }],
+  resumen: {
+    totalOperaciones: Number,
+    exitosas: Number,
+    fallidas: Number
+  },
+  estadoGeneral: 'EN_PROCESO' | 'COMPLETADO' | 'COMPLETADO_CON_ERRORES' | 'FALLIDO'
+}
+```
+
+### Consideraciones Importantes
+
+1. **Orden de operaciones**: Las operaciones se ordenan por `timestampLocal` antes de procesarse
+2. **Transacciones**: Todas las operaciones se ejecutan dentro de una transacción MongoDB
+3. **Tolerancia a fallos**: Si una operación falla, las demás continúan (política configurable)
+4. **Mapeo de IDs**: El frontend debe usar UUIDs locales y el backend retorna el mapeo a IDs MongoDB
+5. **Auditoría**: Cada sincronización queda registrada en `SyncLog` para debugging

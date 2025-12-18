@@ -1,4 +1,4 @@
-﻿using AppGestorVentas.Helpers;
+using AppGestorVentas.Helpers;
 using AppGestorVentas.Models;
 using AppGestorVentas.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -9,19 +9,30 @@ using System.Text.Json;
 
 namespace AppGestorVentas.ViewModels.OrdenViewModels
 {
+    /// <summary>
+    /// ViewModel para agregar/editar productos de una orden.
+    /// Los cambios se guardan LOCALMENTE hasta confirmar la orden.
+    /// </summary>
     public partial class ProductoOrdenViewModel : ObservableObject, IQueryAttributable
     {
-        private readonly HttpApiService _httpApiService;
+        #region SERVICIOS
 
-        private string sIdOrdenMongoDB = string.Empty;
+        private readonly HttpApiService _httpApiService;
+        private readonly OrdenDraftService _ordenDraftService;
+
+        #endregion
+
+        #region PROPIEDADES
+
+        private string _sIdOrden = string.Empty;
 
         // Para saber si se trata de una actualización (edición)
         [ObservableProperty]
         private bool esEdicion = false;
 
-        // Al editar, almacenamos el _id del producto de orden (documento en Mongo)
+        // ID local del producto cuando se edita
         [ObservableProperty]
-        private string sIdOrdenProducto = string.Empty;
+        private string sIdProductoLocal = string.Empty;
 
         // 1. Buscador principal (platillos/bebidas)
         [ObservableProperty]
@@ -29,15 +40,15 @@ namespace AppGestorVentas.ViewModels.OrdenViewModels
 
         // Resultados de la búsqueda principal
         [ObservableProperty]
-        private ObservableCollection<Producto> lstResultadosProductos;
+        private ObservableCollection<Producto> lstResultadosProductos = new();
 
         // 2. Producto seleccionado (solo 1)
         [ObservableProperty]
-        private Producto oProductoSeleccionado;
+        private Producto? oProductoSeleccionado;
 
-        // La variante seleccionada (se asume clase Variante con sVariante)
+        // La variante seleccionada
         [ObservableProperty]
-        private Variante varianteSeleccionada;
+        private Variante? varianteSeleccionada;
 
         // 3. Buscador de extras
         [ObservableProperty]
@@ -45,41 +56,43 @@ namespace AppGestorVentas.ViewModels.OrdenViewModels
 
         // Resultados de búsqueda de extras
         [ObservableProperty]
-        private ObservableCollection<Producto> lstResultadosExtras;
+        private ObservableCollection<Producto> lstResultadosExtras = new();
 
         // 4. Extras seleccionados
         [ObservableProperty]
-        private ObservableCollection<Producto> lstExtrasSeleccionados;
+        private ObservableCollection<Producto> lstExtrasSeleccionados = new();
 
-        //// 5. Indicaciones
+        // 5. Indicaciones
         [ObservableProperty]
         private string sIndicaciones = string.Empty;
 
         [ObservableProperty]
-        private bool bNoHayUnoProductoSeleccionado;
+        private bool bNoHayUnoProductoSeleccionado = true;
 
         // Propiedades para el título de la página y el texto del botón de confirmación
         public string PageTitle => EsEdicion ? "Actualizar Producto" : "Agregar Producto";
-        public string ConfirmButtonText => EsEdicion ? "Actualizar Producto" : "Agregar al Pedido";
+        public string ConfirmButtonText => EsEdicion ? "Actualizar" : "Agregar";
 
-        public ProductoOrdenViewModel(HttpApiService apiService)
+        #endregion
+
+        #region CONSTRUCTOR
+
+        public ProductoOrdenViewModel(HttpApiService apiService, OrdenDraftService ordenDraftService)
         {
             _httpApiService = apiService;
-            LstResultadosProductos = new ObservableCollection<Producto>();
-            LstResultadosExtras = new ObservableCollection<Producto>();
-            LstExtrasSeleccionados = new ObservableCollection<Producto>();
-            OProductoSeleccionado = null;
-            BNoHayUnoProductoSeleccionado = true;
+            _ordenDraftService = ordenDraftService;
         }
 
-        #region Manejo de Navegación
+        #endregion
+
+        #region NAVEGACIÓN
 
         public void ApplyQueryAttributes(IDictionary<string, object> query)
         {
-            // Parámetro obligatorio: sIdOrden (el _id de la orden en Mongo)
+            // ID de la orden (puede ser local o MongoDB)
             if (query.TryGetValue("sIdOrden", out var sIdOrden) && sIdOrden != null)
             {
-                sIdOrdenMongoDB = sIdOrden.ToString() ?? string.Empty;
+                _sIdOrden = sIdOrden.ToString() ?? string.Empty;
             }
 
             // Si se pasa un parámetro "ordenProducto" significa que se quiere editar
@@ -87,8 +100,8 @@ namespace AppGestorVentas.ViewModels.OrdenViewModels
             {
                 try
                 {
-                    OrdenProducto ordenProducto = null;
-                    // Si viene como cadena JSON se deserializa; de lo contrario se intenta un cast directo.
+                    OrdenProducto? ordenProducto = null;
+
                     if (ordenProductoParam is string jsonString)
                     {
                         ordenProducto = JsonSerializer.Deserialize<OrdenProducto>(jsonString);
@@ -106,9 +119,9 @@ namespace AppGestorVentas.ViewModels.OrdenViewModels
 
                     // Activamos el modo edición
                     EsEdicion = true;
-                    SIdOrdenProducto = ordenProducto.sIdMongo;
+                    SIdProductoLocal = ordenProducto.sIdLocal;
 
-                    // Convertir el OrdenProducto a un Producto "dummy" para reutilizar la vista.
+                    // Convertir el OrdenProducto a un Producto para reutilizar la vista
                     OProductoSeleccionado = new Producto
                     {
                         sIdMongo = ordenProducto.sIdMongo,
@@ -116,29 +129,22 @@ namespace AppGestorVentas.ViewModels.OrdenViewModels
                         iCostoReal = ordenProducto.iCostoReal,
                         iCostoPublico = ordenProducto.iCostoPublico,
                         iTipoProducto = ordenProducto.iTipoProducto,
-                        // Se asume que se usa la imagen principal
                         aImagenes = new List<Imagen>
                         {
                             new Imagen { sURLImagen = ordenProducto.sURLImagen }
                         },
-                        // Se asigna la lista completa de variantes
                         aVariantes = ordenProducto.aVariantes
                     };
 
                     SIndicaciones = ordenProducto.sIndicaciones;
 
-                    // Seleccionar la variante actual según el índice almacenado
-                    if (OProductoSeleccionado.aVariantes != null &&
-                        OProductoSeleccionado.aVariantes.Count > ordenProducto.iIndexVarianteSeleccionada)
+                    // Seleccionar la variante actual
+                    if (OProductoSeleccionado.aVariantes?.Count > ordenProducto.iIndexVarianteSeleccionada)
                     {
                         VarianteSeleccionada = OProductoSeleccionado.aVariantes[ordenProducto.iIndexVarianteSeleccionada];
                     }
-                    else
-                    {
-                        MostrarError("La variante seleccionada no se encuentra en la lista.");
-                    }
 
-                    // Cargar los extras ya asignados convirtiéndolos a Producto
+                    // Cargar extras
                     LstExtrasSeleccionados.Clear();
                     if (ordenProducto.aExtras != null)
                     {
@@ -158,208 +164,88 @@ namespace AppGestorVentas.ViewModels.OrdenViewModels
                         }
                     }
 
-                    // Al editar ya existe un producto seleccionado, se deshabilita la búsqueda
                     BNoHayUnoProductoSeleccionado = false;
                     LstResultadosProductos.Clear();
 
-                    // Notificar cambios en propiedades dependientes
                     OnPropertyChanged(nameof(PageTitle));
                     OnPropertyChanged(nameof(ConfirmButtonText));
-                    OnPropertyChanged(nameof(VarianteSeleccionada));
                 }
                 catch (Exception ex)
                 {
-                    MostrarError($"Error al procesar los parámetros de edición: {ex.Message}");
+                    MostrarError($"Error al procesar parámetros de edición: {ex.Message}");
                 }
             }
         }
 
         #endregion
 
-        #region BÚSQUEDA PRINCIPAL (POST)
-        [RelayCommand]
-        public async Task OnBusquedaProductosTextChanged(string texto)
+        #region BÚSQUEDA DE PRODUCTOS
+
+        partial void OnSBusquedaPrincipalChanged(string value)
         {
+            _ = BuscarProductosAsync();
+        }
+
+        [RelayCommand]
+        public async Task BuscarProductosAsync()
+        {
+            if (string.IsNullOrWhiteSpace(SBusquedaPrincipal) || SBusquedaPrincipal.Length < 2)
+            {
+                LstResultadosProductos.Clear();
+                return;
+            }
+
             try
             {
-                if (string.IsNullOrWhiteSpace(texto) || texto.Length < 3)
+                var response = await _httpApiService.PostAsync("api/productos/search",
+                    new { texto = SBusquedaPrincipal });
+
+                if (response != null && response.IsSuccessStatusCode)
                 {
+                    var apiResponse = await response.Content.ReadFromJsonAsync<ApiRespuesta<Producto>>();
+
                     LstResultadosProductos.Clear();
-                    return;
-                }
 
-                var payload = new
-                {
-                    texto = texto.Trim(),
-                    // Filtrar iTipoProducto en [1,2] (platillos/bebidas)
-                    tipoEn = new int[] { 1, 2 }
-                };
-
-                var response = await _httpApiService.PostAsync("api/productos/search", payload, bRequiereToken: true);
-                if (response == null)
-                {
-                    MostrarError("No se recibió respuesta del servidor al buscar productos.");
-                    return;
-                }
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    MostrarError($"Error en la búsqueda de productos: {response.ReasonPhrase}");
-                    return;
-                }
-
-                var respData = await response.Content.ReadFromJsonAsync<ApiRespuesta<Producto>>();
-                if (respData != null && respData.bSuccess && respData.lData != null)
-                {
-                    LstResultadosProductos.Clear();
-                    foreach (var prod in respData.lData)
+                    if (apiResponse?.bSuccess == true && apiResponse.lData != null)
                     {
-                        // Si este producto ya está seleccionado se marca
-                        prod.isSeleccionado = (OProductoSeleccionado != null &&
-                                                 OProductoSeleccionado.sIdMongo == prod.sIdMongo);
-                        LstResultadosProductos.Add(prod);
-                    }
-                }
-                else
-                {
-                    MostrarError("Error al deserializar la respuesta de productos o la respuesta no fue exitosa.");
-                }
-            }
-            catch (Exception ex)
-            {
-                MostrarError($"Ocurrió un error inesperado al buscar productos: {ex.Message}");
-            }
-        }
-        #endregion
-
-        #region SELECCIONAR / QUITAR PRODUCTO
-        [RelayCommand]
-        public async Task OnSeleccionarProducto(Producto prod)
-        {
-            try
-            {
-                // Si ya estaba seleccionado => lo quitamos
-                if (OProductoSeleccionado != null && OProductoSeleccionado.sIdMongo == prod.sIdMongo)
-                {
-                    OProductoSeleccionado = null;
-                    VarianteSeleccionada = null;
-                    prod.isSeleccionado = false;
-                    LstExtrasSeleccionados.Clear();
-                    SBusquedaExtras = string.Empty;
-                    BNoHayUnoProductoSeleccionado = true;
-                }
-                else
-                {
-                    if (OProductoSeleccionado != null)
-                    {
-                        var old = LstResultadosProductos.FirstOrDefault(x => x.sIdMongo == OProductoSeleccionado.sIdMongo);
-                        if (old != null)
-                            old.isSeleccionado = false;
-                    }
-
-                    OProductoSeleccionado = prod;
-                    BNoHayUnoProductoSeleccionado = false;
-                    SBusquedaPrincipal = string.Empty;
-                    // Se asume que se selecciona la primera variante disponible
-                    VarianteSeleccionada = prod.aVariantes.FirstOrDefault();
-                    prod.isSeleccionado = true;
-                }
-            }
-            catch (Exception ex)
-            {
-                MostrarError($"Ocurrió un error inesperado al seleccionar/quitar producto: {ex.Message}");
-            }
-        }
-        #endregion
-
-        #region BÚSQUEDA DE EXTRAS (POST)
-        [RelayCommand]
-        public async Task OnBusquedaExtrasTextChanged(string texto)
-        {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(texto) || texto.Length < 3)
-                {
-                    LstResultadosExtras.Clear();
-                    return;
-                }
-
-                var payload = new
-                {
-                    texto = texto,
-                    tipo = 3
-                };
-
-                var resp = await _httpApiService.PostAsync("api/productos/search", payload, bRequiereToken: true);
-                if (resp == null)
-                {
-                    MostrarError("No se recibió respuesta del servidor al buscar extras.");
-                    return;
-                }
-                if (!resp.IsSuccessStatusCode)
-                {
-                    MostrarError($"Error en la búsqueda de extras: {resp.ReasonPhrase}");
-                    return;
-                }
-
-                var data = await resp.Content.ReadFromJsonAsync<ApiRespuesta<Producto>>();
-                if (data != null && data.bSuccess && data.lData != null)
-                {
-                    LstResultadosExtras.Clear();
-                    foreach (var extra in data.lData)
-                    {
-                        bool existe = LstExtrasSeleccionados.Any(x => x.sIdMongo == extra.sIdMongo);
-                        if (!existe)
+                        foreach (var producto in apiResponse.lData)
                         {
-                            LstResultadosExtras.Add(extra);
+                            LstResultadosProductos.Add(producto);
                         }
                     }
                 }
-                else
-                {
-                    MostrarError("Error al deserializar la respuesta de extras o la respuesta no fue exitosa.");
-                }
             }
             catch (Exception ex)
             {
-                MostrarError($"Ocurrió un error inesperado al buscar extras: {ex.Message}");
-            }
-        }
-        #endregion
-
-        #region SELECCIONAR / ELIMINAR EXTRAS
-        [RelayCommand]
-        private void OnSeleccionarExtra(Producto extra)
-        {
-            try
-            {
-                if (!LstExtrasSeleccionados.Any(x => x.sIdMongo == extra.sIdMongo))
-                {
-                    LstExtrasSeleccionados.Add(extra);
-                    SBusquedaExtras = string.Empty;
-                    LstResultadosExtras.Remove(extra);
-                }
-            }
-            catch (Exception ex)
-            {
-                MostrarError($"Ocurrió un error al seleccionar el extra: {ex.Message}");
+                MostrarError($"Error en búsqueda: {ex.Message}");
             }
         }
 
         [RelayCommand]
-        private void OnEliminarExtra(Producto extra)
+        public void SeleccionarProducto(Producto producto)
         {
-            try
+            if (producto == null) return;
+
+            OProductoSeleccionado = producto;
+            BNoHayUnoProductoSeleccionado = false;
+            LstResultadosProductos.Clear();
+            SBusquedaPrincipal = string.Empty;
+
+            // Seleccionar primera variante por defecto
+            if (producto.aVariantes?.Count > 0)
             {
-                if (LstExtrasSeleccionados.Contains(extra))
-                {
-                    LstExtrasSeleccionados.Remove(extra);
-                }
+                VarianteSeleccionada = producto.aVariantes[0];
             }
-            catch (Exception ex)
-            {
-                MostrarError($"Ocurrió un error al eliminar el extra: {ex.Message}");
-            }
+        }
+
+        [RelayCommand]
+        public void LimpiarSeleccionProducto()
+        {
+            OProductoSeleccionado = null;
+            VarianteSeleccionada = null;
+            BNoHayUnoProductoSeleccionado = true;
+            LstExtrasSeleccionados.Clear();
+            SIndicaciones = string.Empty;
         }
 
         [RelayCommand]
@@ -387,186 +273,169 @@ namespace AppGestorVentas.ViewModels.OrdenViewModels
                 MostrarError($"Ocurrió un error al quitar el producto: {ex.Message}");
             }
         }
+
         #endregion
 
-        #region CONFIRMAR (CREAR O ACTUALIZAR)
-        [RelayCommand]
-        private async Task OnConfirmar()
+        #region BÚSQUEDA DE EXTRAS
+
+        partial void OnSBusquedaExtrasChanged(string value)
         {
+            _ = BuscarExtrasAsync();
+        }
+
+        [RelayCommand]
+        public async Task BuscarExtrasAsync()
+        {
+            if (string.IsNullOrWhiteSpace(SBusquedaExtras) || SBusquedaExtras.Length < 2)
+            {
+                LstResultadosExtras.Clear();
+                return;
+            }
+
             try
             {
-                if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+                var response = await _httpApiService.PostAsync("api/productos/search",
+                    new { texto = SBusquedaExtras, iTipoProducto = 3 }); // Tipo 3 = extras
+
+                if (response != null && response.IsSuccessStatusCode)
                 {
-                    MostrarError("No tienes acceso a Internet. Revisa tu conexión y vuelve a intentarlo.");
-                    return;
-                }
+                    var apiResponse = await response.Content.ReadFromJsonAsync<ApiRespuesta<Producto>>();
 
-                ValidacionOrden oValidacion = new ValidacionOrden(_httpApiService);
+                    LstResultadosExtras.Clear();
 
-                (int iEstatusActual, string sMensaje) = await oValidacion.ObtenerEstatusActual(sIdOrdenMongoDB);
-
-                if (iEstatusActual != -404 && iEstatusActual != -500)
-                {
-                    if (iEstatusActual == 1 || iEstatusActual == 0) // orden en estatus pendiente o confirmada
+                    if (apiResponse?.bSuccess == true && apiResponse.lData != null)
                     {
-                        var mainPage = Application.Current?.Windows[0].Page;
-
-                        if (OProductoSeleccionado == null)
+                        foreach (var extra in apiResponse.lData)
                         {
-                            if (mainPage != null)
-                                await mainPage.DisplayAlert("Validación", "Debes seleccionar un platillo o bebida.", "OK");
-                            return;
-                        }
-                        if (VarianteSeleccionada == null)
-                        {
-                            if (mainPage != null)
-                                await mainPage.DisplayAlert("Validación", "Debes elegir la variante del producto.", "OK");
-                            return;
-                        }
-
-                        if (!string.IsNullOrWhiteSpace(SIndicaciones) && !EntryValidations.IsValidText(SIndicaciones))
-                        {
-                            if (mainPage != null)
-                                await mainPage.DisplayAlert("Validación", "El campo 'Indicaciones' no admite caracteres especiales.", "OK");
-                            return;
-                        }
-                        else if (EntryValidations.IsOnlyNumbers(SIndicaciones))
-                        {
-                            if (mainPage != null)
-                                await mainPage.DisplayAlert("Validación", "El campo 'Indicaciones' no debe ser solo números.", "OK");
-                            return;
-                        }
-
-                        // Construir la lista de extras
-                        var lstExtras = new List<ExtraOrdenProducto>();
-                        string sURLImagenExtra = "";
-                        if (LstExtrasSeleccionados.Count > 0)
-                        {
-                            foreach (Producto oProductoExtra in LstExtrasSeleccionados)
+                            // No mostrar extras ya seleccionados
+                            if (!LstExtrasSeleccionados.Any(e => e.sIdMongo == extra.sIdMongo))
                             {
-                                sURLImagenExtra = "";
-
-                                if (oProductoExtra.aImagenes != null && oProductoExtra.aImagenes.Count > 0)
-                                {
-                                    sURLImagenExtra = oProductoExtra.aImagenes[0].sURLImagen;
-                                }
-
-                                lstExtras.Add(new ExtraOrdenProducto
-                                {
-                                    sNombre = oProductoExtra.sNombre,
-                                    iCostoReal = oProductoExtra.iCostoReal,
-                                    iCostoPublico = oProductoExtra.iCostoPublico,
-                                    sURLImagen = sURLImagenExtra
-                                });
-                            }
-                        }
-
-                        string sURLImagenProducto = "";
-
-                        if (OProductoSeleccionado.aImagenes != null && OProductoSeleccionado.aImagenes.Count > 0)
-                        {
-                            sURLImagenProducto = OProductoSeleccionado.aImagenes[0].sURLImagen;
-                        }
-
-                        // Construir el objeto que se enviará al endpoint
-                        var oOrdenProductoData = new OrdenProducto
-                        {
-                            sIdOrdenMongoDB = sIdOrdenMongoDB,
-                            sNombre = OProductoSeleccionado.sNombre,
-                            iCostoReal = OProductoSeleccionado.iCostoReal,
-                            iCostoPublico = OProductoSeleccionado.iCostoPublico,
-                            sURLImagen = sURLImagenProducto,
-                            sIndicaciones = SIndicaciones,
-                            // Se asigna el índice de la variante seleccionada dentro del arreglo de variantes
-                            iIndexVarianteSeleccionada = OProductoSeleccionado.aVariantes.IndexOf(VarianteSeleccionada),
-                            // Se envía la lista completa de variantes (asegúrate que OProductoSeleccionado.aVariantes tenga el formato adecuado)
-                            aVariantes = OProductoSeleccionado.aVariantes,
-                            iTipoProducto = OProductoSeleccionado.iTipoProducto,
-                            aExtras = lstExtras
-                        };
-
-                        HttpResponseMessage response = null;
-                        if (EsEdicion)
-                        {
-                            // Modo edición: se actualiza el producto existente (PUT)
-                            response = await _httpApiService.PutAsync($"api/orden-productos/{SIdOrdenProducto}", oOrdenProductoData, bRequiereToken: true);
-                        }
-                        else
-                        {
-                            // Modo creación: se agrega un nuevo producto a la orden (POST)
-                            response = await _httpApiService.PostAsync("api/orden-productos/", oOrdenProductoData, bRequiereToken: true);
-                        }
-
-                        if (response == null)
-                        {
-                            MostrarError("No se recibió respuesta del servidor al procesar la operación.");
-                            return;
-                        }
-
-                        if (!response.IsSuccessStatusCode)
-                        {
-                            MostrarError($"Error en la operación: {response.ReasonPhrase}");
-                            return;
-                        }
-
-                        ApiRespuesta<OrdenProducto> apiRespuesta = null;
-                        try
-                        {
-                            apiRespuesta = await response.Content.ReadFromJsonAsync<ApiRespuesta<OrdenProducto>>();
-                        }
-                        catch (Exception exJson)
-                        {
-                            MostrarError($"Error al deserializar la respuesta: {exJson.Message}");
-                            return;
-                        }
-
-                        if (apiRespuesta != null && apiRespuesta.bSuccess)
-                        {
-                            if (mainPage != null)
-                            {
-                                var mensaje = EsEdicion ? "Producto actualizado con éxito." : "Producto agregado con éxito.";
-                                await mainPage.DisplayAlert("OK", mensaje, "OK");
-                                await Shell.Current.GoToAsync("..");
-                            }
-                        }
-                        else
-                        {
-                            if (apiRespuesta != null && apiRespuesta.Error != null)
-                            {
-                                MostrarError(apiRespuesta.Error.sDetails);
-                            }
-                            else
-                            {
-                                MostrarError("Ocurrió un error inesperado al procesar la operación.");
+                                LstResultadosExtras.Add(extra);
                             }
                         }
                     }
-                    else
-                    {
-                        MostrarError("La orden ya se encuentra en un estatus distinto a \"Confirmada\". Si desea agregar más productos, por favor, cree una Sub Orden.");
-                        await Shell.Current.GoToAsync("adminOrdenes");
-                    }
-
-                }
-                else
-                {
-                    MostrarError(sMensaje);
                 }
             }
             catch (Exception ex)
             {
-                MostrarError($"Ocurrió un error inesperado al confirmar: {ex.Message}");
+                MostrarError($"Error en búsqueda de extras: {ex.Message}");
             }
         }
+
+        [RelayCommand]
+        public void AgregarExtra(Producto extra)
+        {
+            if (extra == null) return;
+
+            if (!LstExtrasSeleccionados.Any(e => e.sIdMongo == extra.sIdMongo))
+            {
+                LstExtrasSeleccionados.Add(extra);
+            }
+
+            LstResultadosExtras.Clear();
+            SBusquedaExtras = string.Empty;
+        }
+
+        [RelayCommand]
+        public void EliminarExtra(Producto extra)
+        {
+            if (extra == null) return;
+            LstExtrasSeleccionados.Remove(extra);
+        }
+
         #endregion
 
-        private async void MostrarError(string sMensaje)
+        #region CONFIRMAR - GUARDAR LOCALMENTE
+
+        [RelayCommand]
+        public async Task ConfirmarAsync()
         {
-            var mainPage = Application.Current?.Windows[0].Page;
-            if (mainPage != null)
+            try
             {
-                await mainPage.DisplayAlert("Error", sMensaje, "OK");
+                // Validaciones
+                if (OProductoSeleccionado == null)
+                {
+                    await MostrarAlertaAsync("Validación", "Debes seleccionar un platillo o bebida.");
+                    return;
+                }
+
+                if (VarianteSeleccionada == null)
+                {
+                    await MostrarAlertaAsync("Validación", "Debes elegir la variante del producto.");
+                    return;
+                }
+
+                if (!string.IsNullOrWhiteSpace(SIndicaciones) && !EntryValidations.IsValidText(SIndicaciones))
+                {
+                    await MostrarAlertaAsync("Validación", "El campo 'Indicaciones' no admite caracteres especiales.");
+                    return;
+                }
+
+                // Construir lista de extras
+                var lstExtras = LstExtrasSeleccionados.Select(e => new ExtraOrdenProducto
+                {
+                    sIdLocal = Guid.NewGuid().ToString(),
+                    sIdExtra = e.sIdMongo,
+                    sNombre = e.sNombre,
+                    iCostoReal = e.iCostoReal,
+                    iCostoPublico = e.iCostoPublico,
+                    sURLImagen = e.aImagenes?.FirstOrDefault()?.sURLImagen ?? string.Empty
+                }).ToList();
+
+                if (EsEdicion)
+                {
+                    // ACTUALIZAR producto existente localmente
+                    await _ordenDraftService.ActualizarProductoAsync(
+                        SIdProductoLocal,
+                        VarianteSeleccionada,
+                        SIndicaciones,
+                        lstExtras);
+
+                    await MostrarAlertaAsync("OK", "Producto actualizado. Recuerda guardar los cambios.");
+                }
+                else
+                {
+                    // AGREGAR nuevo producto localmente
+                    await _ordenDraftService.AgregarProductoAsync(
+                        OProductoSeleccionado,
+                        VarianteSeleccionada,
+                        SIndicaciones,
+                        lstExtras);
+
+                    await MostrarAlertaAsync("OK", "Producto agregado. Recuerda guardar los cambios.");
+                }
+
+                // Regresar a la pantalla anterior
+                await Shell.Current.GoToAsync("..");
+            }
+            catch (Exception ex)
+            {
+                MostrarError($"Error: {ex.Message}");
             }
         }
+
+        #endregion
+
+        #region HELPERS
+
+        private async void MostrarError(string mensaje)
+        {
+            var mainPage = Application.Current?.Windows?.FirstOrDefault()?.Page;
+            if (mainPage != null)
+            {
+                await mainPage.DisplayAlert("Error", mensaje, "OK");
+            }
+        }
+
+        private async Task MostrarAlertaAsync(string titulo, string mensaje)
+        {
+            var mainPage = Application.Current?.Windows?.FirstOrDefault()?.Page;
+            if (mainPage != null)
+            {
+                await mainPage.DisplayAlert(titulo, mensaje, "OK");
+            }
+        }
+
+        #endregion
     }
 }

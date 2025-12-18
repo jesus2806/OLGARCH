@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:helpers="clr-namespace:AppGestorVentas.Helpers"
+             xmlns:viewmodels="clr-namespace:AppGestorVentas.ViewModels"
+             x:Class="AppGestorVentas.Views.Components.SyncButtonView"
+             x:DataType="viewmodels:SyncViewModel">
+
+    <Border Padding="10" 
+            StrokeShape="RoundRectangle 10"
+            BackgroundColor="{AppThemeBinding Light=White, Dark=#2d2d2d}"
+            Stroke="{Binding ColorIndicador}"
+            StrokeThickness="2"
+            Shadow="{Shadow Brush=Black, Opacity=0.2, Offset='2,2', Radius=5}">
+        
+        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+            
+            <!-- Indicador de estado -->
+            <Border Grid.Column="0"
+                    WidthRequest="12"
+                    HeightRequest="12"
+                    StrokeShape="RoundRectangle 6"
+                    BackgroundColor="{Binding ColorIndicador}"
+                    VerticalOptions="Center"/>
+            
+            <!-- Información de estado -->
+            <VerticalStackLayout Grid.Column="1" 
+                                 VerticalOptions="Center"
+                                 Spacing="2">
+                
+                <!-- Mensaje de estado -->
+                <Label Text="{Binding SMensajeEstado}"
+                       FontSize="14"
+                       FontAttributes="Bold"
+                       TextColor="{AppThemeBinding Light=#333333, Dark=White}"/>
+                
+                <!-- Barra de progreso (visible durante sincronización) -->
+                <ProgressBar Progress="{Binding DProgreso, Converter={StaticResource PercentToDecimalConverter}}"
+                             ProgressColor="{Binding ColorIndicador}"
+                             IsVisible="{Binding BSincronizando}"
+                             HeightRequest="4"/>
+                
+                <!-- Última sincronización -->
+                <Label FontSize="11"
+                       TextColor="{AppThemeBinding Light=Gray, Dark=#aaaaaa}"
+                       IsVisible="{Binding DtUltimaSync, Converter={StaticResource NullToBoolConverter}}">
+                    <Label.Text>
+                        <Binding Path="DtUltimaSync" StringFormat="Última sync: {0:HH:mm:ss}"/>
+                    </Label.Text>
+                </Label>
+            </VerticalStackLayout>
+            
+            <!-- Botón de sincronización -->
+            <Button Grid.Column="2"
+                    WidthRequest="100"
+                    HeightRequest="40"
+                    CornerRadius="8"
+                    FontSize="13"
+                    Padding="8,0"
+                    Command="{Binding SincronizarCommand}"
+                    IsEnabled="{Binding BSincronizando, Converter={StaticResource InvertBoolConverter}}">
+                
+                <Button.Triggers>
+                    <DataTrigger TargetType="Button"
+                                 Binding="{Binding BSincronizando}"
+                                 Value="True">
+                        <Setter Property="Text" Value="Sincronizando..."/>
+                        <Setter Property="BackgroundColor" Value="Gray"/>
+                    </DataTrigger>
+                    <DataTrigger TargetType="Button"
+                                 Binding="{Binding BSincronizando}"
+                                 Value="False">
+                        <Setter Property="Text" Value="Sincronizar"/>
+                        <Setter Property="BackgroundColor" Value="{StaticResource Primary}"/>
+                    </DataTrigger>
+                </Button.Triggers>
+            </Button>
+            
+        </Grid>
+    </Border>
+    
+</ContentView>

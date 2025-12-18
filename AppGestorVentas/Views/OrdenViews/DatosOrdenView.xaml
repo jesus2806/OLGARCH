@@ -10,26 +10,25 @@
              x:Name="DataOrdenPage"
              Title="Detalle Orden">
 
-    <!-- =========  RESOURCES  ========= -->
     <ContentPage.Resources>
         <ResourceDictionary>
-            <!-- Converters & helpers -->
             <converters:SelectedVarianteConverter x:Key="SelectedVarianteConverter" />
             <converters:NumeroAEstatusOrden x:Key="NumeroAEstatusOrden" />
             <converters:NumeroAColorEstatusOrden x:Key="NumeroAColorEstatusOrden" />
             <conv:InvertBoolConverter x:Key="InvertBoolConverter" />
 
-            <!-- Simple palette -->
             <Color x:Key="Primary500">#0B7A75</Color>
             <Color x:Key="Primary100">#DCF4F3</Color>
             <Color x:Key="Error500">#B3261E</Color>
             <Color x:Key="Surface">#FFFFFF</Color>
             <Color x:Key="OnSurface">#1C1B1F</Color>
             <Color x:Key="Outline">#79747E</Color>
+            <Color x:Key="Warning">#FF9800</Color>
+            <Color x:Key="WarningBg">#FFF3E0</Color>
+            <Color x:Key="Success">#4CAF50</Color>
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <!-- =========  PAGE LAYOUT  ========= -->
     <Grid Padding="16"
           RowDefinitions="Auto,Auto,*,Auto,Auto"
           MaximumWidthRequest="650"
@@ -39,17 +38,16 @@
         <Grid Grid.Row="0" ColumnDefinitions="*,55" Margin="0,0,0,12">
             <Button
                 Grid.Column="0"
-                Text="Agregar producto"
+                Text="+ Agregar producto"
                 Command="{Binding IrAgregarProductoOrdenCommand}"
                 IsEnabled="{Binding BHabilitarAccionesEdicion}"
                 IsVisible="{Binding BHabilitarAccionesEdicion}"
                 HorizontalOptions="Start"
                 HeightRequest="44"/>
             
-            <!-- Botón de indicaciones (Pantalla 6) -->
             <Button
                 Grid.Column="1"
-                Text="✏️"
+                Text="📝"
                 FontSize="20"
                 Command="{Binding MostrarIndicacionesCommand}"
                 IsEnabled="{Binding BHabilitarAccionesEdicion}"
@@ -63,26 +61,22 @@
         </Grid>
 
         <!-- ===== HEADER (Orden info) ===== -->
-        <Border Grid.Row="1" BackgroundColor="{StaticResource Primary100}" StrokeShape="RoundRectangle 8">
+        <Border Grid.Row="1" BackgroundColor="{StaticResource Primary100}" StrokeShape="RoundRectangle 8" Margin="0,0,0,12">
             <Grid ColumnDefinitions="*,*"
                   RowDefinitions="Auto,Auto,Auto"
                   Padding="12">
-                <!-- Número de Orden -->
                 <HorizontalStackLayout Grid.Column="0" Spacing="4">
                     <Label Text="No. Orden:" FontAttributes="Bold" TextColor="{StaticResource OnSurface}" />
                     <Label Text="{Binding OOrden.iNumeroOrden}" TextColor="{StaticResource OnSurface}" />
                 </HorizontalStackLayout>
-                <!-- Mesa -->
                 <HorizontalStackLayout Grid.Column="1" Spacing="4">
                     <Label Text="Mesa:" FontAttributes="Bold" TextColor="{StaticResource OnSurface}" />
                     <Label Text="{Binding OOrden.iMesa}" TextColor="{StaticResource OnSurface}" />
                 </HorizontalStackLayout>
-                <!-- Estatus -->
                 <HorizontalStackLayout Grid.Row="1" Grid.ColumnSpan="2" Spacing="4" Margin="0,6,0,0">
                     <Label Text="Estatus:" FontAttributes="Bold" TextColor="{StaticResource OnSurface}" />
                     <Label Text="{Binding OOrden.iEstatus, Converter={StaticResource NumeroAEstatusOrden}}" TextColor="{StaticResource OnSurface}" />
                 </HorizontalStackLayout>
-                <!-- Mesero -->
                 <HorizontalStackLayout Grid.Row="2" Grid.ColumnSpan="2" Spacing="4" Margin="0,6,0,0">
                     <Label Text="Mesero:" FontAttributes="Bold" TextColor="{StaticResource OnSurface}" />
                     <Label Text="{Binding SNombreMesaro}" TextColor="{StaticResource OnSurface}" />
@@ -90,45 +84,237 @@
             </Grid>
         </Border>
 
-        <!-- ===== PRODUCTOS ===== -->
-        <ScrollView Grid.Row="2">
-            <VerticalStackLayout
-              x:Name="slProductos"
-              Spacing="12"
-              Padding="0" />
-        </ScrollView>
+        <!-- ===== PRODUCTOS (CollectionView) ===== -->
+        <CollectionView Grid.Row="2" 
+                        ItemsSource="{Binding LstOrdenProducto}"
+                        SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:OrdenProducto">
+                    <Border Margin="0,0,0,8" 
+                            Padding="12" 
+                            BackgroundColor="{StaticResource Surface}"
+                            Stroke="{StaticResource Outline}"
+                            StrokeShape="RoundRectangle 8">
+                        <Grid ColumnDefinitions="70,*" RowDefinitions="Auto,Auto,Auto">
 
-        <!-- ===== TOTALES ===== -->
-        <Border Grid.Row="3" BackgroundColor="{StaticResource Surface}" 
-                Stroke="{StaticResource Outline}"
-                StrokeShape="RoundRectangle 8"
-                Padding="12"
-                Margin="0,12,0,0">
-            <VerticalStackLayout Spacing="8">
-                <!-- Total Extras -->
-                <Grid ColumnDefinitions="*,Auto">
-                    <Label Grid.Column="0" Text="Total extras:" FontSize="14" TextColor="{StaticResource Outline}"/>
-                    <Label Grid.Column="1" Text="{Binding OOrden.iTotalExtrasOrden, StringFormat='${0:N2} MXN'}" 
-                           FontSize="14" TextColor="{StaticResource Primary500}"/>
-                </Grid>
-                <!-- Total General -->
-                <Grid ColumnDefinitions="*,Auto">
-                    <Label Grid.Column="0" Text="TOTAL:" FontSize="18" FontAttributes="Bold"/>
-                    <Label Grid.Column="1" Text="{Binding OOrden.iTotalOrden, StringFormat='${0:N2} MXN'}" 
-                           FontSize="18" FontAttributes="Bold" TextColor="{StaticResource Primary500}"/>
-                </Grid>
-            </VerticalStackLayout>
-        </Border>
+                            <!-- Imagen -->
+                            <Border Grid.RowSpan="2"
+                                    StrokeShape="RoundRectangle 8"
+                                    StrokeThickness="0"
+                                    HeightRequest="70"
+                                    WidthRequest="70">
+                                <Image Source="{Binding sURLImagen}"
+                                       Aspect="AspectFill"/>
+                            </Border>
+
+                            <!-- Nombre, variante y precio -->
+                            <Grid Grid.Column="1" 
+                                  Margin="12,0,0,0"
+                                  ColumnDefinitions="*,Auto"
+                                  RowDefinitions="Auto,Auto">
+
+                                <!-- Nombre -->
+                                <Label Text="{Binding sNombre}" 
+                                       FontSize="15" 
+                                       FontAttributes="Bold"
+                                       TextColor="{StaticResource OnSurface}"
+                                       LineBreakMode="TailTruncation"/>
+
+                                <!-- Precio -->
+                                <Label Grid.Column="1"
+                                       Text="{Binding iCostoPublico, StringFormat='${0:N2}'}"
+                                       FontSize="15"
+                                       FontAttributes="Bold"
+                                       TextColor="{StaticResource Primary500}"
+                                       HorizontalOptions="End"/>
+
+                                <!-- Variante -->
+                                <Label Grid.Row="1"
+                                       Grid.ColumnSpan="2"
+                                       Text="{Binding aVariantes, Converter={StaticResource SelectedVarianteConverter}, ConverterParameter={Binding iIndexVarianteSeleccionada}}"
+                                       FontSize="12"
+                                       TextColor="{StaticResource Outline}"/>
+                            </Grid>
+
+                            <!-- Controles de cantidad y extras -->
+                            <FlexLayout Grid.Row="1" 
+                                        Grid.Column="1"
+                                        Margin="12,8,0,0"
+                                        Wrap="Wrap"
+                                        JustifyContent="SpaceBetween"
+                                        AlignItems="Center">
+
+                                <!-- Controles de cantidad -->
+                                <HorizontalStackLayout Spacing="6">
+                                    <Button Text="-" 
+                                            WidthRequest="34" 
+                                            HeightRequest="34"
+                                            Padding="0"
+                                            CornerRadius="17"
+                                            FontSize="18"
+                                            BackgroundColor="{StaticResource Primary100}"
+                                            TextColor="{StaticResource Primary500}"
+                                            Command="{Binding Source={x:Reference DataOrdenPage}, Path=BindingContext.DecrementarCantidadCommand}"
+                                            CommandParameter="{Binding .}"/>
+
+                                    <Label Text="{Binding iCantidad}" 
+                                           FontSize="16" 
+                                           FontAttributes="Bold"
+                                           VerticalOptions="Center"
+                                           HorizontalOptions="Center"
+                                           WidthRequest="30"
+                                           HorizontalTextAlignment="Center"/>
+
+                                    <Button Text="+" 
+                                            WidthRequest="34" 
+                                            HeightRequest="34"
+                                            Padding="0"
+                                            CornerRadius="17"
+                                            FontSize="18"
+                                            BackgroundColor="{StaticResource Primary500}"
+                                            TextColor="White"
+                                            Command="{Binding Source={x:Reference DataOrdenPage}, Path=BindingContext.IncrementarCantidadCommand}"
+                                            CommandParameter="{Binding .}"/>
+                                </HorizontalStackLayout>
+
+                                <!-- Botones de acción -->
+                                <HorizontalStackLayout Spacing="6">
+                                    <Button Text="🍴"
+                                            WidthRequest="40"
+                                            HeightRequest="34"
+                                            Padding="0"
+                                            CornerRadius="6"
+                                            BackgroundColor="{StaticResource Primary100}"
+                                            TextColor="{StaticResource Primary500}"
+                                            Command="{Binding Source={x:Reference DataOrdenPage}, Path=BindingContext.IrAdministrarConsumosCommand}"
+                                            CommandParameter="{Binding .}"/>
+
+                                    <Button Text="🗑️"
+                                            WidthRequest="40"
+                                            HeightRequest="34"
+                                            Padding="0"
+                                            CornerRadius="6"
+                                            BackgroundColor="#FFEBEE"
+                                            TextColor="{StaticResource Error500}"
+                                            Command="{Binding Source={x:Reference DataOrdenPage}, Path=BindingContext.EliminarProductoOrdenCommand}"
+                                            CommandParameter="{Binding sIdLocal}"/>
+                                </HorizontalStackLayout>
+                            </FlexLayout>
+
+                            <!-- Indicador de extras (solo visible si tiene) -->
+                            <!--<HorizontalStackLayout Grid.Row="2" 
+                                                   Grid.ColumnSpan="2"
+                                                   Margin="0,8,0,0"
+                                                   Spacing="4"
+                                                   IsVisible="{Binding bTieneExtras}">
+                                <Label Text="✨" FontSize="12"/>
+                                <Label Text="Tiene extras agregados" 
+                                       FontSize="12" 
+                                       TextColor="{StaticResource Primary500}"
+                                       FontAttributes="Italic"/>
+                            </HorizontalStackLayout>-->
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+
+            <CollectionView.EmptyView>
+                <VerticalStackLayout HorizontalOptions="Center" 
+                                     VerticalOptions="Center" 
+                                     Padding="40">
+                    <Label Text="🍽️" FontSize="64" HorizontalOptions="Center"/>
+                    <Label Text="No hay productos en esta orden" 
+                           FontSize="18" 
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource OnSurface}"
+                           HorizontalOptions="Center"
+                           Margin="0,16,0,4"/>
+                    <Label Text="Presiona + para agregar productos" 
+                           FontSize="14" 
+                           TextColor="{StaticResource Outline}"
+                           HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
+        </CollectionView>
+
+        <!-- ===== INDICADOR DE CAMBIOS PENDIENTES + TOTALES ===== -->
+        <VerticalStackLayout Grid.Row="3" Spacing="8" Margin="0,12,0,0">
+            
+            <!-- Alerta de cambios pendientes -->
+            <Border BackgroundColor="{StaticResource WarningBg}" 
+                    Stroke="{StaticResource Warning}"
+                    StrokeShape="RoundRectangle 8"
+                    Padding="12"
+                    IsVisible="{Binding BTieneCambiosPendientes}">
+                <HorizontalStackLayout Spacing="8" HorizontalOptions="Center">
+                    <Label Text="⚠️" FontSize="16"/>
+                    <Label Text="Tienes cambios sin guardar" 
+                           FontSize="14" 
+                           TextColor="#E65100"
+                           FontAttributes="Bold"
+                           VerticalOptions="Center"/>
+                </HorizontalStackLayout>
+            </Border>
+
+            <!-- Totales -->
+            <Border BackgroundColor="{StaticResource Surface}" 
+                    Stroke="{StaticResource Outline}"
+                    StrokeShape="RoundRectangle 8"
+                    Padding="12">
+                <VerticalStackLayout Spacing="8">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Grid.Column="0" Text="Total extras:" FontSize="14" TextColor="{StaticResource Outline}"/>
+                        <Label Grid.Column="1" Text="{Binding TotalExtrasOrden, StringFormat='${0:N2} MXN'}" 
+                               FontSize="14" TextColor="{StaticResource Primary500}"/>
+                    </Grid>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Grid.Column="0" Text="TOTAL:" FontSize="18" FontAttributes="Bold"/>
+                        <Label Grid.Column="1" Text="{Binding TotalOrden, StringFormat='${0:N2} MXN'}" 
+                               FontSize="18" FontAttributes="Bold" TextColor="{StaticResource Primary500}"/>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
 
         <!-- ===== FOOTER ACTIONS ===== -->
-        <HorizontalStackLayout Grid.Row="4" HorizontalOptions="Center" Spacing="12" Margin="0,12,0,0">
-            <Button Text="Tomar orden" Command="{Binding TomarOrdenCommand}" CommandParameter="{Binding OOrden.sIdMongoDB}"
-                    IsEnabled="{Binding BHabilitarBotonTomarOrden}" IsVisible="{Binding BHabilitarBotonTomarOrden}" HeightRequest="46" />
-            <Button Text="Preparar" Command="{Binding ActualizarAEnpreparacionCommand}" CommandParameter="{Binding OOrden.sIdMongoDB}"
-                    IsEnabled="{Binding BHabilitarBotonPrepararOrden}" IsVisible="{Binding BHabilitarBotonPrepararOrden}" HeightRequest="46" />
-            <Button Text="Preparada" Command="{Binding ActualizarAPreparadaCommand}" CommandParameter="{Binding OOrden.sIdMongoDB}"
-                    IsEnabled="{Binding BHabilitarBotonOrdenPreparada}" IsVisible="{Binding BHabilitarBotonOrdenPreparada}" HeightRequest="46" />
-        </HorizontalStackLayout>
+        <VerticalStackLayout Grid.Row="4" Spacing="8" Margin="0,12,0,0">
+            
+            <!-- Botón Guardar Cambios (solo para órdenes existentes con cambios) -->
+            <Button Text="💾 Guardar Cambios" 
+                    Command="{Binding GuardarCambiosCommand}"
+                    IsEnabled="{Binding BHabilitarBotonGuardarCambios}" 
+                    IsVisible="{Binding BHabilitarBotonGuardarCambios}"
+                    BackgroundColor="{StaticResource Success}"
+                    TextColor="White"
+                    FontAttributes="Bold"
+                    HeightRequest="50"
+                    HorizontalOptions="Fill"/>
+            
+            <!-- Botones de acción principales -->
+            <HorizontalStackLayout HorizontalOptions="Center" Spacing="12">
+                <Button Text="🚀 Tomar Orden" 
+                        Command="{Binding TomarOrdenCommand}"
+                        IsEnabled="{Binding BHabilitarBotonTomarOrden}" 
+                        IsVisible="{Binding BHabilitarBotonTomarOrden}" 
+                        BackgroundColor="{StaticResource Primary500}"
+                        TextColor="White"
+                        FontAttributes="Bold"
+                        HeightRequest="50"
+                        WidthRequest="180"/>
+                
+                <Button Text="👨‍🍳 Preparar" 
+                        Command="{Binding ActualizarAEnpreparacionCommand}"
+                        IsEnabled="{Binding BHabilitarBotonPrepararOrden}" 
+                        IsVisible="{Binding BHabilitarBotonPrepararOrden}" 
+                        HeightRequest="50"/>
+                
+                <Button Text="✅ Preparada" 
+                        Command="{Binding ActualizarAPreparadaCommand}"
+                        IsEnabled="{Binding BHabilitarBotonOrdenPreparada}" 
+                        IsVisible="{Binding BHabilitarBotonOrdenPreparada}" 
+                        HeightRequest="50"/>
+            </HorizontalStackLayout>
+        </VerticalStackLayout>
 
     </Grid>
 </ContentPage>

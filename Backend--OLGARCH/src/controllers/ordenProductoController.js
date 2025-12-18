@@ -26,6 +26,21 @@ const mapOrdenProductoData = (data) => {
           sURLImagen: extra.sURLImagen,
         }))
       : [],
+    // AGREGAR MAPEO DE aConsumos
+    aConsumos: Array.isArray(data.aConsumos)
+      ? data.aConsumos.map((consumo) => ({
+          iIndex: consumo.iIndex,
+          aExtras: Array.isArray(consumo.aExtras)
+            ? consumo.aExtras.map((extra) => ({
+                sIdExtra: extra.sIdExtra,
+                sNombre: extra.sNombre,
+                iCostoReal: extra.iCostoReal,
+                iCostoPublico: extra.iCostoPublico,
+                sURLImagen: extra.sURLImagen,
+              }))
+            : [],
+        }))
+      : [],
     iTipoProducto: data.iTipoProducto,
   };
 };

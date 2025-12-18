@@ -121,31 +121,33 @@
                     <!-- Picker variante -->
                     <Label Text="Variante" FontAttributes="Bold" MaximumHeightRequest="25" />
                     <Picker Title="Seleccione la variante"
+                            IsEnabled="False"
+                            TextColor="Black"
                             ItemsSource="{Binding OProductoSeleccionado.aVariantes}"
                             SelectedItem="{Binding VarianteSeleccionada}"
                             ItemDisplayBinding="{Binding sVariante}" />
                 </VerticalStackLayout>
             </Border>
 
-            <!-- 🔸 3. Buscador de Extras -->
+            <!-- 🔸 3. Buscador de Extras --><!--
             <VerticalStackLayout Spacing="12" IsVisible="{Binding OProductoSeleccionado, Converter={StaticResource NullToBoolConverter}}">
                 <Label Style="{StaticResource HeadlineLabel}" Text="Agregar extras (opcional)" MaximumHeightRequest="25" />
                 <Entry Placeholder="Mínimo 3 caracteres" Text="{Binding SBusquedaExtras}" TextChanged="BusquedaEntry_ExtrasTextChanged" />
                 <CollectionView HeightRequest="220" ItemsSource="{Binding LstResultadosExtras}" ItemTemplate="{StaticResource ExtraCardTemplate}" />
             </VerticalStackLayout>
 
-            <!-- 🔸 4. Extras seleccionados -->
+            --><!-- 🔸 4. Extras seleccionados --><!--
             <Label Style="{StaticResource HeadlineLabel}" Text="Extras seleccionados" MaximumHeightRequest="25" IsVisible="{Binding LstExtrasSeleccionados.Count, Converter={StaticResource CountToBoolConverter}}" />
             <CollectionView HeightRequest="180"
                             ItemsSource="{Binding LstExtrasSeleccionados}"
                             ItemTemplate="{StaticResource SelectedExtraTemplate}"
                             IsVisible="{Binding LstExtrasSeleccionados.Count, Converter={StaticResource CountToBoolConverter}}" />
 
-            <!-- 🔸 5. Indicaciones -->
+            --><!-- 🔸 5. Indicaciones --><!--
             <VerticalStackLayout IsVisible="{Binding OProductoSeleccionado, Converter={StaticResource NullToBoolConverter}}">
                 <Label Style="{StaticResource HeadlineLabel}" Text="Indicaciones adicionales (opcional)" MaximumHeightRequest="25" />
                 <Editor HeightRequest="100" Text="{Binding SIndicaciones}" Placeholder="Ej: Sin cebolla, extra salsa picante..." />
-            </VerticalStackLayout>
+            </VerticalStackLayout>-->
 
             <!-- 🔸 6. Confirmar -->
             <Button Text="{Binding ConfirmButtonText}"

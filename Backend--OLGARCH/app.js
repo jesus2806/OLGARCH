@@ -11,6 +11,7 @@ import ordenProductoRoutes from './src/routes/ordenProducto.routes.js';
 import imageRoutes from './src/routes/image.routes.js';
 import rutasHistorico from './src/routes/historico.routes.js';
 import extraRoutes from './src/routes/extra.routes.js';
+import syncRoutes from './src/routes/sync.routes.js';
 
 dotenv.config();
 const app = express();
@@ -48,6 +49,9 @@ app.use('/api', rutasHistorico);
 
 // Rutas para extras
 app.use('/api', extraRoutes);
+
+// Rutas para sincronización unificada
+app.use('/api', syncRoutes);
 
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'OK' });

@@ -9,17 +9,21 @@ using System.Net.Http.Json;
 namespace AppGestorVentas.ViewModels.OrdenViewModels
 {
     /// <summary>
-    /// ViewModel para la Pantalla 2: Administración de consumos individuales y sus extras.
-    /// Cada consumo representa UNA unidad del producto (ej: si hay 3 chilaquiles, se muestran 3 consumos).
+    /// ViewModel para administrar consumos y extras de un producto.
+    /// Los cambios se guardan LOCALMENTE hasta confirmar la orden.
     /// </summary>
     public partial class ConsumosProductoViewModel : ObservableObject, IQueryAttributable
     {
+        #region SERVICIOS
+
+        private readonly OrdenDraftService _ordenDraftService;
+        private readonly IPopupService _popupService;
+        private readonly HttpApiService _httpApiService;
+        #endregion
+
         #region PROPIEDADES
 
-        private readonly HttpApiService _httpApiService;
-        private readonly IPopupService _popupService;
-
-        private string _sIdOrdenProducto = string.Empty;
+        private string _sIdProducto = string.Empty;
         private string _sIdOrden = string.Empty;
 
         [ObservableProperty]
@@ -37,17 +41,20 @@ namespace AppGestorVentas.ViewModels.OrdenViewModels
         [ObservableProperty]
         private bool isLoading;
 
-        // Propiedad para acceder al ID del producto desde la vista
-        public string IdOrdenProducto => _sIdOrdenProducto;
+        public string IdProducto => _sIdProducto;
 
         #endregion
 
         #region CONSTRUCTOR
 
-        public ConsumosProductoViewModel(HttpApiService httpApiService, IPopupService popupService)
+        public ConsumosProductoViewModel(
+            OrdenDraftService ordenDraftService,
+            IPopupService popupService,
+            HttpApiService httpApiService)
         {
-            _httpApiService = httpApiService;
+            _ordenDraftService = ordenDraftService;
             _popupService = popupService;
+            _httpApiService = httpApiService;
         }
 
         #endregion
@@ -58,7 +65,7 @@ namespace AppGestorVentas.ViewModels.OrdenViewModels
         {
             if (query.TryGetValue("sIdOrdenProducto", out var idProducto) && idProducto != null)
             {
-                _sIdOrdenProducto = idProducto.ToString() ?? string.Empty;
+                _sIdProducto = idProducto.ToString() ?? string.Empty;
             }
 
             if (query.TryGetValue("sIdOrden", out var idOrden) && idOrden != null)
@@ -83,7 +90,7 @@ namespace AppGestorVentas.ViewModels.OrdenViewModels
 
         public async Task LoadDataAsync()
         {
-            if (string.IsNullOrEmpty(_sIdOrdenProducto))
+            if (string.IsNullOrEmpty(_sIdProducto))
             {
                 await MostrarError("No se especificó el producto.");
                 return;
@@ -93,45 +100,27 @@ namespace AppGestorVentas.ViewModels.OrdenViewModels
 
             try
             {
-                // Obtener datos del producto desde la API
-                var response = await _httpApiService.GetAsync($"api/orden-productos/{_sIdOrdenProducto}");
+                // 1. Primero intentar obtener del borrador local (orden en edición)
+                var producto = _ordenDraftService.ObtenerProductoPorIdMongo(_sIdProducto)
+                            ?? _ordenDraftService.ObtenerProducto(_sIdProducto);
 
-                if (response != null && response.IsSuccessStatusCode)
+                if (producto != null)
                 {
-                    var apiResponse = await response.Content.ReadFromJsonAsync<ApiRespuesta<OrdenProducto>>();
-
-                    if (apiResponse != null && apiResponse.bSuccess && apiResponse.lData?.Count > 0)
-                    {
-                        var producto = apiResponse.lData[0];
-                        
-                        // Actualizar cantidad si viene del API
-                        if (producto.iCantidad > 0)
-                        {
-                            ICantidad = producto.iCantidad;
-                        }
-
-                        // Generar la lista de consumos basándose en la cantidad
-                        GenerarConsumos(producto.aConsumos);
-                        
-                        // Calcular total de extras
-                        CalcularTotalExtras();
-                    }
-                    else
-                    {
-                        // Si no hay datos del API, generar consumos vacíos basados en la cantidad
-                        GenerarConsumosVacios();
-                    }
+                    // Usar datos del borrador local
+                    ICantidad = producto.iCantidad;
+                    SNombreProducto = producto.sNombre;
+                    GenerarConsumos(producto.aConsumos);
+                    CalcularTotalExtras();
                 }
                 else
                 {
-                    // Si falla el API, generar consumos vacíos basados en la cantidad recibida
-                    GenerarConsumosVacios();
+                    // 2. Si no está en borrador, consultar al backend (orden ya tomada)
+                    await CargarDesdeBackendAsync();
                 }
             }
             catch (Exception ex)
             {
                 await MostrarError($"Error: {ex.Message}");
-                // En caso de error, mostrar consumos vacíos
                 GenerarConsumosVacios();
             }
             finally
@@ -141,14 +130,47 @@ namespace AppGestorVentas.ViewModels.OrdenViewModels
         }
 
         /// <summary>
-        /// Genera los consumos basándose en la cantidad del producto.
-        /// Si existen consumos con extras del backend, los mapea; si no, crea consumos vacíos.
+        /// Carga los datos del producto desde el backend (MongoDB)
         /// </summary>
-        private void GenerarConsumos(List<Consumo> consumosBackend)
+        private async Task CargarDesdeBackendAsync()
+        {
+            try
+            {
+                // Obtener el producto desde el backend
+                var response = await _httpApiService.GetAsync($"api/orden-productos/{_sIdProducto}");
+
+                if (response != null && response.IsSuccessStatusCode)
+                {
+                    var apiResponse = await response.Content.ReadFromJsonAsync<ApiRespuesta<OrdenProducto>>();
+
+                    if (apiResponse?.bSuccess == true && apiResponse.lData?.Count > 0)
+                    {
+                        var producto = apiResponse.lData[0];
+
+                        ICantidad = producto.iCantidad;
+                        SNombreProducto = producto.sNombre;
+
+                        // Generar consumos desde los datos del backend
+                        GenerarConsumos(producto.aConsumos);
+                        CalcularTotalExtras();
+                        return;
+                    }
+                }
+
+                // Si no se encontró, generar vacíos
+                GenerarConsumosVacios();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[DEBUG] Error al cargar desde backend: {ex.Message}");
+                GenerarConsumosVacios();
+            }
+        }
+
+        private void GenerarConsumos(List<Consumo>? consumosBackend)
         {
             LstConsumos.Clear();
 
-            // Crear un diccionario para acceso rápido a los consumos del backend por índice
             var consumosDict = new Dictionary<int, Consumo>();
             if (consumosBackend != null)
             {
@@ -158,7 +180,6 @@ namespace AppGestorVentas.ViewModels.OrdenViewModels
                 }
             }
 
-            // Generar un consumo por cada unidad del producto
             for (int i = 1; i <= ICantidad; i++)
             {
                 var consumoDisplay = new ConsumoDisplay
@@ -168,15 +189,14 @@ namespace AppGestorVentas.ViewModels.OrdenViewModels
                     Extras = new ObservableCollection<ExtraConsumoDisplay>()
                 };
 
-                // Si existe información del backend para este consumo, cargar sus extras
-                if (consumosDict.TryGetValue(i, out var consumoBackend) && consumoBackend.aExtras != null)
+                if (consumosDict.TryGetValue(i, out var consumo) && consumo.aExtras != null)
                 {
-                    foreach (var extra in consumoBackend.aExtras)
+                    foreach (var extra in consumo.aExtras)
                     {
                         consumoDisplay.Extras.Add(new ExtraConsumoDisplay
                         {
                             iIndexConsumo = i,
-                            sIdExtraSubdoc = extra.sIdMongo, 
+                            sIdExtraSubdoc = extra.sIdMongo ?? extra.sIdLocal,
                             sIdExtra = extra.sIdExtra,
                             sNombre = extra.sNombre,
                             iCostoPublico = extra.iCostoPublico,
@@ -190,9 +210,6 @@ namespace AppGestorVentas.ViewModels.OrdenViewModels
             }
         }
 
-        /// <summary>
-        /// Genera consumos vacíos cuando no hay datos del backend.
-        /// </summary>
         private void GenerarConsumosVacios()
         {
             LstConsumos.Clear();
@@ -209,9 +226,6 @@ namespace AppGestorVentas.ViewModels.OrdenViewModels
             }
         }
 
-        /// <summary>
-        /// Calcula el total de extras de todos los consumos.
-        /// </summary>
         private void CalcularTotalExtras()
         {
             ITotalExtras = LstConsumos.Sum(c => c.ITotalExtrasConsumo);
@@ -226,7 +240,7 @@ namespace AppGestorVentas.ViewModels.OrdenViewModels
         {
             await Shell.Current.GoToAsync("buscarExtras", new Dictionary<string, object>
             {
-                { "sIdOrdenProducto", _sIdOrdenProducto },
+                { "sIdOrdenProducto", _sIdProducto },
                 { "sIdOrden", _sIdOrden },
                 { "iCantidad", ICantidad }
             });
@@ -247,15 +261,16 @@ namespace AppGestorVentas.ViewModels.OrdenViewModels
             IsLoading = true;
             try
             {
-                var response = await _httpApiService.DeleteAsync(
-                    $"api/orden-productos/{_sIdOrdenProducto}/consumos/{extra.iIndexConsumo}/extras/{extra.sIdExtraSubdoc}",
-                    true
-                );
+                // Eliminar localmente usando el servicio
+                await _ordenDraftService.EliminarExtraDeConsumoAsync(
+                    _sIdProducto,
+                    extra.iIndexConsumo,
+                    extra.sIdExtraSubdoc);
 
-                if (response != null && response.IsSuccessStatusCode)
-                    await LoadDataAsync();
-                else
-                    await MostrarError("Error al eliminar el extra.");
+                // Recargar datos
+                await LoadDataAsync();
+
+                await Shell.Current.DisplayAlert("OK", "Extra eliminado. Recuerda guardar los cambios.", "OK");
             }
             catch (Exception ex)
             {
@@ -274,7 +289,7 @@ namespace AppGestorVentas.ViewModels.OrdenViewModels
         }
 
         [ObservableProperty]
-        private bool bModoDecremento; // opcional (para saber si vienes de “bajar cantidad”)
+        private bool bModoDecremento;
 
         [RelayCommand]
         private async Task EliminarConsumo(ConsumoDisplay consumo)
@@ -291,22 +306,26 @@ namespace AppGestorVentas.ViewModels.OrdenViewModels
             IsLoading = true;
             try
             {
-                // ✅ ENDPOINT IDEAL (ver sección Back):
-                var resp = await _httpApiService.DeleteAsync(
-                    $"api/orden-productos/{_sIdOrdenProducto}/consumos/{consumo.iIndex}");
+                // Eliminar localmente usando el servicio
+                await _ordenDraftService.EliminarConsumoAsync(_sIdProducto, consumo.iIndex);
 
-                if (resp != null && resp.IsSuccessStatusCode)
+                // Actualizar cantidad local
+                var producto = _ordenDraftService.ObtenerProductoPorIdMongo(_sIdProducto) 
+                            ?? _ordenDraftService.ObtenerProducto(_sIdProducto);
+                
+                if (producto != null)
                 {
-                    // recarga lista (ya debe venir con cantidad - 1)
-                    await LoadDataAsync();
-
-                    // si venías desde “decrementar”, normalmente quieres volver al detalle
-                    if (BModoDecremento)
-                        await Shell.Current.GoToAsync("..");
+                    ICantidad = producto.iCantidad;
                 }
-                else
+
+                // Recargar datos
+                await LoadDataAsync();
+
+                await Shell.Current.DisplayAlert("OK", "Consumo eliminado. Recuerda guardar los cambios.", "OK");
+
+                if (BModoDecremento || ICantidad == 0)
                 {
-                    await MostrarError("No se pudo eliminar el consumo.");
+                    await Shell.Current.GoToAsync("..");
                 }
             }
             catch (Exception ex)
@@ -318,7 +337,6 @@ namespace AppGestorVentas.ViewModels.OrdenViewModels
                 IsLoading = false;
             }
         }
-
 
         #endregion
 
@@ -334,33 +352,24 @@ namespace AppGestorVentas.ViewModels.OrdenViewModels
 
     #region CLASES AUXILIARES
 
-    /// <summary>
-    /// Modelo para mostrar un consumo en la UI.
-    /// Representa UNA unidad del producto.
-    /// </summary>
     public partial class ConsumoDisplay : ObservableObject
     {
         public int iIndex { get; set; }
         public string sDisplayName { get; set; } = string.Empty;
-        
+
         [ObservableProperty]
         private ObservableCollection<ExtraConsumoDisplay> extras = new();
-        
+
         [ObservableProperty]
         private decimal iTotalExtrasConsumo;
-        
+
         public bool TieneExtras => Extras?.Count > 0;
     }
 
-    /// <summary>
-    /// Modelo para mostrar un extra en la UI.
-    /// </summary>
     public partial class ExtraConsumoDisplay : ObservableObject
     {
-        public int iIndexConsumo { get; set; } // <-- NUEVO
-
+        public int iIndexConsumo { get; set; }
         public string sIdExtraSubdoc { get; set; } = string.Empty;
-
         public string sIdExtra { get; set; } = string.Empty;
         public string sNombre { get; set; } = string.Empty;
         public decimal iCostoPublico { get; set; }
@@ -368,9 +377,6 @@ namespace AppGestorVentas.ViewModels.OrdenViewModels
         public string sPrecioFormateado => $"${iCostoPublico:N2} MXN";
     }
 
-    /// <summary>
-    /// Parámetros para eliminar un extra de un consumo específico.
-    /// </summary>
     public class ExtraConsumoParams
     {
         public int iIndexConsumo { get; set; }

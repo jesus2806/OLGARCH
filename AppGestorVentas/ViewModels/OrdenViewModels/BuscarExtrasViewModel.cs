@@ -8,15 +8,21 @@ using System.Net.Http.Json;
 namespace AppGestorVentas.ViewModels.OrdenViewModels
 {
     /// <summary>
-    /// ViewModel para la Pantalla 3: Búsqueda y selección de extras
+    /// ViewModel para buscar y agregar extras a consumos.
+    /// Los cambios se guardan LOCALMENTE hasta confirmar la orden.
     /// </summary>
     public partial class BuscarExtrasViewModel : ObservableObject, IQueryAttributable
     {
-        #region PROPIEDADES
+        #region SERVICIOS
 
         private readonly HttpApiService _httpApiService;
+        private readonly OrdenDraftService _ordenDraftService;
 
-        private string _sIdOrdenProducto = string.Empty;
+        #endregion
+
+        #region PROPIEDADES
+
+        private string _sIdProducto = string.Empty;
         private string _sIdOrden = string.Empty;
         private int _iCantidadConsumos;
 
@@ -32,12 +38,12 @@ namespace AppGestorVentas.ViewModels.OrdenViewModels
         [ObservableProperty]
         private bool noHayResultados;
 
-        // Para el modal de selección de consumos (Pantalla 4)
+        // Para el modal de selección de consumos
         [ObservableProperty]
         private bool mostrarModalConsumos;
 
         [ObservableProperty]
-        private Extra extraSeleccionado;
+        private Extra? extraSeleccionado;
 
         [ObservableProperty]
         private ObservableCollection<ConsumoSeleccion> lstConsumosSeleccion = new();
@@ -46,9 +52,10 @@ namespace AppGestorVentas.ViewModels.OrdenViewModels
 
         #region CONSTRUCTOR
 
-        public BuscarExtrasViewModel(HttpApiService httpApiService)
+        public BuscarExtrasViewModel(HttpApiService httpApiService, OrdenDraftService ordenDraftService)
         {
             _httpApiService = httpApiService;
+            _ordenDraftService = ordenDraftService;
         }
 
         #endregion
@@ -59,7 +66,7 @@ namespace AppGestorVentas.ViewModels.OrdenViewModels
         {
             if (query.TryGetValue("sIdOrdenProducto", out var idProducto) && idProducto != null)
             {
-                _sIdOrdenProducto = idProducto.ToString() ?? string.Empty;
+                _sIdProducto = idProducto.ToString() ?? string.Empty;
             }
 
             if (query.TryGetValue("sIdOrden", out var idOrden) && idOrden != null)
@@ -70,7 +77,7 @@ namespace AppGestorVentas.ViewModels.OrdenViewModels
             if (query.TryGetValue("iCantidad", out var cantidad) && cantidad != null)
             {
                 _iCantidadConsumos = Convert.ToInt32(cantidad);
-                
+
                 // Inicializar lista de consumos para selección
                 LstConsumosSeleccion.Clear();
                 for (int i = 1; i <= _iCantidadConsumos; i++)
@@ -91,7 +98,6 @@ namespace AppGestorVentas.ViewModels.OrdenViewModels
 
         partial void OnSBusquedaChanged(string value)
         {
-            // Búsqueda automática con debounce
             _ = BuscarExtrasAsync();
         }
 
@@ -109,7 +115,7 @@ namespace AppGestorVentas.ViewModels.OrdenViewModels
 
             try
             {
-                var response = await _httpApiService.PostAsync($"api/extras/search",
+                var response = await _httpApiService.PostAsync("api/extras/search",
                     new { texto = SBusqueda });
 
                 if (response != null && response.IsSuccessStatusCode)
@@ -118,7 +124,7 @@ namespace AppGestorVentas.ViewModels.OrdenViewModels
 
                     LstExtras.Clear();
 
-                    if (apiResponse != null && apiResponse.bSuccess && apiResponse.lData != null)
+                    if (apiResponse?.bSuccess == true && apiResponse.lData != null)
                     {
                         foreach (var extra in apiResponse.lData)
                         {
@@ -157,8 +163,7 @@ namespace AppGestorVentas.ViewModels.OrdenViewModels
             }
             else
             {
-                // Mostrar modal para seleccionar consumos (Pantalla 4)
-                // Reiniciar selección
+                // Mostrar modal para seleccionar consumos
                 foreach (var consumo in LstConsumosSeleccion)
                 {
                     consumo.IsSelected = true;
@@ -200,36 +205,17 @@ namespace AppGestorVentas.ViewModels.OrdenViewModels
 
             try
             {
-                var requestBody = new
-                {
-                    extra = new
-                    {
-                        sIdExtra = ExtraSeleccionado.sIdMongo,
-                        sNombre = ExtraSeleccionado.sNombre,
-                        iCostoReal = ExtraSeleccionado.iCostoReal,
-                        iCostoPublico = ExtraSeleccionado.iCostoPublico,
-                        sURLImagen = ExtraSeleccionado.sURLImagen
-                    },
-                    aIndexConsumos = indices
-                };
+                // Agregar localmente usando el servicio
+                await _ordenDraftService.AgregarExtraAConsumosAsync(
+                    _sIdProducto,
+                    ExtraSeleccionado,
+                    indices);
 
-                var response = await _httpApiService.PostAsync(
-                    $"api/orden-productos/{_sIdOrdenProducto}/consumos/extras",
-                    requestBody);
+                await Shell.Current.DisplayAlert("Éxito",
+                    $"Extra '{ExtraSeleccionado.sNombre}' agregado. Recuerda guardar los cambios.", "OK");
 
-                if (response != null && response.IsSuccessStatusCode)
-                {
-                    await Shell.Current.DisplayAlert("Éxito", 
-                        $"Extra '{ExtraSeleccionado.sNombre}' agregado correctamente.", "OK");
-                    
-                    // Regresar a la pantalla de consumos
-                    await Shell.Current.GoToAsync("..");
-                }
-                else
-                {
-                    var content = response != null ? await response.Content.ReadAsStringAsync() : "Sin respuesta";
-                    await MostrarError($"Error al agregar el extra: {content}");
-                }
+                // Regresar a la pantalla de consumos
+                await Shell.Current.GoToAsync("..");
             }
             catch (Exception ex)
             {
@@ -262,9 +248,6 @@ namespace AppGestorVentas.ViewModels.OrdenViewModels
 
     #region CLASES AUXILIARES
 
-    /// <summary>
-    /// Modelo para selección de consumos en el modal
-    /// </summary>
     public partial class ConsumoSeleccion : ObservableObject
     {
         public int iIndex { get; set; }
