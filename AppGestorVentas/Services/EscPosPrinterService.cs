@@ -39,115 +39,111 @@ namespace AppGestorVentas.Services
         private List<byte> ConstruirComandosTicket(Ticket ticket)
         {
             var comandos = new List<byte>();
-
-            // Inicializar la impresora
             comandos.AddRange(_emitter.Initialize());
+            comandos.AddRange(new byte[] { 0x1B, 0x74, 16 }); // CP1252
 
-            // 2) Seleccionar la code page (ej. CP1252)
-            comandos.AddRange(new byte[] { 0x1B, 0x74, 16 });
+            const int W = 40;
 
-            // === Encabezado centrado ===
+            if (ticket.LogoBytes != null && ticket.LogoBytes.Length > 0)
+            {
+                comandos.AddRange(_emitter.CenterAlign());
+
+                // PrintImage recibe bytes del archivo (PNG/JPG)
+                comandos.AddRange(_emitter.PrintImage(ticket.LogoBytes, true));
+                comandos.AddRange(_emitter.PrintAndFeedLines(1));
+            }
+
+            // ==== ENCABEZADO (centrado) ====
             comandos.AddRange(_emitter.CenterAlign());
             comandos.AddRange(_emitter.PrintLine(ticket.sEncabezado));
             comandos.AddRange(_emitter.PrintAndFeedLines(1));
             comandos.AddRange(_emitter.PrintLine($"No. Mesa: {ticket.iMesa}"));
             comandos.AddRange(_emitter.PrintLine($"Fecha y hora: {ticket.dFechaActual:dd/MM/yyyy HH:mm:ss}"));
             comandos.AddRange(_emitter.PrintLine("Tel: +52 418 122 0998"));
-            comandos.AddRange(_emitter.PrintLine(new string('-', 40)));
 
-            // === Encabezados de columna ===
-            //  Vamos a definir un formato que ocupe el ancho de 40 caracteres, 
-            //  con columnas para Cantidad (4), Descripción (~20), PrecioUnit (7), Subtotal (8).
-            //  Ajusta los valores según el ancho real de tu impresora y tus necesidades.
-            //  El separador mínimo entre columnas suele ser 1 espacio.
-
-            // Modo justificado a la izquierda para imprimir nuestras columnas
-            //comandos.AddRange(_emitter.LeftAlign());
-
+            // Separador (centrado para que no se “recorra”)
             comandos.AddRange(_emitter.CenterAlign());
+            comandos.AddRange(_emitter.PrintLine(new string('-', W)));
 
-            // Encabezado de columnas. Ejemplo:
-            // "Cant  Descripción           P.U.   Subtotal"
-            comandos.AddRange(_emitter.PrintLine("Cant  Descripción           P.Unit   Subtot"));
+            // ==== TABLA (centrada) ====
+            // W=40 => 4 + 1 + 16 + 1 + 9 + 1 + 8 = 40
+            const int QTY_W = 4;
+            const int DESC_W = 16;
+            const int UNIT_W = 9;
+            const int SUB_W = 8;
 
-            // === Impresión de los items (productos) ===
+            var header = string.Format(
+                "{0,-4} {1,-16} {2,9} {3,8}",
+                "Cant", "Descripción", "P. Unidad", "Subtot"
+            );
+            comandos.AddRange(_emitter.PrintLine(header));
+
             foreach (var item in ticket.Items)
             {
-                // Cálculo de subtotal
-                decimal subtotal = item.PrecioUnitario * item.Cantidad;
-                string cantidadStr = item.Cantidad.ToString();
-                string precioStr = item.PrecioUnitario.ToString("C");
-                string subTotStr = subtotal.ToString("C");
+                var cantidadStr = (item.Cantidad <= 0 ? 1 : item.Cantidad).ToString();
+                var desc = (item.Descripcion ?? "").Trim(); // ✅ sin espacios al inicio
 
-                // Definimos una anchura máxima para la descripción del producto.
-                // Por ejemplo, 20 caracteres. (O el valor que te convenga.)
-                int descMaxLength = 20;
+                var unit = FitRight(item.PrecioUnitario.ToString("C"), UNIT_W);
+                var subtotal = FitRight((item.PrecioUnitario * item.Cantidad).ToString("C"), SUB_W);
 
-                // Podríamos dividir el nombre en múltiples líneas si excede descMaxLength
-                // para no truncarlo abruptamente.
-                List<string> lineasDescripcion = WrapText(item.Descripcion, descMaxLength);
+                var descLines = WrapText(desc, DESC_W);
 
-                // Vamos a imprimir la primera línea mostrando Cantidad, Descripción (o parte de ella),
-                // Precio Unitario y Subtotal. 
-                // Si la descripción requiere más líneas, se imprimirán en bucle sin la cantidad repetida.
-                for (int i = 0; i < lineasDescripcion.Count; i++)
+                for (int i = 0; i < descLines.Count; i++)
                 {
-                    // En la primera línea se muestra cantidad, precio y subtotal
-                    // En las subsecuentes, esos campos se dejan en blanco (o se omiten).
                     if (i == 0)
                     {
-                        // Creamos la línea usando string.Format con anchos fijos
-                        // Notación: {0,-4} => Columna 1 (Cantidad) de 4 chars, justificado izq.
-                        //            {1,-20} => Columna 2 (Descripción) de 20 chars, just. izq.
-                        //            {2,7} => Columna 3 (P.Unit) de 7 chars, justificado der.
-                        //            {3,8} => Columna 4 (Subtotal) de 8 chars, justificado der.
-                        string linea = string.Format(
-                            "{0,-4} {1,-20} {2,7} {3,8}",
-                            cantidadStr,
-                            lineasDescripcion[i],
-                            precioStr,
-                            subTotStr
+                        var line = string.Format(
+                            "{0,-4} {1,-16} {2,9} {3,8}",
+                            FitLeft(cantidadStr, QTY_W),
+                            FitLeft(descLines[i], DESC_W),
+                            unit,
+                            subtotal
                         );
-                        comandos.AddRange(_emitter.PrintLine(linea));
+                        comandos.AddRange(_emitter.PrintLine(line));
                     }
                     else
                     {
-                        // Subsecuentes líneas de descripción (sin repetir cantidad/precio/subtotal)
-                        string linea = string.Format(
-                            "{0,-4} {1,-20} {2,7} {3,8}",
-                            "", // vacío para no repetir cantidad
-                            lineasDescripcion[i],
-                            "", // vacío para no repetir precio
-                            ""  // vacío para no repetir subtotal
+                        var line = string.Format(
+                            "{0,-4} {1,-16} {2,9} {3,8}",
+                            "",
+                            FitLeft(descLines[i], DESC_W),
+                            "",
+                            ""
                         );
-                        comandos.AddRange(_emitter.PrintLine(linea));
+                        comandos.AddRange(_emitter.PrintLine(line));
                     }
                 }
             }
 
-            
-            // Línea separadora
-            comandos.AddRange(_emitter.PrintLine(new string('-', 40)));
+            // Separador inferior (centrado e igual al superior)
+            comandos.AddRange(_emitter.PrintLine(new string('-', W)));
 
-            // === Total a la derecha ===
+            // ==== TOTAL ====
             comandos.AddRange(_emitter.RightAlign());
             comandos.AddRange(_emitter.PrintLine("TOTAL: " + ticket.iTotal.ToString("C")));
 
-            // Regresar a la izquierda
-            comandos.AddRange(_emitter.LeftAlign());
-
-            // === Pie de ticket (mensaje final) ===
+            // Pie centrado
+            comandos.AddRange(_emitter.CenterAlign());
             if (!string.IsNullOrEmpty(ticket.sPie))
-            {
                 comandos.AddRange(_emitter.PrintLine(ticket.sPie));
-            }
 
-
-            // Alimentar y cortar
             comandos.AddRange(_emitter.PrintAndFeedLines(3));
             comandos.AddRange(_emitter.CutPaper());
-
             return comandos;
+        }
+
+        private static string FitLeft(string s, int w)
+        {
+            s ??= "";
+            if (s.Length > w) return s.Substring(0, w);
+            return s.PadRight(w);
+        }
+
+        private static string FitRight(string s, int w)
+        {
+            s ??= "";
+            if (s.Length > w) return s.Substring(s.Length - w, w);
+            return s.PadLeft(w);
         }
 
 
@@ -204,7 +200,7 @@ namespace AppGestorVentas.Services
                 comandos.AddRange(_emitter.PrintLine(linea));
             }
 
-            comandos.AddRange(_emitter.PrintAndFeedLines(2));
+            comandos.AddRange(_emitter.PrintAndFeedLines(4));
             // 4) Corte de papel
             comandos.AddRange(_emitter.CutPaper());
 

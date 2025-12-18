@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace AppGestorVentas.Models
+﻿namespace AppGestorVentas.Models
 {
     // Modelo para el ticket completo
     public class Ticket
@@ -15,5 +9,7 @@ namespace AppGestorVentas.Models
         public List<TicketItem> Items { get; set; } = new List<TicketItem>();
         public decimal iTotal { get; set; }
         public string sPie { get; set; }
+
+        public byte[]? LogoBytes { get; set; }
     }
 }

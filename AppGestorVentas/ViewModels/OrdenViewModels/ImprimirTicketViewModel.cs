@@ -8,14 +8,17 @@ using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using System.Net.Http.Json;
 
+#if ANDROID
+using Microsoft.Maui.ApplicationModel;
+#endif
+
 namespace AppGestorVentas.ViewModels.OrdenViewModels
 {
     public partial class ImprimirTicketViewModel : ObservableObject, IQueryAttributable
     {
-        private HttpApiService _httpApiService;
-        private string _sIdOrdenMongoDB;
+        private readonly HttpApiService _httpApiService;
+        private string _sIdOrdenMongoDB = string.Empty;
         private Corte _oCorte = null;
-
 
         [ObservableProperty]
         private ObservableCollection<string> availableDeviceNames = new();
@@ -25,9 +28,9 @@ namespace AppGestorVentas.ViewModels.OrdenViewModels
 
         [ObservableProperty]
         private string connectedDeviceName;
+
         partial void OnConnectedDeviceNameChanged(string oldValue, string newValue)
         {
-            // Si ConnectedDeviceName está vacío o nulo, entonces NO hay impresora conectada
             IsPrinterConnected = !string.IsNullOrEmpty(newValue);
         }
 
@@ -42,84 +45,96 @@ namespace AppGestorVentas.ViewModels.OrdenViewModels
 
 #if ANDROID
         private readonly BluetoothClassicPrinterConnector _oBluetoothConnector;
-#endif
-
-#if WINDOWS
+#elif WINDOWS
         private readonly BlePrinterConnector _oBluetoothConnector;
 #endif
 
-        //private readonly BlePrinterConnector _btClassicConnector;
         private readonly EscPosPrinterService _escPosPrinterService;
         private readonly IPopupService _oPopupService;
 
+        // ==========================
+        // CONSTRUCTORES POR PLATAFORMA
+        // ==========================
 #if ANDROID
         public ImprimirTicketViewModel(
             BluetoothClassicPrinterConnector btClassicConnector,
-            IPopupService popupService, HttpApiService httpApiService)
+            IPopupService popupService,
+            HttpApiService httpApiService)
         {
             _oBluetoothConnector = btClassicConnector;
             _httpApiService = httpApiService;
-            // El EscPosPrinterService recibe un IPrinterConnector, 
-            // por lo que le puedes pasar _btClassicConnector directamente:
             _escPosPrinterService = new EscPosPrinterService(_oBluetoothConnector);
             _oPopupService = popupService;
 
             CanConnect = false;
         }
-#endif
-
-
-#if WINDOWS
-
+#elif WINDOWS
         public ImprimirTicketViewModel(
             BlePrinterConnector btClassicConnector,
-            IPopupService popupService, HttpApiService httpApiService)
+            IPopupService popupService,
+            HttpApiService httpApiService)
         {
             _oBluetoothConnector = btClassicConnector;
             _httpApiService = httpApiService;
-            //El EscPosPrinterService recibe un IPrinterConnector, 
-            // por lo que le puedes pasar _btClassicConnector directamente:
             _escPosPrinterService = new EscPosPrinterService(_oBluetoothConnector);
             _oPopupService = popupService;
 
             CanConnect = false;
         }
+#else
+        // Fallback para iOS/MacCatalyst/u otras (evita errores de compilación/DI)
+        public ImprimirTicketViewModel(
+            IPopupService popupService,
+            HttpApiService httpApiService)
+        {
+            _httpApiService = httpApiService;
+            _oPopupService = popupService;
 
+            // No hay conector en esta plataforma (solo evitamos que truene el ViewModel)
+            _escPosPrinterService = null;
+
+            CanConnect = false;
+            StatusMessage = "Bluetooth no está disponible en esta plataforma.";
+        }
 #endif
 
-
-        #region Manejo de Navegación
-
+        // ==========================
+        // NAVEGACIÓN
+        // ==========================
         public void ApplyQueryAttributes(IDictionary<string, object> query)
         {
-            // Parámetro obligatorio: sIdOrden (el _id de la orden en Mongo)
             if (query.TryGetValue("sIdOrden", out var sIdOrden) && sIdOrden != null)
-            {
                 _sIdOrdenMongoDB = sIdOrden.ToString() ?? string.Empty;
-            }
 
             if (query.TryGetValue("oCorte", out var oCorte) && oCorte != null)
-            {
                 _oCorte = (Corte)oCorte;
-            }
         }
 
-        #endregion
+        // ==========================
+        // UI: cuando cambia el seleccionado
+        // ==========================
+        partial void OnSelectedDeviceNameChanged(string oldValue, string newValue)
+        {
+            if (string.IsNullOrEmpty(newValue))
+            {
+                CanConnect = false;
+                return;
+            }
 
-//#if ANDROID
-        // --------------------------------------------------------------------
-        // (A) Cargar dispositivos guardados al iniciar
-        // --------------------------------------------------------------------
+            CanConnect = !newValue.Equals(ConnectedDeviceName, StringComparison.OrdinalIgnoreCase);
+        }
+
+#if ANDROID || WINDOWS
+        // ==========================
+        // DISPOSITIVOS / CONEXIÓN
+        // ==========================
         public async Task LoadCachedDevicesAsync()
         {
             try
             {
-                // Cargamos la lista anterior de nombres
-
                 var devicesDict = await _oBluetoothConnector.CargarDispositivosEscaneadosAsync();
 
                 AvailableDeviceNames.Clear();
-
                 foreach (var kvp in devicesDict)
                     AvailableDeviceNames.Add(kvp.Key);
 
@@ -139,26 +154,6 @@ namespace AppGestorVentas.ViewModels.OrdenViewModels
             }
         }
 
-        // --------------------------------------------------------------------
-        // (B) Al cambiar el dispositivo seleccionado
-        // --------------------------------------------------------------------
-        partial void OnSelectedDeviceNameChanged(string oldValue, string newValue)
-        {
-            if (string.IsNullOrEmpty(newValue))
-            {
-                CanConnect = false;
-                return;
-            }
-
-            if (newValue.Equals(ConnectedDeviceName, StringComparison.OrdinalIgnoreCase))
-                CanConnect = false;
-            else
-                CanConnect = true;
-        }
-
-        // --------------------------------------------------------------------
-        // (C) "Escanear" para obtener dispositivos emparejados
-        // --------------------------------------------------------------------
         [RelayCommand]
         private async Task ScanDevicesAsync()
         {
@@ -171,7 +166,6 @@ namespace AppGestorVentas.ViewModels.OrdenViewModels
                     return;
                 }
 
-                // Activar Bluetooth en Android si está apagado
                 await ActivateBluetoothOnAndroidAsync();
 #endif
 
@@ -179,10 +173,9 @@ namespace AppGestorVentas.ViewModels.OrdenViewModels
                 {
                     try
                     {
-                        // Obtenemos la lista de dispositivos emparejados
                         var devicesDict = await _oBluetoothConnector.ScanDevicesAsync();
-                        AvailableDeviceNames.Clear();
 
+                        AvailableDeviceNames.Clear();
                         if (devicesDict.Count == 0)
                         {
                             StatusMessage = "No se encontraron dispositivos Bluetooth emparejados.";
@@ -210,9 +203,6 @@ namespace AppGestorVentas.ViewModels.OrdenViewModels
             }
         }
 
-        // --------------------------------------------------------------------
-        // (D) Conectar a la impresora seleccionada (Bluetooth Clásico)
-        // --------------------------------------------------------------------
         [RelayCommand]
         private async Task ConnectPrinterAsync()
         {
@@ -224,7 +214,7 @@ namespace AppGestorVentas.ViewModels.OrdenViewModels
 
             bool conectado = false;
 
-            _oPopupService.ShowPopupAsync<CargaGeneralPopupViewModel>();
+            _ = _oPopupService.ShowPopupAsync<CargaGeneralPopupViewModel>();
             try
             {
                 if (string.IsNullOrEmpty(SelectedDeviceName))
@@ -233,7 +223,6 @@ namespace AppGestorVentas.ViewModels.OrdenViewModels
                     return;
                 }
 
-                // Intentar conectar directamente
                 conectado = await _oBluetoothConnector.ConectarImpresoraAsync(SelectedDeviceName);
             }
             catch (Exception ex)
@@ -255,82 +244,143 @@ namespace AppGestorVentas.ViewModels.OrdenViewModels
                     CanConnect = !string.IsNullOrEmpty(SelectedDeviceName);
                 }
 
+                await _oPopupService.ClosePopupAsync();
             }
-            await _oPopupService.ClosePopupAsync();
+        }
+#else
+        // Stubs para que compile en otras plataformas
+        public Task LoadCachedDevicesAsync()
+        {
+            StatusMessage = "Bluetooth no está disponible en esta plataforma.";
+            return Task.CompletedTask;
         }
 
+        [RelayCommand]
+        private Task ScanDevicesAsync()
+        {
+            StatusMessage = "Bluetooth no está disponible en esta plataforma.";
+            return Task.CompletedTask;
+        }
 
+        [RelayCommand]
+        private Task ConnectPrinterAsync()
+        {
+            StatusMessage = "Bluetooth no está disponible en esta plataforma.";
+            return Task.CompletedTask;
+        }
+#endif
+
+        // ==========================
+        // IMPRIMIR
+        // ==========================
         [RelayCommand]
         private async Task ImprimirAsync()
         {
-
             try
             {
                 if (_oCorte != null)
-                {
                     await PrintCorteAsync(_oCorte);
-                }
                 else
-                {
                     await PrintTicketAsync();
-                }
             }
             catch (Exception ex)
             {
-
+                StatusMessage = "Error inesperado: " + ex.Message;
             }
         }
 
+        private static async Task<byte[]?> LoadLogoBytesAsync(string fileName)
+        {
+            try
+            {
+                using var s = await FileSystem.OpenAppPackageFileAsync(fileName);
+                using var ms = new MemoryStream();
+                await s.CopyToAsync(ms);
+                return ms.ToArray();
+            }
+            catch
+            {
+                return null;
+            }
+        }
 
-        // --------------------------------------------------------------------
-        // (E) Imprimir un ticket de prueba
-        // --------------------------------------------------------------------
         private async Task PrintTicketAsync()
         {
             bool impreso = false;
 
+#if !(ANDROID || WINDOWS)
+            StatusMessage = "Impresión no disponible en esta plataforma.";
+            return;
+#else
             await _oPopupService.ShowPopupAsync<CargaGeneralPopupViewModel>(async vm =>
             {
                 try
                 {
+                    if (!IsPrinterConnected)
+                    {
+                        StatusMessage = "No hay impresora conectada.";
+                        return;
+                    }
 
                     var oResponse = await _httpApiService.GetAsync($"api/ordenes/getInfoTicket/{_sIdOrdenMongoDB}");
                     if (oResponse == null)
                     {
+                        StatusMessage = "No se obtuvo respuesta del servidor.";
                         return;
                     }
+
                     var apiResponse = await oResponse.Content.ReadFromJsonAsync<ApiRespuesta<InfoTicket>>();
-
-                    if (apiResponse.bSuccess)
+                    if (apiResponse == null || !apiResponse.bSuccess || apiResponse.lData == null || apiResponse.lData.Count == 0)
                     {
-                        InfoTicket oInfoTicket = apiResponse.lData[0];
-
-                        var ticket = new Ticket
-                        {
-                            sEncabezado = $"BLOOMS BRUNCH RESTAURANT",
-                            iMesa = oInfoTicket.iMesa,
-                            sPie = "¡Gracias por su compra!",
-                            iTotal = oInfoTicket.dTotalPublico
-                        };
-
-                        string sNombreProducto;
-                        foreach (ProductosInfoTicket oProducto in oInfoTicket.Productos)
-                        {
-                            if (oProducto.bEsExtra)
-                            {
-                                sNombreProducto = $"{oProducto.sNombre.Trim()} (Extra)";
-                            }
-                            else
-                            {
-                                sNombreProducto = oProducto.sNombre;
-                            }
-                            ticket.Items.Add(new TicketItem { Cantidad = oProducto.iCantidad, Descripcion = sNombreProducto, PrecioUnitario = oProducto.iCostoPublico });
-                        }
-
-                        impreso = await _escPosPrinterService.ImprimirTicketAsync(ticket);
+                        StatusMessage = "Respuesta inválida al obtener el ticket.";
+                        return;
                     }
 
+                    var oInfoTicket = apiResponse.lData[0];
 
+                    var ticket = new Ticket
+                    {
+                        sEncabezado = "BLOOMS BRUNCH RESTAURANT",
+                        iMesa = oInfoTicket.iMesa,
+                        sPie = "¡Gracias por su compra!",
+                        iTotal = oInfoTicket.dTotalPublico,
+                        dFechaActual = DateTime.Now // IMPORTANTÍSIMO
+                    };
+
+                    // Logo opcional (debe estar en Resources/Raw y action correcta)
+                    //ticket.LogoBytes = await LoadLogoBytesAsync("logoticket.png");
+
+                    static string StripExtraSuffix(string s)
+                    {
+                        var n = (s ?? "").Trim();
+
+                        if (n.EndsWith("(Extra)", StringComparison.OrdinalIgnoreCase))
+                            n = n.Substring(0, n.Length - "(Extra)".Length).Trim();
+
+                        if (n.EndsWith("Extra", StringComparison.OrdinalIgnoreCase))
+                            n = n.Substring(0, n.Length - "Extra".Length).Trim().TrimEnd('-', ':').Trim();
+
+                        return n.Trim();
+                    }
+
+                    foreach (var oProducto in oInfoTicket.Productos ?? new List<ProductosInfoTicket>())
+                    {
+                        var nombre = (oProducto.sNombre ?? "").Trim();
+
+                        // ✅ solo "Ex. Nombre" y sin espacios extra
+                        var desc = oProducto.bEsExtra
+                            ? $"Ex. {StripExtraSuffix(nombre)}"
+                            : nombre;
+
+                        ticket.Items.Add(new TicketItem
+                        {
+                            Cantidad = oProducto.iCantidad,
+                            Descripcion = desc,
+                            PrecioUnitario = oProducto.iCostoPublico
+                        });
+                    }
+
+                    impreso = await _escPosPrinterService.ImprimirTicketAsync(ticket);
                 }
                 catch (Exception ex)
                 {
@@ -344,21 +394,27 @@ namespace AppGestorVentas.ViewModels.OrdenViewModels
                     await vm.Cerrar();
                 }
             });
+#endif
         }
 
-
-        // --------------------------------------------------------------------
-        // (E) Imprimir un corte de prueba
-        // --------------------------------------------------------------------
-        [RelayCommand]
         private async Task PrintCorteAsync(Corte oCorte)
         {
             bool impreso = false;
 
+#if !(ANDROID || WINDOWS)
+            StatusMessage = "Impresión no disponible en esta plataforma.";
+            return;
+#else
             await _oPopupService.ShowPopupAsync<CargaGeneralPopupViewModel>(async vm =>
             {
                 try
                 {
+                    if (!IsPrinterConnected)
+                    {
+                        StatusMessage = "No hay impresora conectada.";
+                        return;
+                    }
+
                     impreso = await _escPosPrinterService.ImprimirCorteAsync(oCorte);
                 }
                 catch (Exception ex)
@@ -373,27 +429,21 @@ namespace AppGestorVentas.ViewModels.OrdenViewModels
                     await vm.Cerrar();
                 }
             });
+#endif
         }
 
-
-
-
-//#endif
-
-        // --------------------------------------------------------------------
-        // (F) (Opcional) Pedir permisos y habilitar Bluetooth en Android
-        // --------------------------------------------------------------------
+        // ==========================
+        // ANDROID: PERMISOS
+        // ==========================
 #if ANDROID
         private async Task<bool> CheckAndRequestBluetoothPermissions()
         {
             try
             {
-                // Ajustar según tus necesidades/versión de Android
                 var statusBlue = await Permissions.CheckStatusAsync<Permissions.Bluetooth>();
                 if (statusBlue != PermissionStatus.Granted)
                     statusBlue = await Permissions.RequestAsync<Permissions.Bluetooth>();
 
-                // En Android < 12 se requiere (a veces) Location
                 var statusLocation = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
                 if (statusLocation != PermissionStatus.Granted)
                     statusLocation = await Permissions.RequestAsync<Permissions.LocationWhenInUse>();
@@ -416,12 +466,12 @@ namespace AppGestorVentas.ViewModels.OrdenViewModels
                     StatusMessage = "El dispositivo no soporta Bluetooth.";
                     return;
                 }
+
                 if (!adapter.IsEnabled)
                 {
                     var intent = new Android.Content.Intent(Android.Bluetooth.BluetoothAdapter.ActionRequestEnable);
                     Platform.CurrentActivity?.StartActivity(intent);
 
-                    // Esperamos un poco (o manejar OnActivityResult)
                     StatusMessage = "Por favor, activa el Bluetooth para continuar...";
                     await Task.Delay(2000);
                 }
@@ -432,11 +482,5 @@ namespace AppGestorVentas.ViewModels.OrdenViewModels
             }
         }
 #endif
-
-
-
-
-
-
     }
 }

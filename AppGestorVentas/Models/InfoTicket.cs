@@ -4,28 +4,29 @@ namespace AppGestorVentas.Models
 {
     public class InfoTicket
     {
-        [JsonPropertyName("mesa")]
+        [JsonPropertyName("iMesa")]
         public int iMesa { get; set; }
-        [JsonPropertyName("mesero")]
-        public string sMesero { get; set; }
-        [JsonPropertyName("fechaAlta")]
-        public DateTime dFechaAlta { get; set; }
-        [JsonPropertyName("totalPublico")]
+
+        [JsonPropertyName("dTotalPublico")]
         public decimal dTotalPublico { get; set; }
-        [JsonPropertyName("elementos")]
-        public List<ProductosInfoTicket> Productos { get; set; }
+
+        // OJO: tu backend manda "Productos"
+        [JsonPropertyName("Productos")]
+        public List<ProductosInfoTicket> Productos { get; set; } = new();
     }
 
     public class ProductosInfoTicket
     {
-        [JsonPropertyName("nombre")]
-        public string sNombre { get; set; }
-        [JsonPropertyName("costoPublico")]
+        [JsonPropertyName("sNombre")]
+        public string sNombre { get; set; } = string.Empty;
+
+        [JsonPropertyName("iCostoPublico")]
         public decimal iCostoPublico { get; set; }
-        [JsonPropertyName("cantidad")]
+
+        [JsonPropertyName("iCantidad")]
         public int iCantidad { get; set; }
-        [JsonPropertyName("esExtra")]
+
+        [JsonPropertyName("bEsExtra")]
         public bool bEsExtra { get; set; }
     }
-
 }

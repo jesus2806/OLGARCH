@@ -1,7 +1,6 @@
 ﻿// Asegúrate de referenciar tu modelo e interfaces:
 using AppGestorVentas.Classes;
 using AppGestorVentas.Interfaces.Impresora;
-using Microsoft.Maui.Controls.PlatformConfiguration;
 using Plugin.BluetoothClassic.Abstractions;
 using System.Text.Json;
 
@@ -125,6 +124,7 @@ namespace AppGestorVentas.Clases
         // ---------------------------------------------------------
         // (C) Enviar datos
         // ---------------------------------------------------------
+
         public async Task EnviarAsync(byte[] datos)
         {
 #if ANDROID
@@ -133,9 +133,19 @@ namespace AppGestorVentas.Clases
 
             try
             {
-                // Escribimos al OutputStream del socket
                 var outputStream = _bluetoothSocket.OutputStream;
-                await outputStream.WriteAsync(datos, 0, datos.Length);
+
+                // Classic SPP NO requiere 20 bytes. Usa chunks grandes.
+                const int CHUNK_SIZE = 1024; // 512/1024/2048 suelen ir bien
+
+                for (int offset = 0; offset < datos.Length; offset += CHUNK_SIZE)
+                {
+                    int len = Math.Min(CHUNK_SIZE, datos.Length - offset);
+                    await outputStream.WriteAsync(datos, offset, len);
+                }
+
+                // Flush una sola vez al final
+                await outputStream.FlushAsync();
             }
             catch (Exception ex)
             {
