@@ -1,202 +1,285 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:AppGestorVentas.Models"
              x:Class="AppGestorVentas.Views.OrdenViews.DatosOrdenCocinaView"
              Title="Detalle Orden">
 
     <ContentPage.Content>
-        <Grid RowDefinitions="60,*,90" MaximumWidthRequest="900" HorizontalOptions="Center" ZIndex="0">
-            
-            <!--INFORMACIÓN GENERAL-->
+        <!-- CAMBIO: Row 0 ahora es Auto para que quepan indicaciones -->
+        <Grid RowDefinitions="Auto,*,90"
+              MaximumWidthRequest="900"
+              HorizontalOptions="Center"
+              ZIndex="0">
 
-            <Grid Grid.Row="0" ColumnDefinitions="*,*" RowDefinitions="30,30,30" ZIndex="1">
+            <!-- ===== HEADER: Info general + indicaciones generales ===== -->
+            <Border Grid.Row="0"
+                    Margin="10"
+                    Padding="12"
+                    StrokeShape="RoundRectangle 12"
+                    BackgroundColor="#F5F5F5">
 
-                <HorizontalStackLayout                         
-                        Grid.Row="0"
-                        Grid.Column="0"
-                        HorizontalOptions="Center"
-                        VerticalOptions="Center">
+                <VerticalStackLayout Spacing="10">
 
-                    <Label Text="No. Orden: " 
-                       Margin="0,0,5,0"
-                       FontAttributes="Bold"
-                       TextColor="Black" />
+                    <!-- Info general -->
+                    <Grid ColumnDefinitions="*,*"
+                          RowDefinitions="Auto,Auto"
+                          ZIndex="1">
 
-                    <Label Text="{Binding OOrden.iNumeroOrden}" 
-                       TextColor="Black" />
-                </HorizontalStackLayout>
+                        <HorizontalStackLayout Grid.Row="0"
+                                               Grid.Column="0"
+                                               HorizontalOptions="Center"
+                                               VerticalOptions="Center">
+                            <Label Text="No. Orden: "
+                                   Margin="0,0,5,0"
+                                   FontAttributes="Bold"
+                                   TextColor="Black" />
+                            <Label Text="{Binding OOrden.iNumeroOrden}"
+                                   TextColor="Black" />
+                        </HorizontalStackLayout>
 
+                        <HorizontalStackLayout Grid.Row="0"
+                                               Grid.Column="1"
+                                               HorizontalOptions="Center"
+                                               VerticalOptions="Center">
+                            <Label Text="No. Mesa: "
+                                   Margin="0,0,5,0"
+                                   FontAttributes="Bold"
+                                   TextColor="Black" />
+                            <Label Text="{Binding OOrden.iMesa}"
+                                   TextColor="Black" />
+                        </HorizontalStackLayout>
 
-                <HorizontalStackLayout  Grid.Row="0"
-                                    Grid.Column="1"
-                                    HorizontalOptions="Center"
-                                    VerticalOptions="Center">
-                    <Label Text="No. Mesa:" 
-                       Margin="0,0,5,0"
-                       FontAttributes="Bold"
-                       TextColor="Black" />
+                        <HorizontalStackLayout Grid.Row="1"
+                                               Grid.Column="0"
+                                               Grid.ColumnSpan="2"
+                                               HorizontalOptions="Center">
+                            <Label Text="Mesero:"
+                                   Margin="0,0,5,0"
+                                   FontAttributes="Bold"
+                                   TextColor="Black" />
+                            <Label LineBreakMode="TailTruncation"
+                                   MaxLines="1"
+                                   Text="{Binding SNombreMesaro}"
+                                   TextColor="Black" />
+                        </HorizontalStackLayout>
+                    </Grid>
 
-                    <Label Text="{Binding OOrden.iMesa}" 
-                       TextColor="Black" />
+                    <!-- Indicaciones generales (se quitaron de la columna) -->
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Indicaciones:"
+                               FontAttributes="Bold"
+                               TextColor="Black" />
 
-                </HorizontalStackLayout>
+                        <!-- Si hay indicaciones -->
+                        <Label Text="{Binding OOrden.sIndicaciones}"
+                               TextColor="Black"
+                               LineBreakMode="WordWrap"
+                               MaxLines="6" />
 
-                <HorizontalStackLayout Grid.Row="1"
-                                   Grid.Column="0"
-                                   Grid.ColumnSpan="2"
-                                   HorizontalOptions="Center">
-                    <Label  Text="Mesero:"
-                        Margin="0,0,5,0"
-                        FontAttributes="Bold"
-                        TextColor="Black" />
-                    <Label  LineBreakMode="TailTruncation"
-                        MaxLines="1"
-                        Text="{Binding SNombreMesaro}" 
-                        Margin="0,0,30,0"
-                        TextColor="Black" />
+                        <!-- Opcional: si quieres mostrar “Sin indicaciones” cuando venga vacío -->
+                        <Label Text="Sin indicaciones"
+                               TextColor="#666"
+                               FontAttributes="Italic"
+                               IsVisible="False">
+                            <Label.Triggers>
+                                <DataTrigger TargetType="Label"
+                                             Binding="{Binding OOrden.sIndicaciones}"
+                                             Value="">
+                                    <Setter Property="IsVisible" Value="True" />
+                                </DataTrigger>
+                            </Label.Triggers>
+                        </Label>
+                    </VerticalStackLayout>
 
-                </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
 
-            </Grid>
-
-
-            <!--PEDIDO--> 
+            <!-- ===== PEDIDO ===== -->
             <CollectionView ItemsSource="{Binding LstOrdenProducto}"
                             Grid.Row="1"
-                Margin="10"
-                BackgroundColor="Transparent"
-                SelectionMode="None">
+                            Margin="10"
+                            BackgroundColor="Transparent"
+                            SelectionMode="None">
 
-                <!-- Encabezado de la tabla -->
+                <!-- Encabezado -->
                 <CollectionView.Header>
-                    <Grid ColumnDefinitions="*,*,*"
-              Padding="5"
-              BackgroundColor="#2c3e50">
-                        <!-- Ajusta el color a tu preferencia -->
+                    <!-- CAMBIO: 2 columnas (NOMBRE/CANTIDAD + EXTRAS POR CONSUMO) -->
+                    <Grid ColumnDefinitions="*,*"
+                          Padding="5"
+                          BackgroundColor="#2c3e50">
 
                         <Label Grid.Column="0"
-                   Text="NOMBRE"
-                   TextColor="White"
-                   FontAttributes="Bold"
-                   HorizontalTextAlignment="Center"
-                   VerticalTextAlignment="Center" />
+                               Text="PRODUCTO"
+                               TextColor="White"
+                               FontAttributes="Bold"
+                               HorizontalTextAlignment="Center"
+                               VerticalTextAlignment="Center" />
 
                         <Label Grid.Column="1"
-                   Text="INDICACIONES"
-                   TextColor="White"
-                   FontAttributes="Bold"
-                   HorizontalTextAlignment="Center"
-                   VerticalTextAlignment="Center" />
-
-                        <Label Grid.Column="2"
-                   Text="EXTRAS"
-                   TextColor="White"
-                   FontAttributes="Bold"
-                   HorizontalTextAlignment="Center"
-                   VerticalTextAlignment="Center" />
-
+                               Text="CONSUMOS / EXTRAS"
+                               TextColor="White"
+                               FontAttributes="Bold"
+                               HorizontalTextAlignment="Center"
+                               VerticalTextAlignment="Center" />
                     </Grid>
                 </CollectionView.Header>
 
                 <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <!-- Cada elemento en la lista, envuelto en un Frame con sombra y bordes redondeados -->
-                        <Border Margin="0"
-                   Padding="0">
+                    <DataTemplate x:DataType="models:OrdenProducto">
+                        <Border Margin="0,0,0,10"
+                                Padding="10"
+                                StrokeShape="RoundRectangle 10"
+                                BackgroundColor="White">
 
-                            <!-- Grid con 3 columnas: Nombre (0), Extras (1), e Indicaciones (2) -->
-                            <Grid ColumnDefinitions="*,*,*"
-                      Padding="5,10">
+                            <!-- CAMBIO: 2 columnas -->
+                            <Grid ColumnDefinitions="0.35*,0.65*"
+                                  ColumnSpacing="10">
 
-                                <!-- Columna 1: Nombre del platillo -->
-                                <Label Grid.Column="0"
-                           Text="{Binding sNombre}"
-                           FontSize="16"
-                           FontAttributes="Bold"
-                           VerticalTextAlignment="Center"
-                           HorizontalTextAlignment="Center"
-                           LineBreakMode="TailTruncation"
-                           MaxLines="10" />
+                                <!-- Columna 1: Nombre + Cantidad -->
+                                <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                    <Label Text="{Binding sNombre}"
+                                           FontSize="16"
+                                           FontAttributes="Bold"
+                                           HorizontalTextAlignment="Center"
+                                           LineBreakMode="WordWrap"
+                                           MaxLines="4" />
 
+                                    <Label Text="{Binding iCantidad, StringFormat='Cantidad: {0}'}"
+                                           FontSize="17"
+                                           FontAttributes="Bold"
+                                           TextColor="#444"
+                                           HorizontalTextAlignment="Center" />
+                                </VerticalStackLayout>
 
+                                <!-- Columna 2: Consumos y extras por consumo -->
+                                <VerticalStackLayout Grid.Column="1" Spacing="8">
 
-                                <!-- Columna 2: Indicaciones -->
-                                <Label Grid.Column="1"
-                           Text="{Binding sIndicaciones}"
-                           FontSize="14"
-                           VerticalTextAlignment="Center"
-                           HorizontalTextAlignment="Center"
-                           LineBreakMode="WordWrap"
-                           MaxLines="30" />
+                                    <!-- Panel consumos -->
+                                    <VerticalStackLayout x:Name="ConsumosPanel"
+                                                         Spacing="8"
+                                                         BindableLayout.ItemsSource="{Binding aConsumos}">
 
+                                        <!-- Si no hay consumos, oculta este panel -->
+                                        <VerticalStackLayout.Triggers>
+                                            <DataTrigger TargetType="VerticalStackLayout"
+                                                         Binding="{Binding aConsumos.Count}"
+                                                         Value="0">
+                                                <Setter Property="IsVisible" Value="False" />
+                                            </DataTrigger>
+                                        </VerticalStackLayout.Triggers>
 
-                                <!-- Columna 2: Extras -->
-                                <StackLayout Grid.Column="2"
-                                 Spacing="5"
-                                 Padding="0"
-                                 VerticalOptions="Center">
+                                        <BindableLayout.ItemTemplate>
+                                            <DataTemplate x:DataType="models:Consumo">
+                                                <Border BackgroundColor="#F5F5F5"
+                                                        StrokeShape="RoundRectangle 8"
+                                                        Padding="8">
+                                                    <VerticalStackLayout Spacing="4">
 
-                                    <CollectionView ItemsSource="{Binding aExtras}"
-                                        VerticalScrollBarVisibility="Never"
-                                        >
-                                        <CollectionView.ItemTemplate>
-                                            <DataTemplate>
-                                                <Label Text="{Binding sNombre, StringFormat='* {0}'}"
-                                           FontSize="14"
-                                           Margin="20,0,0,0"
-                                           LineBreakMode="TailTruncation"
-                                           MaxLines="3"/>
+                                                        <Label Text="{Binding iIndex, StringFormat='Consumo {0}'}"
+                                                               FontAttributes="Bold"
+                                                               FontSize="13"
+                                                               TextColor="Black" />
+
+                                                        <!-- Lista de extras del consumo -->
+                                                        <VerticalStackLayout x:Name="ExtrasList"
+                                                                             Spacing="2"
+                                                                             Padding="12,0,0,0"
+                                                                             BindableLayout.ItemsSource="{Binding aExtras}">
+                                                            <VerticalStackLayout.Triggers>
+                                                                <DataTrigger TargetType="VerticalStackLayout"
+                                                                             Binding="{Binding aExtras.Count}"
+                                                                             Value="0">
+                                                                    <Setter Property="IsVisible" Value="False" />
+                                                                </DataTrigger>
+                                                            </VerticalStackLayout.Triggers>
+
+                                                            <BindableLayout.ItemTemplate>
+                                                                <DataTemplate x:DataType="models:ExtraConsumo">
+                                                                    <Label Text="{Binding sNombre, StringFormat='• {0}'}"
+                                                                           FontSize="12"
+                                                                           TextColor="#222"
+                                                                           LineBreakMode="WordWrap"
+                                                                           MaxLines="3" />
+                                                                </DataTemplate>
+                                                            </BindableLayout.ItemTemplate>
+                                                        </VerticalStackLayout>
+
+                                                        <!-- Sin extras -->
+                                                        <Label Text="Sin extras"
+                                                               FontSize="12"
+                                                               TextColor="#666"
+                                                               FontAttributes="Italic"
+                                                               IsVisible="False">
+                                                            <Label.Triggers>
+                                                                <DataTrigger TargetType="Label"
+                                                                             Binding="{Binding aExtras.Count}"
+                                                                             Value="0">
+                                                                    <Setter Property="IsVisible" Value="True" />
+                                                                </DataTrigger>
+                                                            </Label.Triggers>
+                                                        </Label>
+
+                                                    </VerticalStackLayout>
+                                                </Border>
                                             </DataTemplate>
-                                        </CollectionView.ItemTemplate>
-                                    </CollectionView>
-                                </StackLayout>
+                                        </BindableLayout.ItemTemplate>
+                                    </VerticalStackLayout>
 
+                                    <!-- Si no hay consumos en el producto -->
+                                    <Label Text="Sin detalle de consumos"
+                                           FontSize="12"
+                                           TextColor="#666"
+                                           FontAttributes="Italic"
+                                           IsVisible="False">
+                                        <Label.Triggers>
+                                            <DataTrigger TargetType="Label"
+                                                         Binding="{Binding aConsumos.Count}"
+                                                         Value="0">
+                                                <Setter Property="IsVisible" Value="True" />
+                                            </DataTrigger>
+                                        </Label.Triggers>
+                                    </Label>
+
+                                </VerticalStackLayout>
                             </Grid>
                         </Border>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
-        
-        
-        <!--BOTONES ACCIONES-->
-            <HorizontalStackLayout Grid.Row="2" HorizontalOptions="Center" VerticalOptions="Start" Padding="0,10,0,0" InputTransparent="false">
-                <Button
-                x:Name="BotonTomar"
-                IsEnabled="{Binding BHabilitarBotonTomarOrden}"
-                IsVisible="{Binding BHabilitarBotonTomarOrden}"
-                Command="{Binding TomarOrdenCommand}"
-                CommandParameter="{Binding OOrden.sIdMongoDB}"
-                Text="Tomar orden"
-                HeightRequest="50"
-                />
 
-                <Button
-                x:Name="BotonPreparar"
-                IsEnabled="{Binding BHabilitarBotonPrepararOrden}"
-                IsVisible="{Binding BHabilitarBotonPrepararOrden}"
-                Command="{Binding ActualizarAEnpreparacionCommand}"
-                CommandParameter="{Binding OOrden.sIdMongoDB}"
-                Text="Preparar orden"
-                HeightRequest="50"
-                />
+            <!-- ===== BOTONES ACCIONES ===== -->
+            <HorizontalStackLayout Grid.Row="2"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Start"
+                                   Padding="0,10,0,0"
+                                   InputTransparent="false">
 
+                <Button x:Name="BotonTomar"
+                        IsEnabled="{Binding BHabilitarBotonTomarOrden}"
+                        IsVisible="{Binding BHabilitarBotonTomarOrden}"
+                        Command="{Binding TomarOrdenCommand}"
+                        CommandParameter="{Binding OOrden.sIdMongoDB}"
+                        Text="Tomar orden"
+                        HeightRequest="50"/>
 
-                <Button
-                x:Name="BotonOrdenPreparada"
-                IsEnabled="{Binding BHabilitarBotonOrdenPreparada}"
-                IsVisible="{Binding BHabilitarBotonOrdenPreparada}"
-                Command="{Binding ActualizarAPreparadaCommand}"
-                CommandParameter="{Binding OOrden.sIdMongoDB}"
-                Text="Marcar como Preparada"
-                HeightRequest="50"
-                />
+                <Button x:Name="BotonPreparar"
+                        IsEnabled="{Binding BHabilitarBotonPrepararOrden}"
+                        IsVisible="{Binding BHabilitarBotonPrepararOrden}"
+                        Command="{Binding ActualizarAEnpreparacionCommand}"
+                        CommandParameter="{Binding OOrden.sIdMongoDB}"
+                        Text="Preparar orden"
+                        HeightRequest="50"/>
 
-
+                <Button x:Name="BotonOrdenPreparada"
+                        IsEnabled="{Binding BHabilitarBotonOrdenPreparada}"
+                        IsVisible="{Binding BHabilitarBotonOrdenPreparada}"
+                        Command="{Binding ActualizarAPreparadaCommand}"
+                        CommandParameter="{Binding OOrden.sIdMongoDB}"
+                        Text="Marcar como Preparada"
+                        HeightRequest="50"/>
             </HorizontalStackLayout>
 
-
-
         </Grid>
-        
     </ContentPage.Content>
 </ContentPage>

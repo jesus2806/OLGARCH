@@ -1,12 +1,71 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\Restaurante 2\\OLGARCH\\AppGestorVentas\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\solej\\documents\\proyectos_maui\\restaurante 2\\olgarch\\appgestorventas\\views\\ordenviews\\datosordencocinaview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:views\\ordenviews\\datosordencocinaview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\solej\\documents\\proyectos_maui\\restaurante 2\\olgarch\\appgestorventas\\viewmodels\\ordenviewmodels\\datosordenviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:viewmodels\\ordenviewmodels\\datosordenviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\solej\\documents\\proyectos_maui\\restaurante 2\\olgarch\\appgestorventas\\views\\ordenviews\\datosordencocinaview.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:views\\ordenviews\\datosordencocinaview.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
       "VerticalTabListWidth": 256,
-      "DocumentGroups": []
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "DatosOrdenViewModel.cs",
+              "DocumentMoniker": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\Restaurante 2\\OLGARCH\\AppGestorVentas\\ViewModels\\OrdenViewModels\\DatosOrdenViewModel.cs",
+              "RelativeDocumentMoniker": "ViewModels\\OrdenViewModels\\DatosOrdenViewModel.cs",
+              "ToolTip": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\Restaurante 2\\OLGARCH\\AppGestorVentas\\ViewModels\\OrdenViewModels\\DatosOrdenViewModel.cs",
+              "RelativeToolTip": "ViewModels\\OrdenViewModels\\DatosOrdenViewModel.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAMsCAAASAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-18T02:09:07.117Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "DatosOrdenCocinaView.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\Restaurante 2\\OLGARCH\\AppGestorVentas\\Views\\OrdenViews\\DatosOrdenCocinaView.xaml.cs",
+              "RelativeDocumentMoniker": "Views\\OrdenViews\\DatosOrdenCocinaView.xaml.cs",
+              "ToolTip": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\Restaurante 2\\OLGARCH\\AppGestorVentas\\Views\\OrdenViews\\DatosOrdenCocinaView.xaml.cs",
+              "RelativeToolTip": "Views\\OrdenViews\\DatosOrdenCocinaView.xaml.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAcAAAA7AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-18T02:08:35.909Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "DatosOrdenCocinaView.xaml",
+              "DocumentMoniker": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\Restaurante 2\\OLGARCH\\AppGestorVentas\\Views\\OrdenViews\\DatosOrdenCocinaView.xaml",
+              "RelativeDocumentMoniker": "Views\\OrdenViews\\DatosOrdenCocinaView.xaml",
+              "ToolTip": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\Restaurante 2\\OLGARCH\\AppGestorVentas\\Views\\OrdenViews\\DatosOrdenCocinaView.xaml",
+              "RelativeToolTip": "Views\\OrdenViews\\DatosOrdenCocinaView.xaml",
+              "ViewState": "AgIAAIYAAAAAAAAAAAAmwIkAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-12-18T02:03:59.594Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
     }
   ]
 }
