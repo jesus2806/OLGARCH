@@ -60,8 +60,8 @@ namespace AppGestorVentas
             mauiAppBuilder.Services.AddHttpClient<HttpApiService>(client =>
             {
                 //client.BaseAddress = new Uri("https://prueba-api-gestorventas.click/"); // servidor preproducción
-                //client.BaseAddress = new Uri("https://ws-app-gestor-ventas-olgarch.click/"); // servidor producción
-                client.BaseAddress = new Uri("http://localhost:3000"); // servidor local
+                client.BaseAddress = new Uri("https://ws-app-gestor-ventas-olgarch.click/"); // servidor producción
+                //client.BaseAddress = new Uri("http://localhost:3000"); // servidor local
                 client.DefaultRequestHeaders.Add("Accept", "application/json"); // Encabezado para aceptar JSON
                 client.Timeout = TimeSpan.FromSeconds(30); // Configura el tiempo de espera a 30 segundos
             });

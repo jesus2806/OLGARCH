@@ -11,5 +11,6 @@ public partial class BuscarExtrasView : ContentPage
         InitializeComponent();
         _viewModel = viewModel;
         BindingContext = _viewModel;
+        Shell.SetTabBarIsVisible(this, false);
     }
 }
