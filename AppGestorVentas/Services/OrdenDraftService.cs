@@ -414,13 +414,23 @@ namespace AppGestorVentas.Services
             OnProductosChanged?.Invoke(this, EventArgs.Empty);
         }
 
+
+        public async Task ActualizarEstatusOrdenAsync(int iEstatus)
+        {
+            if (OrdenActual == null) return;    
+
+            OrdenActual.iEstatus = iEstatus;
+
+            await _localDb.UpdateItemAsync(OrdenActual);
+        }
+
         #endregion
 
-        #region GESTIÓN DE CONSUMOS Y EXTRAS
+            #region GESTIÓN DE CONSUMOS Y EXTRAS
 
-        /// <summary>
-        /// Obtiene un producto por su ID local
-        /// </summary>
+            /// <summary>
+            /// Obtiene un producto por su ID local
+            /// </summary>
         public OrdenProducto? ObtenerProducto(string idLocalProducto)
         {
             return Productos.FirstOrDefault(p => p.sIdLocal == idLocalProducto);

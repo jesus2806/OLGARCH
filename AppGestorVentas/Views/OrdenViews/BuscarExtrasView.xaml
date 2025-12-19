@@ -53,7 +53,6 @@
                     <!-- Mensaje sin resultados -->
                     <Label Text="No se encontraron extras"
                            IsVisible="{Binding NoHayResultados}"
-                           HorizontalOptions="Center"
                            VerticalOptions="Center"
                            TextColor="{StaticResource Outline}"
                            FontAttributes="Italic"
@@ -138,23 +137,22 @@
                 Padding="20"
                 Margin="32"
                 VerticalOptions="Center"
+                    MinimumWidthRequest="200"
                 HorizontalOptions="Center"
                 MaximumWidthRequest="400">
 
                 <!-- ✅ Layout del modal: header / body scrolleable / footer -->
-                <Grid RowDefinitions="Auto,*,Auto" RowSpacing="16">
+                <Grid RowDefinitions="65,*,Auto" RowSpacing="16">
 
                     <!-- ===== Header ===== -->
-                    <VerticalStackLayout Grid.Row="0" Spacing="8">
+                    <VerticalStackLayout Grid.Row="0">
                         <Label Text="¿A qué consumos aplicar el extra?"
                            FontSize="18"
-                           FontAttributes="Bold"
-                           HorizontalOptions="Center"/>
+                           FontAttributes="Bold"/>
 
                         <Label Text="{Binding ExtraSeleccionado.sNombre}"
                            FontSize="16"
-                           TextColor="{StaticResource Primary500}"
-                           HorizontalOptions="Center"/>
+                           TextColor="{StaticResource Primary500}"/>
                     </VerticalStackLayout>
 
                     <!-- ===== Body (SCROLL) ===== -->

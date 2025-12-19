@@ -593,6 +593,7 @@ namespace AppGestorVentas.ViewModels.OrdenViewModels
                 if (exito)
                 {
                     BHabilitarBotonPrepararOrden = false;
+                    await _ordenDraftService.ActualizarEstatusOrdenAsync(2);
                     await LoadDataAsync();
                 }
                 else
