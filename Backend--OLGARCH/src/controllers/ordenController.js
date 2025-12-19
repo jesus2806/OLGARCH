@@ -530,119 +530,152 @@ export const getMesasConOrdenesActivas = async (req, res) => {
   }
 };
 
-
 export async function getInfoTicket(req, res) {
   try {
     const { id } = req.params;
 
-    // 1. Buscar la orden y popular: aProductos, ordenesSecundarias + sus aProductos
     const orden = await Orden.findById(id)
+      .populate({ path: "aProductos", model: "OrdenProducto" })
       .populate({
-        path: 'aProductos',
-        model: 'OrdenProducto'
-      })
-      .populate({
-        path: 'ordenesSecundarias',
-        populate: {
-          path: 'aProductos',
-          model: 'OrdenProducto'
-        }
+        path: "ordenesSecundarias",
+        populate: { path: "aProductos", model: "OrdenProducto" },
       })
       .exec();
 
     if (!orden) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Orden no encontrada' 
+      return res.status(404).json({
+        bSuccess: false,
+        success: false,
+        sMessage: "Orden no encontrada",
+        message: "Orden no encontrada",
+        lData: [],
+        data: [],
       });
     }
 
-    // 2. El virtual iTotalPublicoOrden ya suma orden primaria + secundarias
-    const totalPublicoCompleto = orden.iTotalPublicoOrden;
-
-    // 3. Combinar los productos de la orden primaria y secundarios en un solo array
     const productosPrimaria = orden.aProductos || [];
-    const productosSecundarias = (orden.ordenesSecundarias || []).flatMap(sec => sec.aProductos || []);
+    const productosSecundarias = (orden.ordenesSecundarias || []).flatMap(
+      (sec) => sec.aProductos || []
+    );
     const allProductos = [...productosPrimaria, ...productosSecundarias];
 
-    // 4. Vamos a crear una lista temporal que incluya:
-    //    - Un "item" por cada producto base
-    //    - Un "item" por cada extra (así podemos agruparlos también)
-    const itemsParaAgrupar = [];
+    // Agrupar por producto (nombre + costo) y sumar extras por consumo
+    const prodMap = new Map(); // key -> { sNombre, iCostoPublico, iCantidad, extrasMap }
 
     for (const p of allProductos) {
-      const cantidadProducto = p.iCantidad || 1;
+      const nombreProd = p.sNombre || "";
+      const costoProd = Number(p.iCostoPublico || 0);
 
-      // 4a. Agregamos el producto base
-      itemsParaAgrupar.push({
-        nombre: p.sNombre,
-        costoPublico: p.iCostoPublico,
-        cantidad: cantidadProducto,
-        esExtra: false  // Marca para saber que es producto base
-      });
+      // Cantidad del producto (preferimos iCantidad, si no existe usamos length de consumos)
+      const qtyProd = Number(
+        p.iCantidad || (Array.isArray(p.aConsumos) ? p.aConsumos.length : 1) || 1
+      );
 
-      // 4b. Agregamos cada extra como un item separado
-      if (p.aExtras && p.aExtras.length > 0) {
+      const prodKey = `${nombreProd}__${costoProd}`;
+
+      if (!prodMap.has(prodKey)) {
+        prodMap.set(prodKey, {
+          sNombre: nombreProd,
+          iCostoPublico: costoProd,
+          iCantidad: 0,
+          extrasMap: new Map(), // extraKey -> { sNombre, iCostoPublico, iCantidad }
+        });
+      }
+
+      const g = prodMap.get(prodKey);
+      g.iCantidad += qtyProd;
+
+      // (A) Extras "generales" del producto (si los usas): se asumen por unidad
+      if (Array.isArray(p.aExtras) && p.aExtras.length > 0) {
         for (const e of p.aExtras) {
-          // Suponiendo que el extra también se repite `cantidadProducto` veces
-          itemsParaAgrupar.push({
-            nombre: e.sNombre,
-            costoPublico: e.iCostoPublico,
-            cantidad: cantidadProducto,
-            esExtra: true
-          });
+          const exNombre = e.sNombre || "";
+          const exCosto = Number(e.iCostoPublico || 0);
+          const exKey = `${exNombre}__${exCosto}`;
+
+          if (!g.extrasMap.has(exKey)) {
+            g.extrasMap.set(exKey, { sNombre: exNombre, iCostoPublico: exCosto, iCantidad: 0 });
+          }
+          g.extrasMap.get(exKey).iCantidad += qtyProd;
+        }
+      }
+
+      // (B) Extras INDIVIDUALES por consumo: cuentan 1 por aparición real
+      if (Array.isArray(p.aConsumos) && p.aConsumos.length > 0) {
+        for (const c of p.aConsumos) {
+          if (Array.isArray(c.aExtras) && c.aExtras.length > 0) {
+            for (const ex of c.aExtras) {
+              const exNombre = ex.sNombre || "";
+              const exCosto = Number(ex.iCostoPublico || 0);
+              const exKey = `${exNombre}__${exCosto}`;
+
+              if (!g.extrasMap.has(exKey)) {
+                g.extrasMap.set(exKey, { sNombre: exNombre, iCostoPublico: exCosto, iCantidad: 0 });
+              }
+              g.extrasMap.get(exKey).iCantidad += 1; // 👈 por consumo
+            }
+          }
         }
       }
     }
 
-    // 5. Agrupar todos estos items por (nombre, costoPublico, esExtra)
-    //    y sumar "cantidad"
-    const mapAgrupado = {};
-    for (const item of itemsParaAgrupar) {
-      // Creamos la clave de agrupación
-      const key = `${item.esExtra ? 'EXTRA:' : 'PROD:'}__${item.nombre}__${item.costoPublico}`;
-      if (!mapAgrupado[key]) {
-        mapAgrupado[key] = {
-          nombre: item.nombre,
-          costoPublico: item.costoPublico,
-          cantidad: 0,
-          esExtra: item.esExtra
-        };
+    // Construir lista PLANA y ORDENADA: producto -> extras -> producto -> extras...
+    const Productos = [];
+    for (const g of prodMap.values()) {
+      // Producto base
+      Productos.push({
+        sNombre: g.sNombre,
+        iCantidad: g.iCantidad,
+        iCostoPublico: g.iCostoPublico,
+        bEsExtra: false,
+      });
+
+      // Extras agrupados debajo del producto
+      const extrasOrdenados = Array.from(g.extrasMap.values()).sort((a, b) =>
+        String(a.sNombre).localeCompare(String(b.sNombre), "es")
+      );
+
+      for (const ex of extrasOrdenados) {
+        Productos.push({
+          sNombre: ex.sNombre,
+          iCantidad: ex.iCantidad,
+          iCostoPublico: ex.iCostoPublico,
+          bEsExtra: true,
+        });
       }
-      mapAgrupado[key].cantidad += item.cantidad;
     }
 
-    // 6. Convertir mapAgrupado en un arreglo final "elementos"
-    const elementos = Object.values(mapAgrupado);
+    // Total (producto + extras)
+    const dTotalPublico = Productos.reduce((acc, it) => {
+      return acc + Number(it.iCantidad || 0) * Number(it.iCostoPublico || 0);
+    }, 0);
 
-    // 7. Construir el objeto de respuesta
     const resultado = {
-      mesa: orden.iMesa,
-      mesero: orden.sUsuarioMesero,
-      fechaAlta: orden.dtFechaAlta,
-      totalPublico: totalPublicoCompleto,
-      elementos
+      iMesa: orden.iMesa,
+      dTotalPublico,
+      Productos,
     };
 
-    // Respuesta estandarizada
     return res.status(200).json({
+      bSuccess: true,
       success: true,
-      message: 'Información del ticket obtenida exitosamente',
-      data: resultado
+      sMessage: "Información del ticket obtenida exitosamente",
+      message: "Información del ticket obtenida exitosamente",
+      lData: [resultado],
+      data: [resultado],
     });
-
   } catch (error) {
-    console.error(error);
+    console.error("[getInfoTicket] ERROR:", error);
     return res.status(500).json({
+      bSuccess: false,
       success: false,
-      message: 'Error interno al obtener la orden',
-      error: error.message
+      sMessage: "Error interno al obtener la orden",
+      message: "Error interno al obtener la orden",
+      lData: [],
+      data: [],
+      error: error.message,
     });
   }
 }
-
-
-
 
 // PROBAR 
 
