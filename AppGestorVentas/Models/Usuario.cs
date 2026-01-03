@@ -30,6 +30,10 @@ namespace AppGestorVentas.Models
         [JsonPropertyName("sPassword")]
         public string sPassword { get; set; } = string.Empty;
 
+        [JsonPropertyName("aEsquemas")]
+        [Ignore]
+        public List<string> aEsquemas { get; set; } = new();
+
         [JsonPropertyName("iRol")]
         public int iRol { get; set; }
 

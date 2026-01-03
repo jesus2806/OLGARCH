@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:helpers="clr-namespace:AppGestorVentas.Helpers"
+             x:Class="AppGestorVentas.Views.NominaViews.NominaView"
+             x:Name="PageRef"
+             Title="Nómina">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="12" MaximumWidthRequest="700">
+
+            <!-- Esquema -->
+            <Label Text="Selecciona un esquema" FontAttributes="Bold" />
+            <Picker Title="Esquema"
+                    ItemsSource="{Binding LstEsquemas}"
+                    ItemDisplayBinding="{Binding sNombre}"
+                    SelectedItem="{Binding EsquemaSeleccionado}" />
+
+            <Label TextColor="Crimson" FontSize="14" Text="{Binding SErrorEsquema}" />
+
+            <!-- Buscador -->
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                <SearchBar Grid.Column="0"
+                           Placeholder="Escribe nombre o usuario..."
+                           Text="{Binding SBusqueda}"
+                           SearchCommand="{Binding BuscarCommand}" />
+
+                <Button Grid.Column="1"
+                        Text="Recargar"
+                        Command="{Binding RefrescarUsuariosCommand}"
+                        VerticalOptions="Center"/>
+            </Grid>
+
+            <Label TextColor="Crimson" FontSize="14" Text="{Binding SErrorBusqueda}" />
+
+            <ActivityIndicator IsRunning="{Binding BLoading}" IsVisible="{Binding BLoading}" />
+
+            <!-- ✅ Sugerencias tipo Autocomplete -->
+            <Frame Padding="8"
+                   CornerRadius="12"
+                   BorderColor="#DDD"
+                   IsVisible="{Binding BMostrarSugerencias}">
+                <VerticalStackLayout Spacing="8">
+
+                    <Label Text="Coincidencias" FontAttributes="Bold" />
+
+                    <CollectionView ItemsSource="{Binding LstResultados}"
+                                    SelectionMode="Single"
+                                    SelectedItem="{Binding ResultadoSeleccionado, Mode=TwoWay}">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid ColumnDefinitions="*,Auto" Padding="6">
+
+                                    <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                        <Label Text="{Binding sUsuario}" FontAttributes="Bold" FontSize="16" />
+                                        <Label FontSize="13" TextColor="Gray">
+                                            <Label.FormattedText>
+                                                <FormattedString>
+                                                    <Span Text="{Binding sNombre}" />
+                                                    <Span Text=" " />
+                                                    <Span Text="{Binding sApellidoPaterno}" />
+                                                    <Span Text=" " />
+                                                    <Span Text="{Binding sApellidoMaterno}" />
+                                                </FormattedString>
+                                            </Label.FormattedText>
+                                        </Label>
+                                    </VerticalStackLayout>
+
+                                    <!-- Agregar (opcional, también puedes solo tocar el item) -->
+                                    <Button Grid.Column="1"
+                                            FontFamily="MaterialDesignIcons"
+                                            Text="{x:Static helpers:MaterialDesignIcons.Plus}"
+                                            FontSize="22"
+                                            Padding="0"
+                                            WidthRequest="44"
+                                            HeightRequest="44"
+                                            BackgroundColor="Transparent"
+                                            TextColor="Aqua"
+                                            Command="{Binding BindingContext.AgregarUsuarioCommand, Source={x:Reference PageRef}}"
+                                            CommandParameter="{Binding .}" />
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+
+                </VerticalStackLayout>
+            </Frame>
+
+            <BoxView HeightRequest="1" BackgroundColor="#DDD" Margin="0,6" />
+
+            <!-- Seleccionados -->
+            <Grid ColumnDefinitions="*,Auto" VerticalOptions="Center">
+                <Label Grid.Column="0" Text="Seleccionados" FontAttributes="Bold" />
+                <Button Grid.Column="1"
+                        Text="Limpiar"
+                        Command="{Binding LimpiarSeleccionadosCommand}"
+                        BackgroundColor="Transparent"
+                        TextColor="Gray"
+                        Padding="0"
+                        HeightRequest="40"/>
+            </Grid>
+
+            <CollectionView ItemsSource="{Binding LstSeleccionados}">
+                <CollectionView.EmptyView>
+                    <Label Text="Aún no agregas usuarios." TextColor="Gray" />
+                </CollectionView.EmptyView>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame Padding="10" Margin="0,0,0,10" CornerRadius="12" BorderColor="#DDD">
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+
+                                <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                    <Label Text="{Binding sUsuario}" FontAttributes="Bold" FontSize="16" />
+                                    <Label FontSize="13" TextColor="Gray">
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="{Binding sNombre}" />
+                                                <Span Text=" " />
+                                                <Span Text="{Binding sApellidoPaterno}" />
+                                                <Span Text=" " />
+                                                <Span Text="{Binding sApellidoMaterno}" />
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+                                </VerticalStackLayout>
+
+                                <!-- Quitar -->
+                                <Button Grid.Column="1"
+                                        FontFamily="MaterialDesignIcons"
+                                        Text="{x:Static helpers:MaterialDesignIcons.Delete}"
+                                        FontSize="22"
+                                        Padding="0"
+                                        WidthRequest="44"
+                                        HeightRequest="44"
+                                        BackgroundColor="Transparent"
+                                        TextColor="Crimson"
+                                        Command="{Binding BindingContext.QuitarUsuarioCommand, Source={x:Reference PageRef}}"
+                                        CommandParameter="{Binding .}" />
+                            </Grid>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <Label TextColor="Crimson" FontSize="14" Text="{Binding SErrorAsignacion}" />
+
+            <Button Text="Asignar esquema a seleccionados"
+                    Command="{Binding AsignarEsquemaCommand}"
+                    IsEnabled="{Binding BPuedeAsignar}" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

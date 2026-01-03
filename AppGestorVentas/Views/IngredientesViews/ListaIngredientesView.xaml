@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:helpers="clr-namespace:AppGestorVentas.Helpers"
+             x:Class="AppGestorVentas.Views.IngredientesViews.ListaIngredientesView"
+             x:Name="PageRef"
+             Title="Ingredientes">
+
+    <!-- ✅ Grid para que el CollectionView tenga altura (*) y pueda scrollear -->
+    <Grid Padding="16"
+          RowDefinitions="Auto,Auto,*"
+          RowSpacing="12">
+
+        <!-- Header: búsqueda -->
+        <Grid Grid.Row="0"
+              ColumnDefinitions="*,Auto,Auto"
+              ColumnSpacing="8">
+            <Entry Grid.Column="0"
+                   Text="{Binding STextoBusqueda}"
+                   Placeholder="Buscar ingrediente..."
+                   ClearButtonVisibility="WhileEditing"/>
+
+            <Button Grid.Column="1"
+                    Text="Buscar"
+                    Command="{Binding BuscarCommand}" />
+
+            <Button Grid.Column="2"
+                    Text="Nuevo"
+                    Command="{Binding NuevoCommand}" />
+        </Grid>
+
+        <!-- Loading -->
+        <ActivityIndicator Grid.Row="1"
+                           IsRunning="{Binding BIsBusy}"
+                           IsVisible="{Binding BIsBusy}" />
+
+        <!-- Lista -->
+        <CollectionView Grid.Row="2"
+                        ItemsSource="{Binding LstIngredientes}"
+                        EmptyView="Sin ingredientes"
+                        SelectionMode="None">
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame Padding="12"
+                           Margin="0,6"
+                           BorderColor="#DDDDDD">
+
+                        <Grid ColumnDefinitions="*,Auto,Auto"
+                              ColumnSpacing="10"
+                              RowDefinitions="Auto">
+
+                            <!-- ===== CONTENIDO ===== -->
+                            <VerticalStackLayout Grid.Column="0" Spacing="8">
+
+                                <Label Text="{Binding sNombre}"
+                                       FontAttributes="Bold"
+                                       FontSize="16"
+                                       LineBreakMode="TailTruncation" />
+
+                                <Grid ColumnDefinitions="*,*"
+                                      ColumnSpacing="14"
+                                      RowDefinitions="Auto,Auto">
+
+                                    <HorizontalStackLayout Grid.Row="0" Grid.Column="0" Spacing="6">
+                                        <Label Text="Almacén:" FontAttributes="Bold" />
+                                        <Label Text="{Binding iCantidadEnAlmacen}" />
+                                    </HorizontalStackLayout>
+
+                                    <HorizontalStackLayout Grid.Row="1" Grid.Column="0" Spacing="6">
+                                        <Label Text="Mínimo:" FontAttributes="Bold" />
+                                        <Label Text="{Binding iCantidadMinima}" />
+                                    </HorizontalStackLayout>
+
+                                    <HorizontalStackLayout Grid.Row="0" Grid.Column="1" Spacing="6">
+                                        <Label Text="Unidad:" FontAttributes="Bold" />
+                                        <Label Text="{Binding sUnidad}" />
+                                    </HorizontalStackLayout>
+
+                                    <HorizontalStackLayout Grid.Row="1" Grid.Column="1" Spacing="6">
+                                        <Label Text="Costo/U:" FontAttributes="Bold" />
+                                        <Label Text="{Binding iCostoUnidad, StringFormat='${0}'}" />
+                                    </HorizontalStackLayout>
+
+                                </Grid>
+
+                                <Label Text="⚠ Bajo stock"
+                                       IsVisible="{Binding bBajoStock}"
+                                       TextColor="Crimson"
+                                       FontAttributes="Bold"
+                                       FontSize="13"/>
+                            </VerticalStackLayout>
+
+                            <!-- ===== ICONOS (MaterialDesignIcons) ===== -->
+
+                            <!-- ✏️ Editar -->
+                            <Button Grid.Column="1"
+                                    FontFamily="MaterialDesignIcons"
+                                    Text="{x:Static helpers:MaterialDesignIcons.Pencil}"
+                                    FontSize="22"
+                                    Padding="0"
+                                    WidthRequest="40"
+                                    HeightRequest="40"
+                                    BackgroundColor="Transparent"
+                                    VerticalOptions="Start"
+                                    TextColor="Aqua"
+                                    Command="{Binding BindingContext.EditarCommand, Source={x:Reference PageRef}}"
+                                    CommandParameter="{Binding .}" />
+
+                            <!-- Eliminar -->
+                            <Button Grid.Column="2"
+                                    FontFamily="MaterialDesignIcons"
+                                    Text="{x:Static helpers:MaterialDesignIcons.Delete}"
+                                    FontSize="22"
+                                    Padding="0"
+                                    WidthRequest="40"
+                                    HeightRequest="40"
+                                    BackgroundColor="Transparent"
+                                    VerticalOptions="Start"
+                                    TextColor="Crimson"
+                                    Command="{Binding BindingContext.EliminarCommand, Source={x:Reference PageRef}}"
+                                    CommandParameter="{Binding .}" />
+
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+
+        </CollectionView>
+
+    </Grid>
+</ContentPage>

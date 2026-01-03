@@ -8,6 +8,8 @@ using AppGestorVentas.Views.OrdenViews;
 using AppGestorVentas.Views.ProductoVierws;
 using AppGestorVentas.Views.UsuariosViews;
 using AppGestorVentas.Views.UsuarioViews;
+using AppGestorVentas.Views.IngredientesViews;
+using AppGestorVentas.Views.EsquemasViews;
 
 namespace AppGestorVentas
 {
@@ -112,6 +114,49 @@ namespace AppGestorVentas
                 });
 
                 tabBar.Items.Add(tabProductos);
+
+                // Pestaña Ingredientes
+                var tabIngredientes = new Tab
+                {
+                    Title = "Ingredientes",
+                    Icon = "food.png"
+                };
+
+                tabIngredientes.Items.Add(new ShellContent
+                {
+                    Title = "Administración de Ingredientes",
+                    ContentTemplate = new DataTemplate(typeof(ListaIngredientesView))
+                });
+
+                tabBar.Items.Add(tabIngredientes);
+
+                var tabEsquemas = new Tab
+                {
+                    Title = "Esquemas",
+                    Icon = "notebook.png"
+                };
+
+                tabEsquemas.Items.Add(new ShellContent
+                {
+                    Title = "Esquemas de Pago",
+                    ContentTemplate = new DataTemplate(typeof(EsquemasView))
+                });
+
+                tabBar.Items.Add(tabEsquemas);
+
+                // Pestaña Nómina
+                var tabNomina = new Tab
+                {
+                    Title = "Nómina",
+                    Icon = "cash.png"
+                };
+                tabNomina.Items.Add(new ShellContent
+                {
+                    Title = "Nómina",
+                    ContentTemplate = new DataTemplate(typeof(AppGestorVentas.Views.NominaViews.NominaView))
+                });
+                tabBar.Items.Add(tabNomina);
+
 
                 // Pestaña Historico
                 var tabHistorico = new Tab

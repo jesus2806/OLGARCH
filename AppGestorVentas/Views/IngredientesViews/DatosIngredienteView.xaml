@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="AppGestorVentas.Views.IngredientesViews.DatosIngredienteView"
+             Title="{Binding STituloPagina}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="14" MaximumWidthRequest="600">
+
+            <!-- ===== NOMBRE (fila completa) ===== -->
+            <VerticalStackLayout Spacing="6">
+                <Label Text="Nombre" FontAttributes="Bold" />
+                <Entry Text="{Binding SNombre}"
+                       Placeholder="Ej: Pollo"
+                       TextTransform="Uppercase"
+                       MaxLength="40" />
+                <Label Text="{Binding SErrorNombre}" TextColor="Crimson" FontSize="13" />
+            </VerticalStackLayout>
+
+            <!-- ===== GRID: Unidad + Costo ===== -->
+            <Grid ColumnDefinitions="*,*"
+                  ColumnSpacing="12"
+                  RowDefinitions="Auto">
+
+                <!-- Unidad (Picker) -->
+                <VerticalStackLayout Grid.Column="0" Spacing="6">
+                    <Label Text="Unidad" FontAttributes="Bold" />
+                    <Picker Title="Selecciona..."
+                            ItemsSource="{Binding LstUnidades}"
+                            SelectedItem="{Binding SUnidadSeleccionada}" />
+                    <Label Text="{Binding SErrorUnidad}" TextColor="Crimson" FontSize="13" />
+                </VerticalStackLayout>
+
+                <!-- Costo -->
+                <VerticalStackLayout Grid.Column="1" Spacing="6">
+                    <Label Text="Costo / Unidad" FontAttributes="Bold" />
+                    <Entry Text="{Binding SCostoUnidad}"
+                       Placeholder="0 - 999"
+                       Keyboard="Numeric"
+                       MaxLength="3">
+                        <Entry.Behaviors>
+                            <toolkit:EventToCommandBehavior EventName="Unfocused"
+                                        Command="{Binding NormalizarNumericosCommand}" />
+                        </Entry.Behaviors>
+                    </Entry>
+
+                    <Label Text="{Binding SErrorCostoUnidad}" TextColor="Crimson" FontSize="13" />
+                </VerticalStackLayout>
+            </Grid>
+
+            <!-- ===== GRID: Almacén + Mínimo ===== -->
+            <Grid ColumnDefinitions="*,*"
+                  ColumnSpacing="12"
+                  RowDefinitions="Auto">
+
+                <VerticalStackLayout Grid.Column="0" Spacing="6">
+                    <Label Text="Cantidad en almacén" FontAttributes="Bold" />
+                    <Entry Text="{Binding SCantidadEnAlmacen}"
+                       Placeholder="0 - 999"
+                       Keyboard="Numeric"
+                       MaxLength="3">
+                        <Entry.Behaviors>
+                            <toolkit:EventToCommandBehavior EventName="Unfocused"
+                                        Command="{Binding NormalizarNumericosCommand}" />
+                        </Entry.Behaviors>
+                    </Entry>
+
+                    <Label Text="{Binding SErrorCantidadEnAlmacen}" TextColor="Crimson" FontSize="13" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Grid.Column="1" Spacing="6">
+                    <Label Text="Cantidad mínima" FontAttributes="Bold" />
+                    <Entry Text="{Binding SCantidadMinima}"
+                       Placeholder="0 - 999"
+                       Keyboard="Numeric"
+                       MaxLength="3">
+                        <Entry.Behaviors>
+                            <toolkit:EventToCommandBehavior EventName="Unfocused"
+                                        Command="{Binding NormalizarNumericosCommand}" />
+                        </Entry.Behaviors>
+                    </Entry>
+
+                    <Label Text="{Binding SErrorCantidadMinima}" TextColor="Crimson" FontSize="13" />
+                </VerticalStackLayout>
+
+            </Grid>
+
+            <!-- ===== Botones ===== -->
+            <Grid ColumnDefinitions="*"
+                  ColumnSpacing="12"
+                  Margin="0,10,0,0">
+
+                <Button Grid.Column="0"
+                        Text="Registrar"
+                        Command="{Binding RegistrarCommand}"
+                        IsVisible="{Binding BProcesoRegistrar}"
+                        IsEnabled="{Binding BProcesoRegistrar}" />
+
+                <Button Grid.Column="1"
+                        Text="Actualizar"
+                        Command="{Binding ActualizarCommand}"
+                        IsVisible="{Binding BProcesoActualizacion}"
+                        IsEnabled="{Binding BProcesoActualizacion}" />
+            </Grid>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

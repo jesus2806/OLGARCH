@@ -18,6 +18,12 @@ using CommunityToolkit.Maui.Markup;
 using Microsoft.Extensions.Logging;
 using Plugin.BluetoothClassic.Abstractions;
 using Plugin.Maui.Audio;
+using AppGestorVentas.ViewModels.IngredienteViewModels;
+using AppGestorVentas.Views.IngredientesViews;
+using AppGestorVentas.ViewModels.EsquemaViewModels;
+using AppGestorVentas.Views.EsquemasViews;
+using AppGestorVentas.ViewModels.NominaViewModels;
+using AppGestorVentas.Views.NominaViews;
 
 namespace AppGestorVentas
 {
@@ -60,8 +66,8 @@ namespace AppGestorVentas
             mauiAppBuilder.Services.AddHttpClient<HttpApiService>(client =>
             {
                 //client.BaseAddress = new Uri("https://prueba-api-gestorventas.click/"); // servidor preproducción
-                client.BaseAddress = new Uri("https://ws-app-gestor-ventas-olgarch.click/"); // servidor producción
-                //client.BaseAddress = new Uri("http://localhost:3000"); // servidor local
+                //client.BaseAddress = new Uri("https://ws-app-gestor-ventas-olgarch.click/"); // servidor producción
+                client.BaseAddress = new Uri("http://192.168.1.66:3000"); // servidor local
                 client.DefaultRequestHeaders.Add("Accept", "application/json"); // Encabezado para aceptar JSON
                 client.Timeout = TimeSpan.FromSeconds(30); // Configura el tiempo de espera a 30 segundos
             });
@@ -122,6 +128,13 @@ namespace AppGestorVentas
             //mauiAppBuilder.Services.AddSingleton<AdministracionOrdenViewModel>();
             //mauiAppBuilder.Services.AddTransient<AdministracionOrdenView>();
 
+            mauiAppBuilder.Services.AddTransientWithShellRoute<ListaIngredientesView, ListaIngredientesViewModel>("adminIngredientes");
+            mauiAppBuilder.Services.AddTransientWithShellRoute<DatosIngredienteView, DatosIngredienteViewModel>("datosIngredientes");
+
+            mauiAppBuilder.Services.AddTransientWithShellRoute<EsquemasView, EsquemasViewModel>("adminEsquemas");
+            mauiAppBuilder.Services.AddTransientWithShellRoute<DatosEsquemaView, DatosEsquemaViewModel>("datosEsquema");
+
+            mauiAppBuilder.Services.AddTransientWithShellRoute<NominaView, NominaViewModel>("nomina");
 
             mauiAppBuilder.Services.AddTransientWithShellRoute<DatosOrdenView, DatosOrdenViewModel>("datosOrdenes");
             mauiAppBuilder.Services.AddTransientWithShellRoute<DatosOrdenCocinaView, DatosOrdenViewModel>("datosOrdenesCocina");

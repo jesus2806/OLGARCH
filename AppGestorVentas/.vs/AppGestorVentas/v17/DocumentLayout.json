@@ -1,62 +1,18 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\Daniel\\Downloads\\FINAAAAAAAL\\AppGestorVentas\\",
+  "WorkspaceRootPath": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\daniel\\downloads\\finaaaaaaal\\appgestorventas\\views\\ordenviews\\datosordenview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:views\\ordenviews\\datosordenview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\solej\\documents\\proyectos_maui\\r4\\olgarch\\appgestorventas\\services\\localdatabaseservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:services\\localdatabaseservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\daniel\\downloads\\finaaaaaaal\\appgestorventas\\views\\ordenviews\\datosordencocinaview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:views\\ordenviews\\datosordencocinaview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\solej\\documents\\proyectos_maui\\r4\\olgarch\\appgestorventas\\viewmodels\\nominaviewmodels\\nominaviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:viewmodels\\nominaviewmodels\\nominaviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\daniel\\downloads\\finaaaaaaal\\appgestorventas\\viewmodels\\ordenviewmodels\\consumosproductoviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:viewmodels\\ordenviewmodels\\consumosproductoviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\daniel\\downloads\\finaaaaaaal\\appgestorventas\\viewmodels\\ordenviewmodels\\productoordenviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:viewmodels\\ordenviewmodels\\productoordenviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\daniel\\downloads\\finaaaaaaal\\appgestorventas\\views\\ordenviews\\productoordenview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:views\\ordenviews\\productoordenview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\daniel\\downloads\\finaaaaaaal\\appgestorventas\\views\\ordenviews\\productoordenview.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:views\\ordenviews\\productoordenview.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\daniel\\downloads\\finaaaaaaal\\appgestorventas\\services\\ordendraftservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:services\\ordendraftservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\daniel\\downloads\\finaaaaaaal\\appgestorventas\\viewmodels\\ordenviewmodels\\datosordenviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:viewmodels\\ordenviewmodels\\datosordenviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\daniel\\downloads\\finaaaaaaal\\appgestorventas\\views\\ordenviews\\consumosproductoview.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:views\\ordenviews\\consumosproductoview.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\daniel\\downloads\\finaaaaaaal\\appgestorventas\\views\\ordenviews\\datosordenview.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:views\\ordenviews\\datosordenview.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\daniel\\downloads\\finaaaaaaal\\appgestorventas\\views\\ordenviews\\consumosproductoview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:views\\ordenviews\\consumosproductoview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\daniel\\downloads\\finaaaaaaal\\appgestorventas\\models\\ordenproducto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:models\\ordenproducto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\daniel\\downloads\\finaaaaaaal\\appgestorventas\\models\\consumo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:models\\consumo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\daniel\\downloads\\finaaaaaaal\\appgestorventas\\views\\ordenviews\\datosordencocinaview.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:views\\ordenviews\\datosordencocinaview.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\solej\\documents\\proyectos_maui\\r4\\olgarch\\appgestorventas\\views\\nominaviews\\nominaviews.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:views\\nominaviews\\nominaviews.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     }
   ],
   "DocumentGroupContainers": [
@@ -66,189 +22,46 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 5,
+          "SelectedChildIndex": 0,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "ConsumosProductoViewModel.cs",
-              "DocumentMoniker": "C:\\Users\\Daniel\\Downloads\\FINAAAAAAAL\\AppGestorVentas\\ViewModels\\OrdenViewModels\\ConsumosProductoViewModel.cs",
-              "RelativeDocumentMoniker": "ViewModels\\OrdenViewModels\\ConsumosProductoViewModel.cs",
-              "ToolTip": "C:\\Users\\Daniel\\Downloads\\FINAAAAAAAL\\AppGestorVentas\\ViewModels\\OrdenViewModels\\ConsumosProductoViewModel.cs",
-              "RelativeToolTip": "ViewModels\\OrdenViewModels\\ConsumosProductoViewModel.cs",
-              "ViewState": "AgIAADEAAAAAAAAAAAAawG0AAAAzAAAAAAAAAA==",
+              "DocumentIndex": 0,
+              "Title": "LocalDatabaseService.cs",
+              "DocumentMoniker": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\Services\\LocalDatabaseService.cs",
+              "RelativeDocumentMoniker": "Services\\LocalDatabaseService.cs",
+              "ToolTip": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\Services\\LocalDatabaseService.cs",
+              "RelativeToolTip": "Services\\LocalDatabaseService.cs",
+              "ViewState": "AgIAAOsBAAAAAAAAAADwv/YBAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-18T07:07:15.196Z",
-              "IsPinned": true,
+              "WhenOpened": "2026-01-02T23:32:50.186Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "DatosOrdenCocinaView.xaml",
-              "DocumentMoniker": "C:\\Users\\Daniel\\Downloads\\FINAAAAAAAL\\AppGestorVentas\\Views\\OrdenViews\\DatosOrdenCocinaView.xaml",
-              "RelativeDocumentMoniker": "Views\\OrdenViews\\DatosOrdenCocinaView.xaml",
-              "ToolTip": "C:\\Users\\Daniel\\Downloads\\FINAAAAAAAL\\AppGestorVentas\\Views\\OrdenViews\\DatosOrdenCocinaView.xaml",
-              "RelativeToolTip": "Views\\OrdenViews\\DatosOrdenCocinaView.xaml",
-              "ViewState": "AgIAANUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Title": "NominaViewModel.cs",
+              "DocumentMoniker": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\ViewModels\\NominaViewModels\\NominaViewModel.cs",
+              "RelativeDocumentMoniker": "ViewModels\\NominaViewModels\\NominaViewModel.cs",
+              "ToolTip": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\ViewModels\\NominaViewModels\\NominaViewModel.cs",
+              "RelativeToolTip": "ViewModels\\NominaViewModels\\NominaViewModel.cs",
+              "ViewState": "AgIAAHoBAAAAAAAAAAAuwLgBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-30T23:27:18.414Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "NominaViews.xaml",
+              "DocumentMoniker": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\Views\\NominaViews\\NominaViews.xaml",
+              "RelativeDocumentMoniker": "Views\\NominaViews\\NominaViews.xaml",
+              "ToolTip": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\Views\\NominaViews\\NominaViews.xaml",
+              "RelativeToolTip": "Views\\NominaViews\\NominaViews.xaml",
+              "ViewState": "AgIAAIkAAAAAAAAAAADwv40AAAAjAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2025-12-18T08:41:58.886Z",
+              "WhenOpened": "2025-12-30T23:27:08.455Z",
               "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "ProductoOrdenViewModel.cs",
-              "DocumentMoniker": "C:\\Users\\Daniel\\Downloads\\FINAAAAAAAL\\AppGestorVentas\\ViewModels\\OrdenViewModels\\ProductoOrdenViewModel.cs",
-              "RelativeDocumentMoniker": "ViewModels\\OrdenViewModels\\ProductoOrdenViewModel.cs",
-              "ToolTip": "C:\\Users\\Daniel\\Downloads\\FINAAAAAAAL\\AppGestorVentas\\ViewModels\\OrdenViewModels\\ProductoOrdenViewModel.cs",
-              "RelativeToolTip": "ViewModels\\OrdenViewModels\\ProductoOrdenViewModel.cs",
-              "ViewState": "AgIAAOQAAAAAAAAAAAAgwBIBAAAJAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-18T08:34:56.149Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "ConsumosProductoView.xaml",
-              "DocumentMoniker": "C:\\Users\\Daniel\\Downloads\\FINAAAAAAAL\\AppGestorVentas\\Views\\OrdenViews\\ConsumosProductoView.xaml",
-              "RelativeDocumentMoniker": "Views\\OrdenViews\\ConsumosProductoView.xaml",
-              "ToolTip": "C:\\Users\\Daniel\\Downloads\\FINAAAAAAAL\\AppGestorVentas\\Views\\OrdenViews\\ConsumosProductoView.xaml",
-              "RelativeToolTip": "Views\\OrdenViews\\ConsumosProductoView.xaml",
-              "ViewState": "AgIAAEsAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2025-12-18T07:31:13.833Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "ProductoOrdenView.xaml",
-              "DocumentMoniker": "C:\\Users\\Daniel\\Downloads\\FINAAAAAAAL\\AppGestorVentas\\Views\\OrdenViews\\ProductoOrdenView.xaml",
-              "RelativeDocumentMoniker": "Views\\OrdenViews\\ProductoOrdenView.xaml",
-              "ToolTip": "C:\\Users\\Daniel\\Downloads\\FINAAAAAAAL\\AppGestorVentas\\Views\\OrdenViews\\ProductoOrdenView.xaml",
-              "RelativeToolTip": "Views\\OrdenViews\\ProductoOrdenView.xaml",
-              "ViewState": "AgIAAF0AAAAAAAAAAAAAAHUAAACiAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2025-12-18T06:29:24.238Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "DatosOrdenView.xaml",
-              "DocumentMoniker": "C:\\Users\\Daniel\\Downloads\\FINAAAAAAAL\\AppGestorVentas\\Views\\OrdenViews\\DatosOrdenView.xaml",
-              "RelativeDocumentMoniker": "Views\\OrdenViews\\DatosOrdenView.xaml",
-              "ToolTip": "C:\\Users\\Daniel\\Downloads\\FINAAAAAAAL\\AppGestorVentas\\Views\\OrdenViews\\DatosOrdenView.xaml",
-              "RelativeToolTip": "Views\\OrdenViews\\DatosOrdenView.xaml",
-              "ViewState": "AgIAALcAAAAAAAAAAAAtwMMAAAA8AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2025-12-18T06:34:07.702Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "OrdenDraftService.cs",
-              "DocumentMoniker": "C:\\Users\\Daniel\\Downloads\\FINAAAAAAAL\\AppGestorVentas\\Services\\OrdenDraftService.cs",
-              "RelativeDocumentMoniker": "Services\\OrdenDraftService.cs",
-              "ToolTip": "C:\\Users\\Daniel\\Downloads\\FINAAAAAAAL\\AppGestorVentas\\Services\\OrdenDraftService.cs",
-              "RelativeToolTip": "Services\\OrdenDraftService.cs",
-              "ViewState": "AgIAAK4CAAAAAAAAAAAowL0CAAAYAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-18T07:44:30.534Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "ProductoOrdenView.xaml.cs",
-              "DocumentMoniker": "C:\\Users\\Daniel\\Downloads\\FINAAAAAAAL\\AppGestorVentas\\Views\\OrdenViews\\ProductoOrdenView.xaml.cs",
-              "RelativeDocumentMoniker": "Views\\OrdenViews\\ProductoOrdenView.xaml.cs",
-              "ToolTip": "C:\\Users\\Daniel\\Downloads\\FINAAAAAAAL\\AppGestorVentas\\Views\\OrdenViews\\ProductoOrdenView.xaml.cs",
-              "RelativeToolTip": "Views\\OrdenViews\\ProductoOrdenView.xaml.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAwAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-18T06:12:53.547Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "DatosOrdenViewModel.cs",
-              "DocumentMoniker": "C:\\Users\\Daniel\\Downloads\\FINAAAAAAAL\\AppGestorVentas\\ViewModels\\OrdenViewModels\\DatosOrdenViewModel.cs",
-              "RelativeDocumentMoniker": "ViewModels\\OrdenViewModels\\DatosOrdenViewModel.cs",
-              "ToolTip": "C:\\Users\\Daniel\\Downloads\\FINAAAAAAAL\\AppGestorVentas\\ViewModels\\OrdenViewModels\\DatosOrdenViewModel.cs",
-              "RelativeToolTip": "ViewModels\\OrdenViewModels\\DatosOrdenViewModel.cs",
-              "ViewState": "AgIAAOAAAAAAAAAAAAAWwJ0AAAApAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-18T07:49:15.852Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "ConsumosProductoView.xaml.cs",
-              "DocumentMoniker": "C:\\Users\\Daniel\\Downloads\\FINAAAAAAAL\\AppGestorVentas\\Views\\OrdenViews\\ConsumosProductoView.xaml.cs",
-              "RelativeDocumentMoniker": "Views\\OrdenViews\\ConsumosProductoView.xaml.cs",
-              "ToolTip": "C:\\Users\\Daniel\\Downloads\\FINAAAAAAAL\\AppGestorVentas\\Views\\OrdenViews\\ConsumosProductoView.xaml.cs",
-              "RelativeToolTip": "Views\\OrdenViews\\ConsumosProductoView.xaml.cs",
-              "ViewState": "AgIAAAIAAAAAAAAAAAAmwBIAAAAhAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-18T07:31:37.715Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "DatosOrdenView.xaml.cs",
-              "DocumentMoniker": "C:\\Users\\Daniel\\Downloads\\FINAAAAAAAL\\AppGestorVentas\\Views\\OrdenViews\\DatosOrdenView.xaml.cs",
-              "RelativeDocumentMoniker": "Views\\OrdenViews\\DatosOrdenView.xaml.cs",
-              "ToolTip": "C:\\Users\\Daniel\\Downloads\\FINAAAAAAAL\\AppGestorVentas\\Views\\OrdenViews\\DatosOrdenView.xaml.cs",
-              "RelativeToolTip": "Views\\OrdenViews\\DatosOrdenView.xaml.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABYAAAAIAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-18T07:49:09.931Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 11,
-              "Title": "OrdenProducto.cs",
-              "DocumentMoniker": "C:\\Users\\Daniel\\Downloads\\FINAAAAAAAL\\AppGestorVentas\\Models\\OrdenProducto.cs",
-              "RelativeDocumentMoniker": "Models\\OrdenProducto.cs",
-              "ToolTip": "C:\\Users\\Daniel\\Downloads\\FINAAAAAAAL\\AppGestorVentas\\Models\\OrdenProducto.cs",
-              "RelativeToolTip": "Models\\OrdenProducto.cs",
-              "ViewState": "AgIAAIgAAAAAAAAAAAAuwJIAAAAkAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-18T06:35:27.222Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 12,
-              "Title": "Consumo.cs",
-              "DocumentMoniker": "C:\\Users\\Daniel\\Downloads\\FINAAAAAAAL\\AppGestorVentas\\Models\\Consumo.cs",
-              "RelativeDocumentMoniker": "Models\\Consumo.cs",
-              "ToolTip": "C:\\Users\\Daniel\\Downloads\\FINAAAAAAAL\\AppGestorVentas\\Models\\Consumo.cs",
-              "RelativeToolTip": "Models\\Consumo.cs",
-              "ViewState": "AgIAABMAAAAAAAAAAAA0wAwAAAAzAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-18T06:36:43.372Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 13,
-              "Title": "DatosOrdenCocinaView.xaml.cs",
-              "DocumentMoniker": "C:\\Users\\Daniel\\Downloads\\FINAAAAAAAL\\AppGestorVentas\\Views\\OrdenViews\\DatosOrdenCocinaView.xaml.cs",
-              "RelativeDocumentMoniker": "Views\\OrdenViews\\DatosOrdenCocinaView.xaml.cs",
-              "ToolTip": "C:\\Users\\Daniel\\Downloads\\FINAAAAAAAL\\AppGestorVentas\\Views\\OrdenViews\\DatosOrdenCocinaView.xaml.cs",
-              "RelativeToolTip": "Views\\OrdenViews\\DatosOrdenCocinaView.xaml.cs",
-              "ViewState": "AgIAACMAAAAAAAAAAAAwwCwAAAANAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-18T06:12:38.278Z"
             }
           ]
         }

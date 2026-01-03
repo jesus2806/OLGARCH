@@ -8,6 +8,7 @@ const UsuarioSchema = new mongoose.Schema({
     sUsuario: { type: String, required: true },
     sPassword: { type: String, required: true },
     iRol: { type: Number, required: true },
+    aEsquemas: [{ type: mongoose.Schema.Types.ObjectId, ref: "Esquema", default: [] }],
 });
 
 

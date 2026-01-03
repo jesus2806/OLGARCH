@@ -12,6 +12,8 @@ import imageRoutes from './src/routes/image.routes.js';
 import rutasHistorico from './src/routes/historico.routes.js';
 import extraRoutes from './src/routes/extra.routes.js';
 import syncRoutes from './src/routes/sync.routes.js';
+import ingredienteRoutes from './src/routes/ingrediente.routes.js';
+import esquemaRoutes from './src/routes/esquema.routes.js';
 
 dotenv.config();
 const app = express();
@@ -52,6 +54,10 @@ app.use('/api', extraRoutes);
 
 // Rutas para sincronización unificada
 app.use('/api', syncRoutes);
+
+app.use("/api", ingredienteRoutes);
+
+app.use("/api", esquemaRoutes);
 
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'OK' });

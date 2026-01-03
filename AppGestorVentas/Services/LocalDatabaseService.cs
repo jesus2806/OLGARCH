@@ -473,29 +473,28 @@ namespace AppGestorVentas.Services
 
         #region DeleteDatabaseAsync
 
-        /// <summary>
-        /// Elimina físicamente el archivo de la base de datos local.
-        /// Después de llamar a este método, la conexión actual se cierra
-        /// (Database queda en null) y cualquier operación posterior requerirá
-        /// crear nuevamente la base de datos.
-        /// </summary>
-        public async Task DeleteDatabaseAsync()
+        public Task<bool> DeleteDatabaseAsync()
         {
             try
             {
-                // Asegúrate de 'cerrar' la conexión para que no haya locks
-                // Normalmente, SQLiteAsyncConnection no expone un .CloseAsync(), 
-                // pero poner Database = null evita llamadas posteriores.
-                if (Database != null)
-                {
-                    await Database.CloseAsync();
-                    Database = null;
-                }
+                // 1) Evita que tu servicio siga usando la conexión anterior
+                Database = null;
 
+                // 2) IMPORTANTÍSIMO: liberar conexiones del pool (si no, el archivo puede quedar bloqueado)
+                SQLiteAsyncConnection.ResetPool(); // sqlite-net-pcl :contentReference[oaicite:1]{index=1}
+
+                // 3) En algunos casos Android/Windows liberan el handle hasta que corre el GC :contentReference[oaicite:2]{index=2}
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+
+                // 4) Borrar archivo físico
                 if (File.Exists(Constants.DatabasePath))
                 {
                     File.Delete(Constants.DatabasePath);
+                    return Task.FromResult(true);
                 }
+
+                return Task.FromResult(false);
             }
             catch (Exception ex)
             {

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:helpers="clr-namespace:AppGestorVentas.Helpers"
+             x:Class="AppGestorVentas.Views.EsquemasViews.EsquemasView"
+             x:Name="PageRef"
+             Title="Esquemas de Pago">
+
+    <VerticalStackLayout Padding="16" Spacing="12">
+
+        <!-- Acciones arriba de la lista -->
+        <Grid ColumnDefinitions="*,Auto,Auto" RowDefinitions="Auto" ColumnSpacing="10">
+            <Label Grid.Column="0"
+                   Text="Esquemas"
+                   FontSize="18"
+                   FontAttributes="Bold"
+                   VerticalOptions="Center" />
+
+            <Button Grid.Column="1"
+                    Text="Nuevo"
+                    Command="{Binding NuevoCommand}"
+                    Padding="14,10" />
+
+            <Button Grid.Column="2"
+                    Text="Refrescar"
+                    Command="{Binding CargarCommand}"
+                    Padding="14,10" />
+        </Grid>
+
+        <ActivityIndicator IsRunning="{Binding BLoading}"
+                           IsVisible="{Binding BLoading}" />
+
+        <CollectionView ItemsSource="{Binding LstEsquemas}"
+                        SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame Padding="12"
+                           Margin="0,0,0,10"
+                           BorderColor="#DDD"
+                           CornerRadius="12">
+
+                        <Grid ColumnDefinitions="*,Auto,Auto"
+                              ColumnSpacing="8">
+
+                            <!-- Nombre del esquema (solo nombre) -->
+                            <Label Grid.Column="0"
+                                   Text="{Binding sNombre}"
+                                   FontAttributes="Bold"
+                                   FontSize="18"
+                                   VerticalOptions="Center"
+                                   LineBreakMode="TailTruncation" />
+
+                            <!-- Editar -->
+                            <Button Grid.Column="1"
+                                    FontFamily="MaterialDesignIcons"
+                                    Text="{x:Static helpers:MaterialDesignIcons.Pencil}"
+                                    FontSize="22"
+                                    Padding="0"
+                                    WidthRequest="40"
+                                    HeightRequest="40"
+                                    BackgroundColor="Transparent"
+                                    VerticalOptions="Center"
+                                    TextColor="Aqua"
+                                    Command="{Binding BindingContext.EditarCommand, Source={x:Reference PageRef}}"
+                                    CommandParameter="{Binding .}" />
+
+                            <!-- Eliminar -->
+                            <Button Grid.Column="2"
+                                    FontFamily="MaterialDesignIcons"
+                                    Text="{x:Static helpers:MaterialDesignIcons.Delete}"
+                                    FontSize="22"
+                                    Padding="0"
+                                    WidthRequest="40"
+                                    HeightRequest="40"
+                                    BackgroundColor="Transparent"
+                                    VerticalOptions="Center"
+                                    TextColor="Crimson"
+                                    Command="{Binding BindingContext.EliminarCommand, Source={x:Reference PageRef}}"
+                                    CommandParameter="{Binding .}" />
+
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+    </VerticalStackLayout>
+</ContentPage>

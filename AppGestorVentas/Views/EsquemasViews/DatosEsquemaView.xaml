@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="AppGestorVentas.Views.EsquemasViews.DatosEsquemaView"
+             Title="{Binding STituloPagina}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="14" MaximumWidthRequest="650">
+
+            <Label Text="Datos del Esquema de Pago" FontAttributes="Bold" FontSize="18"/>
+
+            <Entry Text="{Binding SNombre}"
+                   Placeholder="Nombre del esquema"
+                   TextTransform="Uppercase" />
+
+            <Label TextColor="Crimson"
+                   FontSize="14"
+                   Text="{Binding SErrorNombre}" />
+
+            <Label Text="Pago por día" FontAttributes="Bold" />
+
+            <!-- ✅ Error general de días -->
+            <Label TextColor="Crimson"
+                   FontSize="14"
+                   Text="{Binding SErrorDias}" />
+
+            <CollectionView ItemsSource="{Binding LstDias}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid ColumnDefinitions="140,*,100" Padding="6">
+                            <Label Grid.Column="0"
+                                   Text="{Binding sDia}"
+                                   VerticalOptions="Center" />
+
+                            <Entry Grid.Column="1"
+                                   Text="{Binding dValor, Mode=TwoWay}"
+                                   Keyboard="Numeric"
+                                   Placeholder="0.00"
+                                   HorizontalTextAlignment="End" />
+
+                            <Label Grid.Column="2"
+                                   Text="MXN"
+                                   TextColor="Gray"
+                                   HorizontalTextAlignment="End"
+                                   VerticalOptions="Center"/>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <Button Text="Registrar"
+                    Command="{Binding RegistrarCommand}"
+                    IsEnabled="{Binding BProcesoRegistrar}"
+                    IsVisible="{Binding BProcesoRegistrar}" />
+
+            <Button Text="Actualizar"
+                    Command="{Binding ActualizarCommand}"
+                    IsEnabled="{Binding BProcesoActualizacion}"
+                    IsVisible="{Binding BProcesoActualizacion}" />
+
+            <Button Text="Eliminar"
+                    Command="{Binding EliminarCommand}"
+                    IsEnabled="{Binding BProcesoActualizacion}"
+                    IsVisible="{Binding BProcesoActualizacion}" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
