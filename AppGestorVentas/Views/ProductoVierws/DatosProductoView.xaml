@@ -28,19 +28,22 @@
             <!--======================================-->
             <Grid x:Name="VistaEscritorio" Grid.Row="0" Padding="20" RowSpacing="20" ColumnSpacing="20" HorizontalOptions="Center">
                     <!-- Definición de las filas y columnas del Grid principal -->
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <!-- Título -->
-                        <RowDefinition Height="Auto"/>
-                        <!-- Contenido principal (Campos e Imagen) -->
-                        <RowDefinition Height="Auto"/>
-                        <!-- Variantes -->
-                        <RowDefinition Height="Auto"/>
-                        <!-- Botones -->
-                        <RowDefinition Height="Auto"/>
-                        <!-- Mensaje de error -->
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <!-- Título -->
+                    <RowDefinition Height="Auto"/>
+                    <!-- Campos + Imagen -->
+                    <RowDefinition Height="Auto"/>
+                    <!-- Variantes -->
+                    <RowDefinition Height="Auto"/>
+                    <!-- Ingredientes -->
+                    <RowDefinition Height="Auto"/>
+                    <!-- Botones -->
+                    <RowDefinition Height="Auto"/>
+                    <!-- Error -->
+                </Grid.RowDefinitions>
+
+                <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="800"/>
                         <!-- Ancho máximo para centrar contenido -->
                     </Grid.ColumnDefinitions>
@@ -152,36 +155,36 @@
                     </Grid>
 
                     <!-- Frame para la sección VARIANTES -->
-                    <Border Grid.Row="2"
+                <Border Grid.Row="2"
                     Padding="15"
                     IsEnabled="{Binding BHabilitaraAgregarVarientes}"
                     BackgroundColor="White">
-                        <VerticalStackLayout Spacing="10">
-                            <Label Text="Variantes/Descripción"
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Variantes/Descripción"
                            HorizontalTextAlignment="Center"
                            FontAttributes="Bold"/>
 
-                            <!-- Ingreso de una variante (Entry + Botón) -->
-                            <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                        <!-- Ingreso de una variante (Entry + Botón) -->
+                        <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
 
-                                <Editor Placeholder="Ingrese la descripción del producto"
+                            <Editor Placeholder="Ingrese la descripción del producto"
                                 HeightRequest="100"
                                 WidthRequest="400"
                                 Text="{Binding SVarianteNueva}" />
 
 
-                                <Button Text="Agregar" 
+                            <Button Text="Agregar" 
                                 Command="{Binding AgregarVarianteCommand}"
                                 MaximumHeightRequest="50"
                                 TextColor="White"/>
-                            </HorizontalStackLayout>
+                        </HorizontalStackLayout>
 
-                            <!-- Lista de variantes -->
-                            <CollectionView ItemsSource="{Binding Variantes}"
+                        <!-- Lista de variantes -->
+                        <CollectionView ItemsSource="{Binding Variantes}"
                                     HeightRequest="200"
                                     SelectionMode="None">
-                                <CollectionView.ItemTemplate>
-                                    <DataTemplate>
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
                                     <Border Stroke="{StaticResource Primary}" Padding="10">
                                         <Grid ColumnDefinitions="*, Auto"
                                       Padding="5">
@@ -202,13 +205,137 @@
                                         </Grid>
                                     </Border>
 
-                                    </DataTemplate>
-                                </CollectionView.ItemTemplate>
-                            </CollectionView>
-                        </VerticalStackLayout>
-                    </Border>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
 
-                    <!-- Botones para CREAR y ACTUALIZAR -->
+                        <!-- INGREDIENTES -->
+                        <Border Grid.Row="3"
+                    Padding="15"
+                    BackgroundColor="White">
+                            <VerticalStackLayout Spacing="10">
+
+                                <Label Text="Ingredientes"
+                               HorizontalTextAlignment="Center"
+                               FontAttributes="Bold"/>
+
+                                <!-- Buscador -->
+                                <SearchBar Placeholder="Buscar ingrediente (desde el primer carácter)"
+                               Text="{Binding SBusquedaIngrediente}"
+                               TextChanged="OnBuscarIngredienteTextChanged" />
+
+                                <Label TextColor="Crimson" FontSize="14" Text="{Binding SErrorIngredientes}" />
+
+                                <ActivityIndicator IsRunning="{Binding BLoadingIngredientes}"
+                               IsVisible="{Binding BLoadingIngredientes}" />
+
+                                <!-- Dos columnas: resultados / seleccionados -->
+                                <Grid ColumnDefinitions="*,*" ColumnSpacing="16">
+
+                                    <!-- Resultados -->
+                                    <VerticalStackLayout Grid.Column="0" Spacing="6">
+                                        <Label Text="Resultados" FontAttributes="Bold" />
+                                        <CollectionView ItemsSource="{Binding LstResultadosIngredientes}"
+                                    HeightRequest="250"
+                                    SelectionMode="None">
+                                            <CollectionView.EmptyView>
+                                                <Label Text="Escribe para buscar ingredientes..."
+                                   TextColor="Gray"/>
+                                            </CollectionView.EmptyView>
+
+                                            <CollectionView.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Frame Padding="10" Margin="0,0,0,10" CornerRadius="12" BorderColor="#DDD">
+                                                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                                                            <Label Text="{Binding sNombre}" VerticalOptions="Center" />
+
+                                                            <Button Grid.Column="1"
+                                                        FontFamily="MaterialDesignIcons"
+                                                        Text="{x:Static helpers:MaterialDesignIcons.Plus}"
+                                                        FontSize="22"
+                                                        Padding="0"
+                                                        WidthRequest="44"
+                                                        HeightRequest="44"
+                                                        BackgroundColor="Transparent"
+                                                        TextColor="Aqua"
+                                                        Command="{Binding BindingContext.AgregarIngredienteCommand, Source={x:Reference DatosProductoPage}}"
+                                                        CommandParameter="{Binding .}" />
+                                                        </Grid>
+                                                    </Frame>
+                                                </DataTemplate>
+                                            </CollectionView.ItemTemplate>
+                                        </CollectionView>
+                                    </VerticalStackLayout>
+
+                                    <!-- Seleccionados -->
+                                    <VerticalStackLayout Grid.Column="1" Spacing="6">
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <Label Grid.Column="0" Text="Seleccionados" FontAttributes="Bold" />
+                                            <Button Grid.Column="1"
+                                        Text="Limpiar"
+                                        Command="{Binding LimpiarIngredientesCommand}"
+                                        BackgroundColor="Transparent"
+                                        TextColor="Gray"
+                                        Padding="0"
+                                        HeightRequest="40" />
+                                        </Grid>
+
+                                        <CollectionView ItemsSource="{Binding LstIngredientesSeleccionados}"
+                                    HeightRequest="250"
+                                    SelectionMode="None">
+                                            <CollectionView.EmptyView>
+                                                <Label Text="Aún no agregas ingredientes."
+                                   TextColor="Gray"/>
+                                            </CollectionView.EmptyView>
+
+                                            <CollectionView.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Frame Padding="10" Margin="0,0,0,10" CornerRadius="12" BorderColor="#DDD">
+                                                        <Grid ColumnDefinitions="*,120,60,Auto" ColumnSpacing="10">
+
+                                                            <Label Text="{Binding SNombre}"
+                                               VerticalOptions="Center" />
+
+                                                            <Entry Grid.Column="1"
+                                                           Text="{Binding SCantidadUso, Mode=TwoWay}"
+                                                           Keyboard="Numeric"
+                                                           Placeholder="Cantidad"
+                                                           HorizontalTextAlignment="End"
+                                                           VerticalOptions="Center"/>
+
+                                                            <Label Grid.Column="2"
+                                                               Text="{Binding SUnidad}"
+                                                               VerticalOptions="Center"
+                                                               HorizontalOptions="Start"
+                                                               TextColor="Gray"
+                                                               FontAttributes="Bold" />
+
+                                                            <Button Grid.Column="2"
+                                                        FontFamily="MaterialDesignIcons"
+                                                        Text="{x:Static helpers:MaterialDesignIcons.Delete}"
+                                                        FontSize="22"
+                                                        Padding="0"
+                                                        WidthRequest="44"
+                                                        HeightRequest="44"
+                                                        BackgroundColor="Transparent"
+                                                        TextColor="Crimson"
+                                                        Command="{Binding BindingContext.QuitarIngredienteCommand, Source={x:Reference DatosProductoPage}}"
+                                                        CommandParameter="{Binding .}" />
+                                                        </Grid>
+                                                    </Frame>
+                                                </DataTemplate>
+                                            </CollectionView.ItemTemplate>
+                                        </CollectionView>
+                                    </VerticalStackLayout>
+
+                                </Grid>
+                            </VerticalStackLayout>
+                        </Border>
+                    </VerticalStackLayout>
+                </Border>
+
+
+                <!-- Botones para CREAR y ACTUALIZAR -->
                     <StackLayout Grid.Row="3" 
                          Orientation="Horizontal" 
                          HorizontalOptions="Center" 
@@ -255,9 +382,11 @@
                     <RowDefinition Height="Auto"/>
                     <!-- Variantes -->
                     <RowDefinition Height="Auto"/>
+                    <!-- Ingredientes -->
+                    <RowDefinition Height="Auto"/>
                     <!-- Botones -->
                     <RowDefinition Height="Auto"/>
-                    <!-- Mensaje de error -->
+                    <!-- Error -->
                 </Grid.RowDefinitions>
 
                 <!-- Sección de Imagen -->
@@ -383,6 +512,113 @@
                                 </DataTemplate>
                             </CollectionView.ItemTemplate>
                         </CollectionView>
+                        <!-- ✅ INGREDIENTES (ANDROID) -->
+                        <Border Grid.Row="3"
+                            Padding="15"
+                            BackgroundColor="White">
+                            <VerticalStackLayout Spacing="10">
+
+                                <Label Text="Ingredientes"
+                                   HorizontalTextAlignment="Center"
+                                   FontAttributes="Bold"/>
+
+                                <SearchBar Placeholder="Buscar ingrediente (desde el primer carácter)"
+                                   Text="{Binding SBusquedaIngrediente}"
+                                   TextChanged="OnBuscarIngredienteTextChanged" />
+
+                                <ActivityIndicator IsRunning="{Binding BLoadingIngredientes}"
+                                     IsVisible="{Binding BLoadingIngredientes}" />
+
+                                <Label Text="Resultados" FontAttributes="Bold" />
+                                <CollectionView ItemsSource="{Binding LstResultadosIngredientes}"
+                                    SelectionMode="None">
+                                    <CollectionView.EmptyView>
+                                        <Label Text="Escribe para buscar ingredientes..."
+                                         TextColor="Gray"/>
+                                    </CollectionView.EmptyView>
+
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate>
+                                            <Frame Padding="10" Margin="0,0,0,10" CornerRadius="12" BorderColor="#DDD">
+                                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                                                    <Label Text="{Binding sNombre}" VerticalOptions="Center" />
+                                                    <Button Grid.Column="1"
+                                                    FontFamily="MaterialDesignIcons"
+                                                    Text="{x:Static helpers:MaterialDesignIcons.Plus}"
+                                                    FontSize="22"
+                                                    Padding="0"
+                                                    WidthRequest="44"
+                                                    HeightRequest="44"
+                                                    BackgroundColor="Transparent"
+                                                    TextColor="Green"
+                                                    Command="{Binding BindingContext.AgregarIngredienteCommand, Source={x:Reference DatosProductoPage}}"
+                                                    CommandParameter="{Binding .}" />
+                                                </Grid>
+                                            </Frame>
+                                        </DataTemplate>
+                                    </CollectionView.ItemTemplate>
+                                </CollectionView>
+
+                                <BoxView HeightRequest="1" BackgroundColor="#DDD" Margin="0,6" />
+
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <Label Grid.Column="0" Text="Seleccionados" FontAttributes="Bold" />
+                                    <Button Grid.Column="1"
+                                    Text="Limpiar"
+                                    Command="{Binding LimpiarIngredientesCommand}"
+                                    BackgroundColor="Transparent"
+                                    TextColor="Gray"
+                                    Padding="0"
+                                    HeightRequest="40" />
+                                </Grid>
+
+                                <CollectionView ItemsSource="{Binding LstIngredientesSeleccionados}"
+                                    SelectionMode="None">
+                                    <CollectionView.EmptyView>
+                                        <Label Text="Aún no agregas ingredientes."
+                                         TextColor="Gray"/>
+                                    </CollectionView.EmptyView>
+
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate>
+                                            <Frame Padding="10" Margin="0,0,0,10" CornerRadius="12" BorderColor="#DDD">
+                                                <Grid ColumnDefinitions="*,120,60,Auto" ColumnSpacing="10">
+                                                    <Label Text="{Binding SNombre}" VerticalOptions="Center" />
+                                                    <Entry Grid.Column="1"
+                                                       Text="{Binding SCantidadUso, Mode=TwoWay}"
+                                                       Keyboard="Numeric"
+                                                       Placeholder="Cantidad"
+                                                       HorizontalTextAlignment="End"
+                                                       VerticalOptions="Center"/>
+
+                                                    <Label Grid.Column="2"
+                                                       Text="{Binding SUnidad}"
+                                                       VerticalOptions="Center"
+                                                       HorizontalOptions="Start"
+                                                       TextColor="Gray"
+                                                       FontAttributes="Bold" />
+
+                                                    <Button Grid.Column="2"
+                                                    FontFamily="MaterialDesignIcons"
+                                                    Text="{x:Static helpers:MaterialDesignIcons.Delete}"
+                                                    FontSize="22"
+                                                    Padding="0"
+                                                    WidthRequest="44"
+                                                    HeightRequest="44"
+                                                    BackgroundColor="Transparent"
+                                                    TextColor="Crimson"
+                                                    Command="{Binding BindingContext.QuitarIngredienteCommand, Source={x:Reference DatosProductoPage}}"
+                                                    CommandParameter="{Binding .}" />
+                                                </Grid>
+
+                                            </Frame>
+                                        </DataTemplate>
+                                    </CollectionView.ItemTemplate>
+                                </CollectionView>
+
+                            </VerticalStackLayout>
+                        </Border>
+
                     </VerticalStackLayout>
                 </Border>
 

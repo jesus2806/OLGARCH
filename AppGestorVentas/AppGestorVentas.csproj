@@ -141,6 +141,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <MauiXaml Update="Views\AsistenciaViews\PaseListaView.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Views\EsquemasViews\DatosEsquemaView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

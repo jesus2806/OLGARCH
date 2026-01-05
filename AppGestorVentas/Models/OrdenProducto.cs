@@ -20,6 +20,9 @@ namespace AppGestorVentas.Models
         [JsonPropertyName("_id")]
         public string sIdMongo { get; set; } = string.Empty;
 
+        [JsonPropertyName("sIdProductoMongoDB")]
+        public string sIdProductoMongoDB { get; set; } = string.Empty;
+
         /// <summary>
         /// Indica si el producto ha sido sincronizado con el backend
         /// </summary>

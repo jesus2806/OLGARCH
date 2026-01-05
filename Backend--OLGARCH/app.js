@@ -14,6 +14,7 @@ import extraRoutes from './src/routes/extra.routes.js';
 import syncRoutes from './src/routes/sync.routes.js';
 import ingredienteRoutes from './src/routes/ingrediente.routes.js';
 import esquemaRoutes from './src/routes/esquema.routes.js';
+import asistenciaRoutes from './src/routes/asistencia.routes.js';
 
 dotenv.config();
 const app = express();
@@ -58,6 +59,8 @@ app.use('/api', syncRoutes);
 app.use("/api", ingredienteRoutes);
 
 app.use("/api", esquemaRoutes);
+
+app.use("/api", asistenciaRoutes);
 
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'OK' });

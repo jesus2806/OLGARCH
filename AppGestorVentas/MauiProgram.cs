@@ -24,6 +24,8 @@ using AppGestorVentas.ViewModels.EsquemaViewModels;
 using AppGestorVentas.Views.EsquemasViews;
 using AppGestorVentas.ViewModels.NominaViewModels;
 using AppGestorVentas.Views.NominaViews;
+using AppGestorVentas.Views.AsistenciaViews;
+using AppGestorVentas.ViewModels.AsistenciaViewModels;
 
 namespace AppGestorVentas
 {
@@ -135,6 +137,8 @@ namespace AppGestorVentas
             mauiAppBuilder.Services.AddTransientWithShellRoute<DatosEsquemaView, DatosEsquemaViewModel>("datosEsquema");
 
             mauiAppBuilder.Services.AddTransientWithShellRoute<NominaView, NominaViewModel>("nomina");
+
+            mauiAppBuilder.Services.AddTransientWithShellRoute<PaseListaView, PaseListaViewModel>("paseLista");
 
             mauiAppBuilder.Services.AddTransientWithShellRoute<DatosOrdenView, DatosOrdenViewModel>("datosOrdenes");
             mauiAppBuilder.Services.AddTransientWithShellRoute<DatosOrdenCocinaView, DatosOrdenViewModel>("datosOrdenesCocina");

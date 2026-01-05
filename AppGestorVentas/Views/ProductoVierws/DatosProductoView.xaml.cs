@@ -1,21 +1,20 @@
-using AppGestorVentas.ViewModels.ProductoViewModels;
-using System.Net.WebSockets;
+﻿using AppGestorVentas.ViewModels.ProductoViewModels;
+using Microsoft.Maui.ApplicationModel;
 
-namespace AppGestorVentas.Views.ProductoVierws;
-
-public partial class DatosProductoView : ContentPage
+namespace AppGestorVentas.Views.ProductoVierws
 {
-	public DatosProductoView(DatosProductoViewModel viewModel)
-	{
-		InitializeComponent();
-		BindingContext = viewModel;
-        Shell.SetTabBarIsVisible(this, false);
-        Shell.SetFlyoutBehavior(this, FlyoutBehavior.Disabled); // Deshabilita el boton del menu lateral
-    }
-
-    protected override async void OnAppearing()
+    public partial class DatosProductoView : ContentPage
     {
-        try
+        public DatosProductoView(DatosProductoViewModel viewModel)
+        {
+            InitializeComponent();
+            BindingContext = viewModel;
+
+            Shell.SetTabBarIsVisible(this, false);
+            Shell.SetFlyoutBehavior(this, FlyoutBehavior.Disabled);
+        }
+
+        protected override void OnAppearing()
         {
             base.OnAppearing();
 
@@ -23,31 +22,47 @@ public partial class DatosProductoView : ContentPage
             {
                 VistaEscritorio.IsEnabled = false;
                 VistaEscritorio.IsVisible = false;
+
                 VistaAndroid.IsVisible = true;
                 VistaAndroid.IsEnabled = true;
             }
-            else if (OperatingSystem.IsWindows())
+            else
             {
                 VistaAndroid.IsVisible = false;
                 VistaAndroid.IsEnabled = false;
+
                 VistaEscritorio.IsEnabled = true;
                 VistaEscritorio.IsVisible = true;
             }
 
-        } catch (Exception ex) { }
-    }
+            // ✅ Cargar ingredientes al entrar
+            if (BindingContext is DatosProductoViewModel vm)
+            {
+                MainThread.BeginInvokeOnMainThread(async () =>
+                {
+                    await vm.InitIngredientes();
+                });
+            }
+        }
 
-
-
-
-
-    private void OnCambioTipoProducto(object? sender, EventArgs e)
-    {
-        if (BindingContext is DatosProductoViewModel vm)
+        private void OnCambioTipoProducto(object? sender, EventArgs e)
         {
-            vm.CambioTipoProducto();
+            if (BindingContext is DatosProductoViewModel vm)
+                vm.CambioTipoProducto();
+        }
+
+        private async void OnBuscarIngredienteTextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (BindingContext is DatosProductoViewModel vm)
+            {
+                vm.SBusquedaIngrediente = e.NewTextValue ?? string.Empty;
+
+                // ✅ Asegura cache (solo la 1a vez hace llamada)
+                await vm.InitIngredientes();
+
+                // ✅ Ejecuta el filtro (insensible a may/min y acentos)
+                vm.BuscarIngredientes();
+            }
         }
     }
-
-
 }

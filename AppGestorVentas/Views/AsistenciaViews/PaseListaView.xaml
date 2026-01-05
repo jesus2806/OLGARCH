@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:AppGestorVentas.ViewModels.AsistenciaViewModels"
+    x:Class="AppGestorVentas.Views.AsistenciaViews.PaseListaView"
+    Title="Pase de lista">
+
+    <Grid Padding="16"
+          RowDefinitions="Auto,Auto,Auto,Auto,Auto,*"
+          RowSpacing="10">
+
+        <!-- Fecha + botones -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10">
+            <DatePicker Date="{Binding DtDia}" />
+
+            <Button Grid.Column="1"
+                    Text="Cargar"
+                    Command="{Binding CargarCommand}"
+                    IsEnabled="{Binding BPuedeCargar}" />
+
+            <Button Grid.Column="2"
+                    Text="Guardar"
+                    Command="{Binding GuardarCommand}"
+                    IsEnabled="{Binding BPuedeGuardar}" />
+        </Grid>
+
+        <!-- Búsqueda -->
+        <SearchBar Grid.Row="1"
+                   Placeholder="Buscar empleado..."
+                   Text="{Binding SBusqueda}"
+                   SearchCommand="{Binding CargarCommand}" />
+
+        <!-- Acciones + loading -->
+        <Grid Grid.Row="2" ColumnDefinitions="*,Auto" ColumnSpacing="10">
+            <HorizontalStackLayout Spacing="10">
+                <Button Text="Todos asistieron" Command="{Binding TodosPresenteCommand}" />
+                <Button Text="Limpiar" Command="{Binding LimpiarCommand}"
+                        BackgroundColor="Transparent" TextColor="Gray" />
+            </HorizontalStackLayout>
+
+            <ActivityIndicator Grid.Column="1"
+                               IsRunning="{Binding BIsBusy}"
+                               IsVisible="{Binding BIsBusy}" />
+        </Grid>
+
+        <!-- Aviso cambios -->
+        <Label Grid.Row="3"
+               Text="Tienes cambios sin guardar."
+               TextColor="OrangeRed"
+               IsVisible="{Binding BHayCambios}" />
+
+        <!-- Error -->
+        <Label Grid.Row="4"
+               Text="{Binding SError}"
+               TextColor="Crimson"
+               IsVisible="{Binding BErrorVisible}"
+               Margin="0,0,0,8"/>
+
+        <!-- Lista -->
+        <CollectionView Grid.Row="5"
+                        ItemsSource="{Binding LstRoster}"
+                        SelectionMode="None">
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="vm:RosterItemVm">
+                    <Frame Padding="12"
+                           Margin="0,0,0,10"
+                           CornerRadius="12"
+                           BorderColor="#DDD">
+
+                        <Grid ColumnDefinitions="*,Auto"
+                              RowDefinitions="Auto,Auto"
+                              RowSpacing="6"
+                              ColumnSpacing="10">
+
+                            <VerticalStackLayout Grid.Row="0" Grid.Column="0" Spacing="2">
+                                <Label Text="{Binding Nombre}"
+                                       FontAttributes="Bold"
+                                       FontSize="16"
+                                       LineBreakMode="TailTruncation"/>
+                                <Label Text="{Binding Usuario}"
+                                       TextColor="Gray"
+                                       FontSize="12"/>
+                            </VerticalStackLayout>
+
+                            <!-- Check Asistió -->
+                            <VerticalStackLayout Grid.Row="0" Grid.Column="1" Spacing="2" HorizontalOptions="End">
+                                <Label Text="Asistió"
+                                       FontSize="12"
+                                       TextColor="Gray"
+                                       HorizontalTextAlignment="Center"/>
+                                <CheckBox IsChecked="{Binding BAsistio, Mode=TwoWay}" />
+                            </VerticalStackLayout>
+
+                            <!-- (Opcional) texto estado -->
+                            <Label Grid.Row="1" Grid.ColumnSpan="2"
+                                   Text="{Binding SEstatus}"
+                                   TextColor="Gray"
+                                   FontSize="12"/>
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+
+        </CollectionView>
+
+    </Grid>
+</ContentPage>

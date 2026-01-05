@@ -21,6 +21,7 @@ const ConsumoSchema = new mongoose.Schema({
 
 const OrdenProductoSchema = new mongoose.Schema({
   sIdOrdenMongoDB: { type: mongoose.Schema.Types.ObjectId, required: true },
+  sIdProductoMongoDB: {type: mongoose.Schema.Types.ObjectId,ref: "Producto",required: false},
   sNombre: { type: String, required: true },
   iCostoReal: { type: Number, required: true },
   iCostoPublico: { type: Number, required: true },

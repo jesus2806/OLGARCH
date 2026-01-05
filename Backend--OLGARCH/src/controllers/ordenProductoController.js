@@ -1,10 +1,16 @@
 // controllers/ordenProductoController.js
 import OrdenProducto from '../models/ordenProducto.js';
 import Orden from '../models/orden.js';
+import Producto from '../models/producto.js';
 import mongoose from 'mongoose';
 
 const mapOrdenProductoData = (data) => {
   return {
+    // ✅ NUEVO: id real del Producto (catálogo) para receta/ingredientes
+    sIdProductoMongoDB: data.sIdProductoMongoDB
+      ? new mongoose.Types.ObjectId(data.sIdProductoMongoDB)
+      : undefined,
+
     sIdOrdenMongoDB: data.sIdOrdenMongoDB,
     sNombre: data.sNombre,
     iCostoReal: data.iCostoReal,
@@ -13,9 +19,7 @@ const mapOrdenProductoData = (data) => {
     sIndicaciones: data.sIndicaciones,
     iIndexVarianteSeleccionada: data.iIndexVarianteSeleccionada,
     aVariantes: Array.isArray(data.aVariantes)
-      ? data.aVariantes.map((variant) => ({
-          sVariante: variant.sVariante,
-        }))
+      ? data.aVariantes.map((variant) => ({ sVariante: variant.sVariante }))
       : [],
     iCantidad: data.iCantidad || 1,
     aExtras: Array.isArray(data.aExtras)
@@ -26,7 +30,6 @@ const mapOrdenProductoData = (data) => {
           sURLImagen: extra.sURLImagen,
         }))
       : [],
-    // AGREGAR MAPEO DE aConsumos
     aConsumos: Array.isArray(data.aConsumos)
       ? data.aConsumos.map((consumo) => ({
           iIndex: consumo.iIndex,
@@ -50,42 +53,56 @@ const mapOrdenProductoData = (data) => {
  */
 export const createOrdenProducto = async (req, res) => {
   try {
+    // ✅ VALIDACIÓN: debe venir el id del producto real del catálogo
+    if (!req.body?.sIdProductoMongoDB) {
+      return res.status(400).json({
+        success: false,
+        message: 'Falta sIdProductoMongoDB (id del Producto del catálogo).',
+        error: { code: 400, details: 'Debes mandar sIdProductoMongoDB para poder descontar ingredientes.' }
+      });
+    }
+
+    // ✅ VALIDACIÓN: que sea ObjectId válido
+    if (!mongoose.Types.ObjectId.isValid(req.body.sIdProductoMongoDB)) {
+      return res.status(400).json({
+        success: false,
+        message: 'sIdProductoMongoDB no es un ObjectId válido.',
+        error: { code: 400, details: 'Formato inválido para sIdProductoMongoDB.' }
+      });
+    }
+
+    // ✅ VALIDACIÓN: que exista el Producto en catálogo (para receta)
+    const existeProducto = await Producto.exists({ _id: req.body.sIdProductoMongoDB });
+    if (!existeProducto) {
+      return res.status(404).json({
+        success: false,
+        message: 'El Producto del catálogo no existe.',
+        error: { code: 404, details: 'No se encontró Producto con ese sIdProductoMongoDB.' }
+      });
+    }
+
     const mappedData = mapOrdenProductoData(req.body);
 
     const nuevoProducto = new OrdenProducto(mappedData);
     const productoGuardado = await nuevoProducto.save();
 
-    // Agregar el _id del nuevo producto en el arreglo aProductos de la Orden
-    Orden.findByIdAndUpdate(
+    // ✅ usa await para que errores se manejen en este try/catch
+    await Orden.findByIdAndUpdate(
       productoGuardado.sIdOrdenMongoDB,
       { $push: { aProductos: productoGuardado._id } },
       { new: true }
-    )
-      .then(ordenActualizada => {
-        return res.status(201).json({
-          success: true,
-          message: 'Producto de orden creado exitosamente',
-          data: productoGuardado
-        });
-      })
-      .catch(error => {
-        return res.status(500).json({
-          success: false,
-          message: 'Error al crear el producto de orden',
-          error: {
-            code: 500,
-            details: error.message,
-          }
-        });
-      });
+    );
+
+    return res.status(201).json({
+      success: true,
+      message: 'Producto de orden creado exitosamente',
+      data: productoGuardado
+    });
   } catch (error) {
     return res.status(500).json({
       success: false,
       message: 'Error al crear el producto de orden',
-      error: {
-        code: 500,
-        details: error.message,
-      }
+      error: { code: 500, details: error.message }
     });
   }
 };
@@ -157,6 +174,26 @@ export const getOrdenProductoById = async (req, res) => {
 export const updateOrdenProducto = async (req, res) => {
   try {
     const { id } = req.params;
+
+    // (Opcional) si te mandan sIdProductoMongoDB, validar que exista
+    if (req.body?.sIdProductoMongoDB) {
+      if (!mongoose.Types.ObjectId.isValid(req.body.sIdProductoMongoDB)) {
+        return res.status(400).json({
+          success: false,
+          message: 'sIdProductoMongoDB no es un ObjectId válido.',
+          error: { code: 400, details: 'Formato inválido para sIdProductoMongoDB.' }
+        });
+      }
+      const existeProducto = await Producto.exists({ _id: req.body.sIdProductoMongoDB });
+      if (!existeProducto) {
+        return res.status(404).json({
+          success: false,
+          message: 'El Producto del catálogo no existe.',
+          error: { code: 404, details: 'No se encontró Producto con ese sIdProductoMongoDB.' }
+        });
+      }
+    }
+
     const mappedData = mapOrdenProductoData(req.body);
     const productoActualizado = await OrdenProducto.findByIdAndUpdate(id, mappedData, { new: true });
 
@@ -164,10 +201,7 @@ export const updateOrdenProducto = async (req, res) => {
       return res.status(404).json({
         success: false,
         message: 'Producto de orden no encontrado',
-        error: {
-          code: 404,
-          details: 'Producto de orden no encontrado',
-        }
+        error: { code: 404, details: 'Producto de orden no encontrado' }
       });
     }
 
@@ -180,10 +214,7 @@ export const updateOrdenProducto = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: 'Error al actualizar el producto de orden',
-      error: {
-        code: 500,
-        details: error.message,
-      }
+      error: { code: 500, details: error.message }
     });
   }
 };

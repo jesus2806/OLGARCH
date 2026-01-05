@@ -10,6 +10,7 @@ namespace AppGestorVentas.ViewModels.ProductoViewModels
     {
         private readonly int productType;
         private readonly LocalDatabaseService _localDatabaseService;
+
         private const int PageSize = 5;
         private int currentPage = 1;
         private bool isNoMoreData;
@@ -18,6 +19,7 @@ namespace AppGestorVentas.ViewModels.ProductoViewModels
         {
             productType = type;
             _localDatabaseService = localDatabaseService;
+
             Productos = new ObservableCollection<Producto>();
             TextoBusqueda = string.Empty;
             NumeroPaginaActual = "Página 1";
@@ -32,17 +34,11 @@ namespace AppGestorVentas.ViewModels.ProductoViewModels
         [ObservableProperty]
         private string numeroPaginaActual;
 
-        /// <summary>
-        /// Muestra un mensaje de error utilizando un DisplayAlert en la página principal.
-        /// </summary>
-        /// <param name="sMensaje">Mensaje de error a mostrar.</param>
         private async void MostrarError(string sMensaje)
         {
             var mainPage = Application.Current?.Windows[0].Page;
             if (mainPage != null)
-            {
                 await mainPage.DisplayAlert("Error", sMensaje, "OK");
-            }
         }
 
         /// <summary>
@@ -52,27 +48,39 @@ namespace AppGestorVentas.ViewModels.ProductoViewModels
         {
             try
             {
-                // Solicitar un elemento extra para detectar si hay más datos.
-                int limiteConsulta = PageSize + 1;
+                int limiteConsulta = PageSize + 1; // pedir 1 extra para detectar siguiente página
+
                 string query;
                 object[] parameters;
+
                 if (!string.IsNullOrWhiteSpace(TextoBusqueda))
                 {
                     query = "SELECT * FROM tb_Producto WHERE iTipoProducto = ? AND sNombre LIKE ? LIMIT ? OFFSET ?";
-                    parameters = new object[] { productType, $"%{TextoBusqueda}%", limiteConsulta, (currentPage - 1) * PageSize };
+                    parameters = new object[]
+                    {
+                        productType,
+                        $"%{TextoBusqueda}%",
+                        limiteConsulta,
+                        (currentPage - 1) * PageSize
+                    };
                 }
                 else
                 {
                     query = "SELECT * FROM tb_Producto WHERE iTipoProducto = ? LIMIT ? OFFSET ?";
-                    parameters = new object[] { productType, limiteConsulta, (currentPage - 1) * PageSize };
+                    parameters = new object[]
+                    {
+                        productType,
+                        limiteConsulta,
+                        (currentPage - 1) * PageSize
+                    };
                 }
 
                 var items = await _localDatabaseService.GetItemsAsync<Producto>(query, parameters);
+
                 Productos.Clear();
 
                 if (items != null && items.Count > 0)
                 {
-                    // Si se obtuvo más de PageSize, hay más datos. Removemos el extra.
                     if (items.Count > PageSize)
                     {
                         items.RemoveAt(items.Count - 1);
@@ -83,17 +91,47 @@ namespace AppGestorVentas.ViewModels.ProductoViewModels
                         isNoMoreData = true;
                     }
 
-                    foreach (Producto producto in items)
+                    foreach (var producto in items)
                     {
                         try
                         {
-                            // Carga imágenes y variantes para cada producto
+                            // ✅ IMPORTANTE: como aImagenes/aVariantes tienen [Ignore],
+                            // al venir de SQLite pueden estar null: inicialízalas siempre.
+                            producto.aImagenes ??= new List<Imagen>();
+                            producto.aVariantes ??= new List<Variante>();
+
+                            // ✅ Cargar imágenes relacionadas (usa object[] para parámetros)
                             var imagenes = await _localDatabaseService.GetItemsAsync<Imagen>(
-                                "SELECT * FROM tb_Imagen WHERE sIdMongoDBProducto = ?", producto.sIdMongo);
-                            producto.aImagenes = imagenes;
+                                "SELECT * FROM tb_Imagen WHERE sIdMongoDBProducto = ?",
+                                new object[] { producto.sIdMongo }
+                            );
+
+                            producto.aImagenes = imagenes ?? new List<Imagen>();
+
+                            // ✅ Cargar variantes relacionadas
                             var variantes = await _localDatabaseService.GetItemsAsync<Variante>(
-                                "SELECT * FROM tb_Variante WHERE sIdMongoDBProducto = ?", producto.sIdMongo);
-                            producto.aVariantes = variantes;
+                                "SELECT * FROM tb_Variante WHERE sIdMongoDBProducto = ?",
+                                new object[] { producto.sIdMongo }
+                            );
+
+                            producto.aVariantes = variantes ?? new List<Variante>();
+
+                            // ✅ Cargar ingredientes relacionados
+                            var ingredientesLocal = await _localDatabaseService.GetItemsAsync<ProductoIngredienteLocal>(
+                                "SELECT * FROM tb_ProductoIngrediente WHERE sIdMongoDBProducto = ?",
+                                new object[] { producto.sIdMongo }
+                            );
+
+                            // Reconstruye aIngredientes (porque viene [Ignore] en Producto)
+                            producto.aIngredientes ??= new List<ProductoIngrediente>();
+                            producto.aIngredientes = (ingredientesLocal ?? new List<ProductoIngredienteLocal>())
+                                .Select(x => new ProductoIngrediente
+                                {
+                                    sIdIngrediente = x.sIdIngrediente,
+                                    iCantidadUso = x.iCantidadUso
+                                })
+                                .ToList();
+
                             Productos.Add(producto);
                         }
                         catch (Exception ex)
@@ -106,6 +144,7 @@ namespace AppGestorVentas.ViewModels.ProductoViewModels
                 {
                     isNoMoreData = true;
                 }
+
                 NumeroPaginaActual = $"Página {currentPage}";
             }
             catch (Exception ex)

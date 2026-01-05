@@ -124,7 +124,7 @@ namespace AppGestorVentas.ViewModels.OrdenViewModels
                     // Convertir el OrdenProducto a un Producto para reutilizar la vista
                     OProductoSeleccionado = new Producto
                     {
-                        sIdMongo = ordenProducto.sIdMongo,
+                        sIdMongo = ordenProducto.sIdProductoMongoDB,
                         sNombre = ordenProducto.sNombre,
                         iCostoReal = ordenProducto.iCostoReal,
                         iCostoPublico = ordenProducto.iCostoPublico,

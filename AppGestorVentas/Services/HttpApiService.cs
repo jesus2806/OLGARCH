@@ -1,5 +1,6 @@
 ﻿using AppGestorVentas.Classes;
 using AppGestorVentas.Models;
+using AppGestorVentas.Models.Asistencia;
 using AppGestorVentas.ViewModels.Popup;
 using AppGestorVentas.Views.LoginViews;
 using CommunityToolkit.Maui.Core;
@@ -582,6 +583,35 @@ namespace AppGestorVentas.Services
                     vm.SMensaje = mensaje;
                 });
             }
+        }
+
+        #endregion
+
+        #region Asistencia
+
+        public async Task<ApiRespuesta<AsistenciaRosterDto>> GetAsistenciaRosterAsync(string sDia, string? q = null)
+        {
+            // OJO: tu GetAsync concatena strings, así que aquí conviene empezar con "/"
+            var route = $"api/asistencia/roster?dia={Uri.EscapeDataString(sDia)}";
+            if (!string.IsNullOrWhiteSpace(q))
+                route += $"&q={Uri.EscapeDataString(q)}";
+
+            var http = await GetAsync(route, bRequiereToken: true);
+            if (http == null)
+                return new ApiRespuesta<AsistenciaRosterDto> { bSuccess = false, sMessage = "Sin respuesta del servidor." };
+
+            var api = await http.Content.ReadFromJsonAsync<ApiRespuesta<AsistenciaRosterDto>>();
+            return api ?? new ApiRespuesta<AsistenciaRosterDto> { bSuccess = false, sMessage = "Respuesta inválida." };
+        }
+
+        public async Task<ApiRespuesta<object>> GuardarAsistenciaBulkAsync(AsistenciaBulkRequest req)
+        {
+            var http = await PostAsync("api/asistencia/bulk", req, bRequiereToken: true);
+            if (http == null)
+                return new ApiRespuesta<object> { bSuccess = false, sMessage = "Sin respuesta del servidor." };
+
+            var api = await http.Content.ReadFromJsonAsync<ApiRespuesta<object>>();
+            return api ?? new ApiRespuesta<object> { bSuccess = false, sMessage = "Respuesta inválida." };
         }
 
         #endregion

@@ -3,6 +3,8 @@ import Usuario from '../models/usuario.js';
 // import OrdenProducto from '../models/OrdenProducto.js';
 import OrdenProducto from '../models/ordenProducto.js';
 import mongoose from 'mongoose';
+import Producto from '../models/producto.js';
+import Ingrediente from '../models/ingrediente.js';
 
 /**
  * Crear una nueva orden
@@ -306,37 +308,200 @@ export const getOrdenById = async (req, res) => {
  * Actualizar una orden por ID
  */
 export const updateOrden = async (req, res) => {
+  const session = await mongoose.startSession();
+
   try {
     const { id } = req.params;
-    const ordenActualizada = await Orden.findByIdAndUpdate(id, req.body, { new: true });
 
-    if (!ordenActualizada) {
+    session.startTransaction();
+
+    // 1) Trae la orden actual (para comparar estatus)
+    const orden = await Orden.findById(id).session(session);
+    if (!orden) {
+      await session.abortTransaction();
+      session.endSession();
       return res.status(404).json({
         success: false,
         message: 'Orden no encontrada',
-        error: {
-          code: 404,
-          details: error.message,
-        },
+        error: { code: 404, details: 'Orden no encontrada' }
       });
     }
+
+    const estatusAnterior = Number(orden.iEstatus);
+    const estatusNuevo = req.body?.iEstatus !== undefined ? Number(req.body.iEstatus) : null;
+
+    // 2) Si están intentando pasar a 3, y antes NO era 3, y NO se ha descontado inventario:
+    const debeDescontarInventario =
+      estatusNuevo === 3 &&
+      estatusAnterior !== 3;
+
+    // 3) Si debe descontar, primero descuenta (para poder abortar si no hay stock)
+    if (debeDescontarInventario) {
+      await descontarInventarioPorOrden({ ordenId: orden._id, session });
+    }
+
+    // 4) Aplica el update normal (tu endpoint sigue funcionando igual)
+    Object.assign(orden, req.body);
+    const ordenActualizada = await orden.save({ session });
+
+    await session.commitTransaction();
+    session.endSession();
 
     return res.status(200).json({
       success: true,
       message: 'Orden actualizada exitosamente',
       data: ordenActualizada
     });
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: 'Error al actualizar la orden',
-      error: {
-        code: 500,
-        details: error.message,
-      },
+    } catch (error) {
+      await session.abortTransaction();
+      session.endSession();
+
+      const code = error.statusCode || 500;
+
+      return res.status(code).json({
+        success: false,
+        message: error.statusCode === 409 ? error.message : 'Error al actualizar la orden',
+        error: {
+          code,
+          details: error.message,
+          faltantes: error.faltantes || undefined
+        }
+      });
+    }
+};
+
+async function descontarInventarioPorOrden({ ordenId, session }) {
+  // Trae la orden con sus aProductos (solo IDs, no necesitas populate)
+  const orden = await Orden.findById(ordenId).session(session);
+  if (!orden) throw new Error('Orden no encontrada para descontar inventario.');
+
+  if (!orden.aProductos || orden.aProductos.length === 0) return; // no hay nada que descontar
+
+  // 1) Traer OrdenProducto docs
+  const ordenProductos = await OrdenProducto.find({ _id: { $in: orden.aProductos } })
+    .session(session)
+    .lean();
+
+  if (!ordenProductos || ordenProductos.length === 0) return;
+
+  // 2) Detectar productId y cantidad por cada OrdenProducto (AJUSTA aquí si tu schema usa otros nombres)
+  const items = ordenProductos
+    .map((op) => {
+      const productoId = op.sIdProductoMongoDB;
+
+      const cantidad =
+        Number(
+          op.iCantidad ??
+          op.iCantidadProducto ??
+          op.iCantidadOrdenProducto ??
+          op.cantidad ??
+          1
+        );
+
+      if (!productoId) return null;
+
+      return {
+        productoId: String(productoId),
+        cantidad: Number.isFinite(cantidad) && cantidad > 0 ? cantidad : 1
+      };
+    })
+    .filter(Boolean);
+
+  if (items.length === 0) return;
+
+  // 3) Traer productos (recetas)
+  const uniqueProductoIds = [...new Set(items.map((x) => x.productoId))];
+
+  const productos = await Producto.find(
+    { _id: { $in: uniqueProductoIds } },
+    { aIngredientes: 1, iTipoProducto: 1 } // receta + tipo (por si quieres ignorar Extras)
+  )
+    .session(session)
+    .lean();
+
+  const mapProducto = new Map(productos.map((p) => [String(p._id), p]));
+
+  // 4) Acumular consumo por ingrediente (ingredienteId => totalUso)
+  const consumoPorIngrediente = new Map();
+
+  for (const it of items) {
+    const prod = mapProducto.get(it.productoId);
+    if (!prod) continue;
+
+    // Si quieres ignorar extras, puedes descomentar:
+    // if (Number(prod.iTipoProducto) === 3) continue;
+
+    const receta = Array.isArray(prod.aIngredientes) ? prod.aIngredientes : [];
+    if (receta.length === 0) continue;
+
+    for (const r of receta) {
+      const ingId = r?.sIdIngrediente ? String(r.sIdIngrediente) : null;
+      const uso = Number(r?.iCantidadUso ?? 0);
+
+      if (!ingId) continue;
+      if (!Number.isFinite(uso) || uso <= 0) continue;
+
+      const totalUso = uso * it.cantidad;
+      consumoPorIngrediente.set(ingId, (consumoPorIngrediente.get(ingId) || 0) + totalUso);
+    }
+  }
+
+  if (consumoPorIngrediente.size === 0) return;
+
+  // 5) Validar stock antes de descontar (para no permitir negativos)
+  const idsIngredientes = [...consumoPorIngrediente.keys()];
+
+  const ingredientes = await Ingrediente.find(
+    { _id: { $in: idsIngredientes } },
+    { iCantidadEnAlmacen: 1, sNombre: 1, sUnidad: 1 }
+  )
+    .session(session)
+    .lean();
+
+  const mapIng = new Map(ingredientes.map((i) => [String(i._id), i]));
+
+  const faltantes = [];
+  for (const [ingId, reqUso] of consumoPorIngrediente.entries()) {
+    const ing = mapIng.get(ingId);
+    if (!ing) {
+      faltantes.push({ sIdIngrediente: ingId, motivo: 'Ingrediente no existe' });
+      continue;
+    }
+    const stock = Number(ing.iCantidadEnAlmacen ?? 0);
+    if (stock < reqUso) {
+      faltantes.push({
+        sIdIngrediente: ingId,
+        sNombre: ing.sNombre,
+        sUnidad: ing.sUnidad,
+        stock,
+        requerido: reqUso
+      });
+    }
+  }
+
+  if (faltantes.length > 0) {
+    const err = new Error('Stock insuficiente para completar la preparación.');
+    err.statusCode = 409;
+    err.faltantes = faltantes;
+    throw err;
+  }
+
+  // 6) Descontar (bulk)
+  const ops = [];
+  for (const [ingId, reqUso] of consumoPorIngrediente.entries()) {
+    ops.push({
+      updateOne: {
+        filter: { _id: ingId },
+        update: { $inc: { iCantidadEnAlmacen: -reqUso } }
+      }
     });
   }
-};
+
+  if (ops.length > 0) {
+    await Ingrediente.bulkWrite(ops, { session });
+  }
+}
+
 
 /**
  * Eliminar una orden por ID

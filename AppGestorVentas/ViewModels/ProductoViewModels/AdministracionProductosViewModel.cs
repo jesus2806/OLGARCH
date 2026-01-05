@@ -53,11 +53,13 @@ namespace AppGestorVentas.ViewModels.ProductoViewModels
                         await _localDatabaseService.CreateTableAsync<Producto>();
                         await _localDatabaseService.CreateTableAsync<Variante>();
                         await _localDatabaseService.CreateTableAsync<Imagen>();
+                        await _localDatabaseService.CreateTableAsync<ProductoIngredienteLocal>();
 
                         // Limpia registros locales
                         await _localDatabaseService.DeleteAllRecordsAsync<Producto>();
                         await _localDatabaseService.DeleteAllRecordsAsync<Variante>();
                         await _localDatabaseService.DeleteAllRecordsAsync<Imagen>();
+                        await _localDatabaseService.DeleteAllRecordsAsync<ProductoIngredienteLocal>();
 
                         // Llama a la API para obtener productos
                         var response = await _httpApiService.GetAsync("api/productos", true);
@@ -83,6 +85,15 @@ namespace AppGestorVentas.ViewModels.ProductoViewModels
                                             {
                                                 imagen.sIdMongoDBProducto = producto.sIdMongo;
                                                 await _localDatabaseService.SaveItemAsync(imagen);
+                                            }
+                                            foreach (var ing in producto.aIngredientes ?? new List<ProductoIngrediente>())
+                                            {
+                                                await _localDatabaseService.SaveItemAsync(new ProductoIngredienteLocal
+                                                {
+                                                    sIdMongoDBProducto = producto.sIdMongo,
+                                                    sIdIngrediente = ing.sIdIngrediente,
+                                                    iCantidadUso = ing.iCantidadUso
+                                                });
                                             }
                                         }
                                         catch (Exception ex)

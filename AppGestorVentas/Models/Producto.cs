@@ -36,6 +36,10 @@ namespace AppGestorVentas.Models
         [Ignore]
         public List<Variante> aVariantes { get; set; } = new();
 
+        [JsonPropertyName("aIngredientes")]
+        [Ignore]
+        public List<ProductoIngrediente> aIngredientes { get; set; } = new();
+
         [JsonPropertyName("iTipoProducto")]
         public int iTipoProducto { get; set; }
 
@@ -47,6 +51,12 @@ namespace AppGestorVentas.Models
 
         [JsonPropertyName("__v")]
         public int __v { get; set; }
+
+        [Ignore]
+        public string DescripcionPrincipal => aVariantes?.FirstOrDefault()?.sVariante ?? "";
+
+        [Ignore]
+        public string ImagenPrincipalSafe => ImagenPrincipalUrl ?? "";
 
         private bool _isSeleccionado;
         [Ignore]

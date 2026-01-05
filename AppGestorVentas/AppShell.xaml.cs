@@ -157,6 +157,17 @@ namespace AppGestorVentas
                 });
                 tabBar.Items.Add(tabNomina);
 
+                var tabAsistencia = new Tab
+                {
+                    Title = "Asistencia",
+                    Icon = "clock.png" // usa uno que ya tengas
+                };
+                tabAsistencia.Items.Add(new ShellContent
+                {
+                    Title = "Pase de lista",
+                    ContentTemplate = new DataTemplate(typeof(AppGestorVentas.Views.AsistenciaViews.PaseListaView))
+                });
+                tabBar.Items.Add(tabAsistencia);
 
                 // Pestaña Historico
                 var tabHistorico = new Tab

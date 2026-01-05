@@ -6,6 +6,7 @@ using CommunityToolkit.Maui.Core;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Net.Http.Json;
 
 namespace AppGestorVentas.ViewModels.ProductoViewModels
@@ -16,57 +17,52 @@ namespace AppGestorVentas.ViewModels.ProductoViewModels
         private readonly IPopupService _popupService;
         private readonly LocalDatabaseService _localDbService;
 
-        [ObservableProperty]
-        private string sTituloPagina = string.Empty;
+        [ObservableProperty] private string sTituloPagina = string.Empty;
 
-        [ObservableProperty]
-        public ObservableCollection<string> lstProductos = new();
+        [ObservableProperty] public ObservableCollection<string> lstProductos = new();
 
-        // MODELO principal. Si viene con sIdMongo, es EDICIÓN.
-        [ObservableProperty]
-        private Producto oProducto = new Producto();
+        [ObservableProperty] private Producto oProducto = new Producto();
 
-        // Variantes en memoria 
-        [ObservableProperty]
-        private ObservableCollection<Variante> variantes = new();
+        [ObservableProperty] private ObservableCollection<Variante> variantes = new();
 
-        // Variante temporal
-        [ObservableProperty]
-        private string sVarianteNueva;
+        [ObservableProperty] private string sVarianteNueva;
 
-        [ObservableProperty]
-        private string sProductoSeleccionado;
+        [ObservableProperty] private string sProductoSeleccionado;
 
-        // Imagen en bytes + nombre de archivo
         private byte[] _imagenBytes;
         private string _nombreArchivoImagen;
 
-        // Vista previa
-        [ObservableProperty]
-        private ImageSource sImagenPreview;
+        [ObservableProperty] private ImageSource sImagenPreview;
+        [ObservableProperty] private ImageSource sImagenPreviewEscritorio;
 
-        [ObservableProperty]
-        private ImageSource sImagenPreviewEscritorio;
+        [ObservableProperty] private bool bHayError;
+        [ObservableProperty] private string sMensajeError;
 
-        // Mostrar errores
-        [ObservableProperty]
-        private bool bHayError;
-        [ObservableProperty]
-        private string sMensajeError;
-
-        // Opciones para Picker
         public List<int> ListaTiposProducto { get; set; } = new() { 1, 2, 3 };
 
-        // Indica si es modo edición (se setea en ApplyQueryAttributes)
-        [ObservableProperty]
-        public bool bEsEdicion;
+        [ObservableProperty] public bool bEsEdicion;
 
-        [ObservableProperty]
-        public bool bHabilitaraAgregarVarientes;
+        [ObservableProperty] public bool bHabilitaraAgregarVarientes;
 
-        // ¿Hay imagen para "Quitar"?
-        [ObservableProperty]
-        private bool bHabilitarQuitarImagen;
+        [ObservableProperty] private bool bHabilitarQuitarImagen;
+
+        // ==============================
+        // ✅ INGREDIENTES (NUEVO)
+        // ==============================
+        private List<Ingrediente> _cacheIngredientes; // cache local
+        private bool _ingredientesInicializados;
+
+        [ObservableProperty] private bool bLoadingIngredientes;
+        [ObservableProperty] private string sBusquedaIngrediente = "";
+
+        [ObservableProperty] private ObservableCollection<Ingrediente> lstResultadosIngredientes = new();
+        [ObservableProperty] private ObservableCollection<IngredienteUsoItem> lstIngredientesSeleccionados = new();
+
+        [ObservableProperty] private string sErrorIngredientes = "";
+
+        public bool BRequiereIngredientes => !string.Equals(SProductoSeleccionado, "Extra", StringComparison.OrdinalIgnoreCase);
+
+        // ==============================
 
         #region CONSTRUCTOR
 
@@ -78,40 +74,42 @@ namespace AppGestorVentas.ViewModels.ProductoViewModels
             _popupService = popupService;
             _localDbService = localDbService;
 
-            // Si no se pasa nada, se asume modo creación
             if (OProducto == null)
                 OProducto = new Producto { iTipoProducto = 1 };
 
             LstProductos = new ObservableCollection<string>
-                        {
-                            "Platillo",
-                            "Bebida",
-                            "Extra"
-                        };
+            {
+                "Platillo",
+                "Bebida",
+                "Extra"
+            };
 
             SProductoSeleccionado = LstProductos[0];
-
             STituloPagina = "Crear Producto";
 
+            // Reacciona cuando cambian seleccionados para validaciones visuales si quieres
+            LstIngredientesSeleccionados.CollectionChanged += (_, __) =>
+            {
+                OnPropertyChanged(nameof(BRequiereIngredientes));
+            };
         }
 
         #endregion
 
-        #region APLICACIÓN DE PARÁMETROS (Edición vs Creación)
+        #region APLICACIÓN DE PARÁMETROS
 
         public void ApplyQueryAttributes(IDictionary<string, object> query)
         {
-                // Determinamos si es edición al checar sIdMongo
-                BEsEdicion = !string.IsNullOrWhiteSpace(OProducto?.sIdMongo);
+            BEsEdicion = !string.IsNullOrWhiteSpace(OProducto?.sIdMongo);
 
             if (query.TryGetValue("oProducto", out var oProd) && oProd != null)
             {
                 OProducto = (Producto)oProd;
                 STituloPagina = "Actualizar Producto";
                 BEsEdicion = !string.IsNullOrWhiteSpace(OProducto.sIdMongo);
-                SProductoSeleccionado = LstProductos[OProducto.iTipoProducto - 1];
+                SProductoSeleccionado = LstProductos[Math.Max(0, OProducto.iTipoProducto - 1)];
 
-                // Cargar variantes en la ObservableCollection
+                // Variantes
                 if (OProducto.aVariantes != null)
                 {
                     Variantes.Clear();
@@ -119,7 +117,7 @@ namespace AppGestorVentas.ViewModels.ProductoViewModels
                         Variantes.Add(v);
                 }
 
-                // Si hay imágenes, mostrar la primera como preview
+                // Preview Imagen
                 if (OProducto.aImagenes != null && OProducto.aImagenes.Count > 0)
                 {
                     var primerUrl = OProducto.aImagenes[0].sURLImagen;
@@ -132,24 +130,175 @@ namespace AppGestorVentas.ViewModels.ProductoViewModels
                 }
 
                 OnPropertyChanged(nameof(OProducto));
-                //BHabilitarQuitarImagen = _imagenBytes != null && _imagenBytes.Length > 0;
             }
             else
             {
-                // Modo creación
                 OProducto = new Producto { iTipoProducto = 1 };
                 BEsEdicion = false;
             }
+
             OnPropertyChanged(nameof(BEsEdicion));
             OnPropertyChanged(nameof(BHabilitarQuitarImagen));
+            OnPropertyChanged(nameof(BRequiereIngredientes));
         }
 
         #endregion
 
-        public void PreparaVistaSoloLectura()
-        {
+        // ==============================
+        // ✅ INGREDIENTES - CARGA / BUSQUEDA / SELECCIÓN
+        // ==============================
 
+        [RelayCommand]
+        public async Task InitIngredientes()
+        {
+            try
+            {
+                if (_ingredientesInicializados) return;
+
+                if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+                    return;
+
+                BLoadingIngredientes = true;
+
+                var resp = await _httpApiService.GetAsync("api/ingredientes", bRequiereToken: true);
+                if (resp == null) return;
+
+                var api = await resp.Content.ReadFromJsonAsync<ApiRespuesta<Ingrediente>>();
+                if (!(resp.IsSuccessStatusCode && api != null && api.bSuccess && api.lData != null))
+                    return;
+
+                _cacheIngredientes = api.lData.ToList();
+                _ingredientesInicializados = true;
+
+                // Si vienes en edición y ya tiene aIngredientes, hidrata para mostrar nombres + cantidades
+                HidratarSeleccionadosDesdeProducto();
+            }
+            catch
+            {
+                // silencioso
+            }
+            finally
+            {
+                BLoadingIngredientes = false;
+            }
         }
+
+        private void HidratarSeleccionadosDesdeProducto()
+        {
+            try
+            {
+                if (OProducto?.aIngredientes == null || OProducto.aIngredientes.Count == 0) return;
+
+                LstIngredientesSeleccionados.Clear();
+
+                foreach (var pi in OProducto.aIngredientes)
+                {
+                    var ing = _cacheIngredientes?.FirstOrDefault(x => x.sIdMongo == pi.sIdIngrediente);
+
+                    // Si no existe en cache, crea placeholder mínimo
+                    if (ing == null)
+                    {
+                        ing = new Ingrediente
+                        {
+                            sIdMongo = pi.sIdIngrediente,
+                            sNombre = "(Ingrediente)"
+                        };
+                    }
+
+                    LstIngredientesSeleccionados.Add(new IngredienteUsoItem(ing)
+                    {
+                        SCantidadUso = pi.iCantidadUso.ToString(CultureInfo.InvariantCulture)
+                    });
+                }
+            }
+            catch
+            {
+                // silencioso
+            }
+        }
+
+        [RelayCommand]
+        public void BuscarIngredientes()
+        {
+            try
+            {
+                if (!_ingredientesInicializados || _cacheIngredientes == null)
+                {
+                    LstResultadosIngredientes = new ObservableCollection<Ingrediente>();
+                    return;
+                }
+
+                var q = (SBusquedaIngrediente ?? "").Trim();
+                if (string.IsNullOrWhiteSpace(q))
+                {
+                    LstResultadosIngredientes = new ObservableCollection<Ingrediente>();
+                    return;
+                }
+
+                var normQ = Normalizar(q);
+
+                // Evitar mostrar ya seleccionados
+                var setSel = new HashSet<string>(LstIngredientesSeleccionados.Select(x => x.Ingrediente.sIdMongo));
+
+                var filtrados = _cacheIngredientes
+                    .Where(i => !setSel.Contains(i.sIdMongo))
+                    .Where(i => MatchDesdePrimerCaracter(i, normQ))
+                    .Take(50)
+                    .ToList();
+
+                LstResultadosIngredientes = new ObservableCollection<Ingrediente>(filtrados);
+            }
+            catch
+            {
+                // silencioso
+            }
+        }
+
+        private static bool MatchDesdePrimerCaracter(Ingrediente i, string normQ)
+        {
+            // "desde el primer carácter": validamos por palabra (tokens)
+            var texto = Normalizar(i?.sNombre ?? "");
+            if (texto.StartsWith(normQ)) return true;
+
+            var tokens = texto.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            return tokens.Any(t => t.StartsWith(normQ));
+        }
+
+        [RelayCommand]
+        public void AgregarIngrediente(Ingrediente ing)
+        {
+            if (ing == null) return;
+
+            if (LstIngredientesSeleccionados.Any(x => x.Ingrediente.sIdMongo == ing.sIdMongo))
+                return;
+
+            LstIngredientesSeleccionados.Add(new IngredienteUsoItem(ing));
+
+            var r = LstResultadosIngredientes.FirstOrDefault(x => x.sIdMongo == ing.sIdMongo);
+            if (r != null) LstResultadosIngredientes.Remove(r);
+
+            SErrorIngredientes = "";
+            OnPropertyChanged(nameof(BRequiereIngredientes));
+        }
+
+        [RelayCommand]
+        public void QuitarIngrediente(IngredienteUsoItem item)
+        {
+            if (item == null) return;
+            if (LstIngredientesSeleccionados.Contains(item))
+                LstIngredientesSeleccionados.Remove(item);
+        }
+
+        [RelayCommand]
+        public void LimpiarIngredientes()
+        {
+            LstIngredientesSeleccionados.Clear();
+            SBusquedaIngrediente = "";
+            LstResultadosIngredientes = new ObservableCollection<Ingrediente>();
+            SErrorIngredientes = "";
+        }
+
+        // ==============================
 
         #region COMANDOS IMAGEN
 
@@ -171,7 +320,7 @@ namespace AppGestorVentas.ViewModels.ProductoViewModels
                     PickerTitle = "Selecciona imagen",
                     FileTypes = customFileType
                 });
-                if (result == null) return; // user canceled
+                if (result == null) return;
 
                 using var pickedStream = await result.OpenReadAsync();
                 using var ms = new MemoryStream();
@@ -201,7 +350,7 @@ namespace AppGestorVentas.ViewModels.ProductoViewModels
 
         #endregion
 
-        #region COMANDOS VARIANTES
+        #region VARIANTES
 
         [RelayCommand]
         public async void AgregarVariante()
@@ -243,62 +392,67 @@ namespace AppGestorVentas.ViewModels.ProductoViewModels
 
         #endregion
 
-        #region COMANDOS SEPARADOS: CREAR y ACTUALIZAR
+        public void CambioTipoProducto()
+        {
+            if (SProductoSeleccionado.Equals("Extra", StringComparison.OrdinalIgnoreCase))
+            {
+                BHabilitaraAgregarVarientes = false;
+                Variantes.Clear();
+                LimpiarIngredientes();
+            }
+            else
+            {
+                BHabilitaraAgregarVarientes = true;
+
+                // ✅ si vuelves a Platillo/Bebida, garantiza que ya estén cargados
+                _ = InitIngredientes();
+            }
+
+            OnPropertyChanged(nameof(BRequiereIngredientes));
+        }
+
+
+        #region CREAR / ACTUALIZAR
 
         [RelayCommand]
         public async Task CrearProducto()
         {
-
             if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
             {
                 MostrarError("No tienes acceso a Internet. Revisa tu conexión y vuelve a intentarlo.");
                 return;
             }
 
-
             BHayError = false;
             SMensajeError = string.Empty;
 
-            // 1) Validaciones
             if (!ValidarCamposBasicos()) return;
 
             await _popupService.ShowPopupAsync<CargaGeneralPopupViewModel>(async vm =>
             {
                 try
                 {
-                    // 2) Subir imagen (si existe)
                     string urlFinal = await SubirImagenAsync();
                     if (urlFinal == null && _imagenBytes != null && _imagenBytes.Length > 0)
-                    {
-                        // Falla en subir, abortamos
                         return;
-                    }
 
-                    // 3) Armar body con la nueva imagen
                     var imagenesList = new List<object>();
                     if (!string.IsNullOrWhiteSpace(urlFinal))
-                    {
                         imagenesList.Add(new { sURLImagen = urlFinal });
-                    }
 
                     var listVars = Variantes.Select(v => new { sVariante = v.sVariante }).ToList();
 
-                    int iTipoProducto;
-                    switch (SProductoSeleccionado)
+                    int iTipoProducto = SProductoSeleccionado switch
                     {
-                        case "Platillo":
-                            iTipoProducto = 1;
-                            break;
-                        case "Bebida":
-                            iTipoProducto = 2;
-                            break;
-                        case "Extra":
-                            iTipoProducto = 3;
-                            break;
-                        default:
-                            iTipoProducto = 0;
-                            break;
-                    }
+                        "Platillo" => 1,
+                        "Bebida" => 2,
+                        "Extra" => 3,
+                        _ => 0
+                    };
+
+                    // ✅ Ingredientes para enviar
+                    var ingredientesBody = BuildIngredientesBody();
+                    if (ingredientesBody == null) return; // ya mostró error
 
                     var body = new
                     {
@@ -307,10 +461,10 @@ namespace AppGestorVentas.ViewModels.ProductoViewModels
                         iCostoPublico = OProducto.iCostoPublico,
                         imagenes = imagenesList,
                         aVariantes = listVars,
-                        iTipoProducto = iTipoProducto
+                        iTipoProducto = iTipoProducto,
+                        aIngredientes = ingredientesBody
                     };
 
-                    // 4) POST
                     var resp = await _httpApiService.PostAsync("api/productos", body, true);
                     if (resp != null && resp.IsSuccessStatusCode)
                     {
@@ -320,10 +474,9 @@ namespace AppGestorVentas.ViewModels.ProductoViewModels
                             await vm.Cerrar();
                             var mainPage = Application.Current?.Windows[0].Page;
                             if (mainPage != null)
-                            {
                                 await mainPage.DisplayAlert("Éxito", "Producto creado correctamente", "OK");
-                            }
-                            ResetFormulario();
+
+                            ResetFormulario(); // ✅ limpia todo incluyendo ingredientes
                         }
                         else
                         {
@@ -346,26 +499,9 @@ namespace AppGestorVentas.ViewModels.ProductoViewModels
             });
         }
 
-
-        public void CambioTipoProducto()
-        {
-            if (SProductoSeleccionado.Equals("Extra"))
-            {
-                BHabilitaraAgregarVarientes = false;
-                Variantes.Clear();
-            }
-            else
-            {
-                BHabilitaraAgregarVarientes = true;
-            }
-        }
-
-
-
         [RelayCommand]
         public async Task ActualizarProducto()
         {
-
             if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
             {
                 MostrarError("No tienes acceso a Internet. Revisa tu conexión y vuelve a intentarlo.");
@@ -375,7 +511,6 @@ namespace AppGestorVentas.ViewModels.ProductoViewModels
             BHayError = false;
             SMensajeError = string.Empty;
 
-            // 1) Validaciones
             if (!ValidarCamposBasicos()) return;
 
             if (string.IsNullOrWhiteSpace(OProducto.sIdMongo))
@@ -388,15 +523,10 @@ namespace AppGestorVentas.ViewModels.ProductoViewModels
             {
                 try
                 {
-                    // 2) Subir imagen
                     string urlFinal = await SubirImagenAsync();
                     if (urlFinal == null && _imagenBytes != null && _imagenBytes.Length > 0)
-                    {
-                        // Falla
                         return;
-                    }
 
-                    // 3) Si no hay imagen nueva, conservamos la(s) antigua(s)
                     List<object> imagenesList = new();
                     if (!string.IsNullOrEmpty(urlFinal))
                     {
@@ -404,30 +534,22 @@ namespace AppGestorVentas.ViewModels.ProductoViewModels
                     }
                     else if (OProducto.aImagenes != null && OProducto.aImagenes.Count > 0)
                     {
-                        // Mantener la existente
                         imagenesList.AddRange(OProducto.aImagenes.Select(i => new { i.sURLImagen }));
                     }
 
                     var listVars = Variantes.Select(v => new { sVariante = v.sVariante }).ToList();
 
-
-                    int iTipoProducto;
-                    switch (SProductoSeleccionado)
+                    int iTipoProducto = SProductoSeleccionado switch
                     {
-                        case "Platillo":
-                            iTipoProducto = 1;
-                            break;
-                        case "Bebida":
-                            iTipoProducto = 2;
-                            break;
-                        case "Extra":
-                            iTipoProducto = 3;
-                            break;
-                        default:
-                            iTipoProducto = 0;
-                            break;
-                    }
+                        "Platillo" => 1,
+                        "Bebida" => 2,
+                        "Extra" => 3,
+                        _ => 0
+                    };
 
+                    // ✅ Ingredientes para enviar
+                    var ingredientesBody = BuildIngredientesBody();
+                    if (ingredientesBody == null) return;
 
                     var body = new
                     {
@@ -436,10 +558,10 @@ namespace AppGestorVentas.ViewModels.ProductoViewModels
                         iCostoPublico = OProducto.iCostoPublico,
                         imagenes = imagenesList,
                         aVariantes = listVars,
-                        iTipoProducto = iTipoProducto
+                        iTipoProducto = iTipoProducto,
+                        aIngredientes = ingredientesBody
                     };
 
-                    // 4) PUT /api/productos/{id}
                     var resp = await _httpApiService.PutAsync($"api/productos/{OProducto.sIdMongo}", body, true);
                     if (resp != null && resp.IsSuccessStatusCode)
                     {
@@ -449,10 +571,7 @@ namespace AppGestorVentas.ViewModels.ProductoViewModels
                             await vm.Cerrar();
                             var mainPage = Application.Current?.Windows[0].Page;
                             if (mainPage != null)
-                            {
                                 await mainPage.DisplayAlert("Actualizado", "Producto actualizado correctamente", "OK");
-                            }
-                            //await Shell.Current.GoToAsync("..");
                         }
                         else
                         {
@@ -477,11 +596,10 @@ namespace AppGestorVentas.ViewModels.ProductoViewModels
 
         #endregion
 
-        #region MÉTODOS AUXILIARES
+        // ==============================
+        // ✅ VALIDACIÓN + BUILD INGREDIENTES
+        // ==============================
 
-        /// <summary>
-        /// Retorna false si un campo básico es inválido.
-        /// </summary>
         private bool ValidarCamposBasicos()
         {
             if (string.IsNullOrWhiteSpace(OProducto.sNombre))
@@ -504,13 +622,98 @@ namespace AppGestorVentas.ViewModels.ProductoViewModels
                 MostrarError("Debes agregar al menos 1 variante.");
                 return false;
             }
+
+            // ✅ Ingredientes obligatorios (si NO es Extra)
+            if (BRequiereIngredientes)
+            {
+                if (LstIngredientesSeleccionados.Count < 1)
+                {
+                    MostrarError("Debes agregar al menos 1 ingrediente.");
+                    return false;
+                }
+
+                foreach (var item in LstIngredientesSeleccionados)
+                {
+                    var s = (item.SCantidadUso ?? "").Trim();
+                    if (string.IsNullOrWhiteSpace(s))
+                    {
+                        MostrarError($"Captura cantidad para: {item.Ingrediente?.sNombre}");
+                        return false;
+                    }
+
+                    if (!TryParseCantidad(s, out var cant))
+                    {
+                        MostrarError($"Cantidad inválida en: {item.Ingrediente?.sNombre}");
+                        return false;
+                    }
+
+                    if (cant <= 0)
+                    {
+                        MostrarError($"La cantidad debe ser > 0 en: {item.Ingrediente?.sNombre}");
+                        return false;
+                    }
+                }
+            }
+
             return true;
         }
 
-        /// <summary>
-        /// Sube la imagen si existe. Retorna la URL en S3, o string vacío 
-        /// si no subimos nada. Retorna null si hubo error.
-        /// </summary>
+        private List<object> BuildIngredientesBody()
+        {
+            SErrorIngredientes = "";
+
+            if (!BRequiereIngredientes)
+                return new List<object>(); // Extra: mandamos vacío
+
+            var lista = new List<object>();
+
+            foreach (var item in LstIngredientesSeleccionados)
+            {
+                var s = (item.SCantidadUso ?? "").Trim();
+
+                if (!TryParseCantidad(s, out var cant) || cant <= 0)
+                {
+                    MostrarError($"Cantidad inválida para: {item.Ingrediente?.sNombre}");
+                    return null;
+                }
+
+                lista.Add(new
+                {
+                    sIdIngrediente = item.Ingrediente.sIdMongo,
+                    iCantidadUso = cant
+                });
+            }
+
+            return lista;
+        }
+
+        private static bool TryParseCantidad(string input, out decimal value)
+        {
+            input = (input ?? "").Trim();
+
+            // Acepta "1", "1.5", "1,5"
+            if (decimal.TryParse(input, NumberStyles.Any, CultureInfo.InvariantCulture, out value))
+                return true;
+
+            if (decimal.TryParse(input, NumberStyles.Any, new CultureInfo("es-MX"), out value))
+                return true;
+
+            value = 0;
+            return false;
+        }
+
+        private static string Normalizar(string s)
+        {
+            s = (s ?? "").Trim().ToLowerInvariant();
+            var formD = s.Normalize(System.Text.NormalizationForm.FormD);
+            var chars = formD.Where(c => CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark);
+            return new string(chars.ToArray());
+        }
+
+        // ==============================
+
+        #region AUX: SUBIR IMAGEN + RESET
+
         private async Task<string> SubirImagenAsync()
         {
             if (!string.IsNullOrWhiteSpace(_nombreArchivoImagen) && !EntryValidations.HasValidImageExtension(_nombreArchivoImagen))
@@ -518,6 +721,7 @@ namespace AppGestorVentas.ViewModels.ProductoViewModels
                 MostrarError("Imagenes con extensiones permitidas: jpg, jpeg, png, gif, webp.");
                 return null;
             }
+
             if (_imagenBytes != null && _imagenBytes.Length > 0 && !string.IsNullOrWhiteSpace(_nombreArchivoImagen))
             {
                 using var msUpload = new MemoryStream(_imagenBytes);
@@ -528,6 +732,7 @@ namespace AppGestorVentas.ViewModels.ProductoViewModels
                     fieldName: "image",
                     bRequiereToken: true
                 );
+
                 if (respUpload != null && respUpload.IsSuccessStatusCode)
                 {
                     var respJson = await respUpload.Content.ReadFromJsonAsync<ApiRespuesta<RespImagen>>();
@@ -547,7 +752,7 @@ namespace AppGestorVentas.ViewModels.ProductoViewModels
                     return null;
                 }
             }
-            // Si no hay imagen que subir, regresamos string vacío para indicar "nada subido"
+
             return string.Empty;
         }
 
@@ -557,31 +762,100 @@ namespace AppGestorVentas.ViewModels.ProductoViewModels
             OProducto.iCostoReal = 0;
             OProducto.iCostoPublico = 0;
             OProducto.iTipoProducto = 1;
+
             Variantes.Clear();
-            OnPropertyChanged(nameof(OProducto));
             SVarianteNueva = string.Empty;
+
+            // ✅ Limpia ingredientes
+            LimpiarIngredientes();
+
+            OnPropertyChanged(nameof(OProducto));
+
             _imagenBytes = null;
             _nombreArchivoImagen = null;
             SImagenPreview = null;
             SImagenPreviewEscritorio = null;
             BHabilitarQuitarImagen = false;
+
+            SProductoSeleccionado = LstProductos[0];
+            STituloPagina = "Crear Producto";
+            BEsEdicion = false;
+            OnPropertyChanged(nameof(BEsEdicion));
         }
 
         private async void MostrarError(string sMensaje)
         {
-            //BHayError = true;
-            //SMensajeError = sMensaje;
             var mainPage = Application.Current?.Windows[0].Page;
             if (mainPage != null)
-            {
                 await mainPage.DisplayAlert("Error", sMensaje, "OK");
-            }
         }
 
         #endregion
     }
 
-    // Clase para mapear data.sRutaImagenS3
+    public partial class IngredienteUsoItem : ObservableObject
+    {
+        private bool _sanitizing;
+
+        public Ingrediente Ingrediente { get; }
+
+        public string SNombre => Ingrediente?.sNombre ?? "";
+
+        public string SUnidad
+            => string.IsNullOrWhiteSpace(Ingrediente?.sUnidad)
+                ? ""
+                : Ingrediente.sUnidad.Trim().ToUpperInvariant();
+
+        [ObservableProperty]
+        private string sCantidadUso = "1";
+
+        partial void OnSCantidadUsoChanged(string oldValue, string newValue)
+        {
+            if (_sanitizing) return;
+
+            var v = newValue ?? "";
+
+            // Permitir vacío mientras el usuario edita
+            if (v.Length == 0) return;
+
+            var sb = new System.Text.StringBuilder();
+            bool hasSep = false;
+
+            foreach (var ch in v.Trim())
+            {
+                if (ch == '-') continue;
+
+                if (char.IsDigit(ch))
+                {
+                    sb.Append(ch);
+                    continue;
+                }
+
+                if ((ch == '.' || ch == ',') && !hasSep)
+                {
+                    sb.Append(ch);
+                    hasSep = true;
+                }
+                // Ignora cualquier otro caracter
+            }
+
+            var sanitized = sb.ToString();
+
+            if (!string.Equals(sanitized, v, StringComparison.Ordinal))
+            {
+                _sanitizing = true;
+                SCantidadUso = sanitized; // NO fuerza "0"
+                _sanitizing = false;
+            }
+        }
+
+        public IngredienteUsoItem(Ingrediente ing)
+        {
+            Ingrediente = ing;
+        }
+    }
+
+
     public class RespImagen
     {
         public string sRutaImagenS3 { get; set; }

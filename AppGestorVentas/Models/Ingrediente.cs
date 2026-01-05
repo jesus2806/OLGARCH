@@ -19,10 +19,12 @@ namespace AppGestorVentas.Models
         public string sNombre { get; set; } = string.Empty;
 
         [JsonPropertyName("iCantidadEnAlmacen")]
-        public int iCantidadEnAlmacen { get; set; }
+        [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
+        public decimal iCantidadEnAlmacen { get; set; }
 
         [JsonPropertyName("iCantidadMinima")]
-        public int iCantidadMinima { get; set; }
+        [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
+        public decimal iCantidadMinima { get; set; }
 
         [JsonPropertyName("sUnidad")]
         public string sUnidad { get; set; } = string.Empty;

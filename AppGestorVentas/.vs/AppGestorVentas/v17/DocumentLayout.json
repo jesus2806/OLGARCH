@@ -3,16 +3,136 @@
   "WorkspaceRootPath": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\solej\\documents\\proyectos_maui\\r4\\olgarch\\appgestorventas\\services\\localdatabaseservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:services\\localdatabaseservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\solej\\documents\\proyectos_maui\\r4\\olgarch\\appgestorventas\\viewmodels\\asistenciaviewmodels\\paselistaviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:viewmodels\\asistenciaviewmodels\\paselistaviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\solej\\documents\\proyectos_maui\\r4\\olgarch\\appgestorventas\\viewmodels\\nominaviewmodels\\nominaviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:viewmodels\\nominaviewmodels\\nominaviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\solej\\documents\\proyectos_maui\\r4\\olgarch\\appgestorventas\\views\\asistenciaviews\\paselistaview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:views\\asistenciaviews\\paselistaview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\solej\\documents\\proyectos_maui\\r4\\olgarch\\appgestorventas\\views\\nominaviews\\nominaviews.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:views\\nominaviews\\nominaviews.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\solej\\documents\\proyectos_maui\\r4\\olgarch\\appgestorventas\\views\\asistenciaviews\\paselistaview.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:views\\asistenciaviews\\paselistaview.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\solej\\documents\\proyectos_maui\\r4\\olgarch\\appgestorventas\\appshell.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:appshell.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\solej\\documents\\proyectos_maui\\r4\\olgarch\\appgestorventas\\appshell.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:appshell.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\solej\\documents\\proyectos_maui\\r4\\olgarch\\appgestorventas\\mauiprogram.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:mauiprogram.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\solej\\documents\\proyectos_maui\\r4\\olgarch\\appgestorventas\\models\\asistenciadtos.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:models\\asistenciadtos.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\solej\\documents\\proyectos_maui\\r4\\olgarch\\appgestorventas\\mainpage.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:mainpage.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\solej\\documents\\proyectos_maui\\r4\\olgarch\\appgestorventas\\mainpage.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:mainpage.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\solej\\documents\\proyectos_maui\\r4\\olgarch\\appgestorventas\\models\\apirespuesta.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:models\\apirespuesta.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\solej\\documents\\proyectos_maui\\r4\\olgarch\\appgestorventas\\converters\\stringnotemptyconverter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:converters\\stringnotemptyconverter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\solej\\documents\\proyectos_maui\\r4\\olgarch\\appgestorventas\\views\\productovierws\\datosproductoview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:views\\productovierws\\datosproductoview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\solej\\documents\\proyectos_maui\\r4\\olgarch\\appgestorventas\\appgestorventas.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:appgestorventas.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\solej\\documents\\proyectos_maui\\r4\\olgarch\\appgestorventas\\resources\\fonts\\fluentui.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:resources\\fonts\\fluentui.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\solej\\documents\\proyectos_maui\\r4\\olgarch\\appgestorventas\\views\\ingredientesviews\\listaingredientesview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:views\\ingredientesviews\\listaingredientesview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\solej\\documents\\proyectos_maui\\r4\\olgarch\\appgestorventas\\helpers\\materialdesignicons.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:helpers\\materialdesignicons.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\solej\\documents\\proyectos_maui\\r4\\olgarch\\appgestorventas\\models\\ingrediente.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:models\\ingrediente.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\solej\\documents\\proyectos_maui\\r4\\olgarch\\appgestorventas\\viewmodels\\ingredienteviewmodels\\listaingredientesviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:viewmodels\\ingredienteviewmodels\\listaingredientesviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\solej\\documents\\proyectos_maui\\r4\\olgarch\\appgestorventas\\services\\ordendraftservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:services\\ordendraftservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\solej\\documents\\proyectos_maui\\r4\\olgarch\\appgestorventas\\viewmodels\\ordenviewmodels\\validacionorden.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:viewmodels\\ordenviewmodels\\validacionorden.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\solej\\documents\\proyectos_maui\\r4\\olgarch\\appgestorventas\\viewmodels\\ordenviewmodels\\productoordenviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:viewmodels\\ordenviewmodels\\productoordenviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\solej\\documents\\proyectos_maui\\r4\\olgarch\\appgestorventas\\viewmodels\\ordenviewmodels\\datosordenviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:viewmodels\\ordenviewmodels\\datosordenviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\solej\\documents\\proyectos_maui\\r4\\olgarch\\appgestorventas\\viewmodels\\ordenviewmodels\\consumosproductoviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:viewmodels\\ordenviewmodels\\consumosproductoviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\solej\\documents\\proyectos_maui\\r4\\olgarch\\appgestorventas\\models\\ordenproducto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:models\\ordenproducto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\solej\\documents\\proyectos_maui\\r4\\olgarch\\appgestorventas\\views\\ordenviews\\datosordenview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:views\\ordenviews\\datosordenview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\solej\\documents\\proyectos_maui\\r4\\olgarch\\appgestorventas\\viewmodels\\productoviewmodels\\productosectionviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:viewmodels\\productoviewmodels\\productosectionviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\solej\\documents\\proyectos_maui\\r4\\olgarch\\appgestorventas\\viewmodels\\productoviewmodels\\administracionproductosviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:viewmodels\\productoviewmodels\\administracionproductosviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\solej\\documents\\proyectos_maui\\r4\\olgarch\\appgestorventas\\models\\productoingredientelocal.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:models\\productoingredientelocal.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\solej\\documents\\proyectos_maui\\r4\\olgarch\\appgestorventas\\models\\productoingrediente.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:models\\productoingrediente.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\solej\\documents\\proyectos_maui\\r4\\olgarch\\appgestorventas\\models\\producto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:models\\producto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\solej\\documents\\proyectos_maui\\r4\\olgarch\\appgestorventas\\views\\productovierws\\administracionproductosview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:views\\productovierws\\administracionproductosview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\solej\\documents\\proyectos_maui\\r4\\olgarch\\appgestorventas\\viewmodels\\productoviewmodels\\datosproductoviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:viewmodels\\productoviewmodels\\datosproductoviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|c:\\users\\solej\\documents\\proyectos_maui\\r4\\olgarch\\appgestorventas\\views\\productovierws\\datosproductoview.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8BCD9E57-0AB7-4A1B-8A1D-05BB8A8AE74F}|AppGestorVentas.csproj|solutionrelative:views\\productovierws\\datosproductoview.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -27,41 +147,409 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "LocalDatabaseService.cs",
-              "DocumentMoniker": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\Services\\LocalDatabaseService.cs",
-              "RelativeDocumentMoniker": "Services\\LocalDatabaseService.cs",
-              "ToolTip": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\Services\\LocalDatabaseService.cs",
-              "RelativeToolTip": "Services\\LocalDatabaseService.cs",
-              "ViewState": "AgIAAOsBAAAAAAAAAADwv/YBAAAJAAAAAAAAAA==",
+              "Title": "PaseListaViewModel.cs",
+              "DocumentMoniker": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\ViewModels\\AsistenciaViewModels\\PaseListaViewModel.cs",
+              "RelativeDocumentMoniker": "ViewModels\\AsistenciaViewModels\\PaseListaViewModel.cs",
+              "ToolTip": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\ViewModels\\AsistenciaViewModels\\PaseListaViewModel.cs",
+              "RelativeToolTip": "ViewModels\\AsistenciaViewModels\\PaseListaViewModel.cs",
+              "ViewState": "AgIAAK4AAAAAAAAAAAAqwLYAAAAyAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-02T23:32:50.186Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "NominaViewModel.cs",
-              "DocumentMoniker": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\ViewModels\\NominaViewModels\\NominaViewModel.cs",
-              "RelativeDocumentMoniker": "ViewModels\\NominaViewModels\\NominaViewModel.cs",
-              "ToolTip": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\ViewModels\\NominaViewModels\\NominaViewModel.cs",
-              "RelativeToolTip": "ViewModels\\NominaViewModels\\NominaViewModel.cs",
-              "ViewState": "AgIAAHoBAAAAAAAAAAAuwLgBAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-30T23:27:18.414Z",
+              "WhenOpened": "2026-01-05T01:29:53.837Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "NominaViews.xaml",
-              "DocumentMoniker": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\Views\\NominaViews\\NominaViews.xaml",
-              "RelativeDocumentMoniker": "Views\\NominaViews\\NominaViews.xaml",
-              "ToolTip": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\Views\\NominaViews\\NominaViews.xaml",
-              "RelativeToolTip": "Views\\NominaViews\\NominaViews.xaml",
-              "ViewState": "AgIAAIkAAAAAAAAAAADwv40AAAAjAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2025-12-30T23:27:08.455Z",
+              "Title": "PaseListaView.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\Views\\AsistenciaViews\\PaseListaView.xaml.cs",
+              "RelativeDocumentMoniker": "Views\\AsistenciaViews\\PaseListaView.xaml.cs",
+              "ToolTip": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\Views\\AsistenciaViews\\PaseListaView.xaml.cs",
+              "RelativeToolTip": "Views\\AsistenciaViews\\PaseListaView.xaml.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAcAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-05T01:32:43.68Z",
               "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "PaseListaView.xaml",
+              "DocumentMoniker": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\Views\\AsistenciaViews\\PaseListaView.xaml",
+              "RelativeDocumentMoniker": "Views\\AsistenciaViews\\PaseListaView.xaml",
+              "ToolTip": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\Views\\AsistenciaViews\\PaseListaView.xaml",
+              "RelativeToolTip": "Views\\AsistenciaViews\\PaseListaView.xaml",
+              "ViewState": "AgIAAF8AAAAAAAAAAAAowGUAAAAcAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-01-05T01:30:30.971Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "AppShell.xaml",
+              "DocumentMoniker": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\AppShell.xaml",
+              "RelativeDocumentMoniker": "AppShell.xaml",
+              "ToolTip": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\AppShell.xaml",
+              "RelativeToolTip": "AppShell.xaml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-01-04T20:08:12.335Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "AppShell.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\AppShell.xaml.cs",
+              "RelativeDocumentMoniker": "AppShell.xaml.cs",
+              "ToolTip": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\AppShell.xaml.cs",
+              "RelativeToolTip": "AppShell.xaml.cs",
+              "ViewState": "AgIAAKIAAAAAAAAAAAAowKYAAAAsAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-04T20:08:14.511Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "AsistenciaDtos.cs",
+              "DocumentMoniker": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\Models\\AsistenciaDtos.cs",
+              "RelativeDocumentMoniker": "Models\\AsistenciaDtos.cs",
+              "ToolTip": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\Models\\AsistenciaDtos.cs",
+              "RelativeToolTip": "Models\\AsistenciaDtos.cs",
+              "ViewState": "AgIAAAoAAAAAAAAAAAAmwA8AAAAlAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-05T01:26:42.341Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "MauiProgram.cs",
+              "DocumentMoniker": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\MauiProgram.cs",
+              "RelativeDocumentMoniker": "MauiProgram.cs",
+              "ToolTip": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\MauiProgram.cs",
+              "RelativeToolTip": "MauiProgram.cs",
+              "ViewState": "AgIAAIYAAAAAAAAAAAAwwIoAAABmAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-04T20:08:01.613Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "MainPage.xaml",
+              "DocumentMoniker": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\MainPage.xaml",
+              "RelativeDocumentMoniker": "MainPage.xaml",
+              "ToolTip": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\MainPage.xaml",
+              "RelativeToolTip": "MainPage.xaml",
+              "ViewState": "AgIAABIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-01-04T22:23:22.383Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "MainPage.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\MainPage.xaml.cs",
+              "RelativeDocumentMoniker": "MainPage.xaml.cs",
+              "ToolTip": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\MainPage.xaml.cs",
+              "RelativeToolTip": "MainPage.xaml.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-04T22:23:26.731Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "ApiRespuesta.cs",
+              "DocumentMoniker": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\Models\\ApiRespuesta.cs",
+              "RelativeDocumentMoniker": "Models\\ApiRespuesta.cs",
+              "ToolTip": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\Models\\ApiRespuesta.cs",
+              "RelativeToolTip": "Models\\ApiRespuesta.cs",
+              "ViewState": "AgIAADwAAAAAAAAAAAAwwEYAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-05T01:49:48.719Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "StringNotEmptyConverter.cs",
+              "DocumentMoniker": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\Converters\\StringNotEmptyConverter.cs",
+              "RelativeDocumentMoniker": "Converters\\StringNotEmptyConverter.cs",
+              "ToolTip": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\Converters\\StringNotEmptyConverter.cs",
+              "RelativeToolTip": "Converters\\StringNotEmptyConverter.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-05T01:31:59.027Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "AppGestorVentas.csproj",
+              "DocumentMoniker": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\AppGestorVentas.csproj",
+              "RelativeDocumentMoniker": "AppGestorVentas.csproj",
+              "ToolTip": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\AppGestorVentas.csproj",
+              "RelativeToolTip": "AppGestorVentas.csproj",
+              "ViewState": "AgIAAF4AAAAAAAAAAAASwGcAAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-01-04T20:17:52.394Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "DatosProductoView.xaml",
+              "DocumentMoniker": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\Views\\ProductoVierws\\DatosProductoView.xaml",
+              "RelativeDocumentMoniker": "Views\\ProductoVierws\\DatosProductoView.xaml",
+              "ToolTip": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\Views\\ProductoVierws\\DatosProductoView.xaml",
+              "RelativeToolTip": "Views\\ProductoVierws\\DatosProductoView.xaml",
+              "ViewState": "AgIAABYCAAAAAAAAAAAwwBwCAAA2AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-01-03T02:41:37.732Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "ListaIngredientesView.xaml",
+              "DocumentMoniker": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\Views\\IngredientesViews\\ListaIngredientesView.xaml",
+              "RelativeDocumentMoniker": "Views\\IngredientesViews\\ListaIngredientesView.xaml",
+              "ToolTip": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\Views\\IngredientesViews\\ListaIngredientesView.xaml",
+              "RelativeToolTip": "Views\\IngredientesViews\\ListaIngredientesView.xaml",
+              "ViewState": "AgIAAHQAAAAAAAAAAAAswIAAAAAZAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-01-04T20:22:16.903Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "FluentUI.cs",
+              "DocumentMoniker": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\Resources\\Fonts\\FluentUI.cs",
+              "RelativeDocumentMoniker": "Resources\\Fonts\\FluentUI.cs",
+              "ToolTip": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\Resources\\Fonts\\FluentUI.cs",
+              "RelativeToolTip": "Resources\\Fonts\\FluentUI.cs",
+              "ViewState": "AgIAAAgAAAAAAAAAAAAQwAgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-04T20:46:24.53Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "MaterialDesignIcons.cs",
+              "DocumentMoniker": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\Helpers\\MaterialDesignIcons.cs",
+              "RelativeDocumentMoniker": "Helpers\\MaterialDesignIcons.cs",
+              "ToolTip": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\Helpers\\MaterialDesignIcons.cs",
+              "RelativeToolTip": "Helpers\\MaterialDesignIcons.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-04T20:06:00.855Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "ListaIngredientesViewModel.cs",
+              "DocumentMoniker": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\ViewModels\\IngredienteViewModels\\ListaIngredientesViewModel.cs",
+              "RelativeDocumentMoniker": "ViewModels\\IngredienteViewModels\\ListaIngredientesViewModel.cs",
+              "ToolTip": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\ViewModels\\IngredienteViewModels\\ListaIngredientesViewModel.cs",
+              "RelativeToolTip": "ViewModels\\IngredienteViewModels\\ListaIngredientesViewModel.cs",
+              "ViewState": "AgIAALYAAAAAAAAAAAAAALwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-04T02:30:08.336Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "OrdenDraftService.cs",
+              "DocumentMoniker": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\Services\\OrdenDraftService.cs",
+              "RelativeDocumentMoniker": "Services\\OrdenDraftService.cs",
+              "ToolTip": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\Services\\OrdenDraftService.cs",
+              "RelativeToolTip": "Services\\OrdenDraftService.cs",
+              "ViewState": "AgIAABADAAAAAAAAAAAcwBUDAAA/AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-04T02:02:43.205Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "ProductoOrdenViewModel.cs",
+              "DocumentMoniker": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\ViewModels\\OrdenViewModels\\ProductoOrdenViewModel.cs",
+              "RelativeDocumentMoniker": "ViewModels\\OrdenViewModels\\ProductoOrdenViewModel.cs",
+              "ToolTip": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\ViewModels\\OrdenViewModels\\ProductoOrdenViewModel.cs",
+              "RelativeToolTip": "ViewModels\\OrdenViewModels\\ProductoOrdenViewModel.cs",
+              "ViewState": "AgIAAK4AAAAAAAAAAAAswKEBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-04T01:35:20.837Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 23,
+              "Title": "OrdenProducto.cs",
+              "DocumentMoniker": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\Models\\OrdenProducto.cs",
+              "RelativeDocumentMoniker": "Models\\OrdenProducto.cs",
+              "ToolTip": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\Models\\OrdenProducto.cs",
+              "RelativeToolTip": "Models\\OrdenProducto.cs",
+              "ViewState": "AgIAAKEAAAAAAAAAAAAswKgAAAAwAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-04T01:34:14.895Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "Ingrediente.cs",
+              "DocumentMoniker": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\Models\\Ingrediente.cs",
+              "RelativeDocumentMoniker": "Models\\Ingrediente.cs",
+              "ToolTip": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\Models\\Ingrediente.cs",
+              "RelativeToolTip": "Models\\Ingrediente.cs",
+              "ViewState": "AgIAAA8AAAAAAAAAAAA5wBwAAAAlAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-03T03:12:34.672Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "ValidacionOrden.cs",
+              "DocumentMoniker": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\ViewModels\\OrdenViewModels\\ValidacionOrden.cs",
+              "RelativeDocumentMoniker": "ViewModels\\OrdenViewModels\\ValidacionOrden.cs",
+              "ToolTip": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\ViewModels\\OrdenViewModels\\ValidacionOrden.cs",
+              "RelativeToolTip": "ViewModels\\OrdenViewModels\\ValidacionOrden.cs",
+              "ViewState": "AgIAALoAAAAAAAAAAAAswL4AAABFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-04T01:58:31.561Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "DatosOrdenViewModel.cs",
+              "DocumentMoniker": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\ViewModels\\OrdenViewModels\\DatosOrdenViewModel.cs",
+              "RelativeDocumentMoniker": "ViewModels\\OrdenViewModels\\DatosOrdenViewModel.cs",
+              "ToolTip": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\ViewModels\\OrdenViewModels\\DatosOrdenViewModel.cs",
+              "RelativeToolTip": "ViewModels\\OrdenViewModels\\DatosOrdenViewModel.cs",
+              "ViewState": "AgIAABgBAAAAAAAAAAAswKMCAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-04T01:30:51.628Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "ConsumosProductoViewModel.cs",
+              "DocumentMoniker": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\ViewModels\\OrdenViewModels\\ConsumosProductoViewModel.cs",
+              "RelativeDocumentMoniker": "ViewModels\\OrdenViewModels\\ConsumosProductoViewModel.cs",
+              "ToolTip": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\ViewModels\\OrdenViewModels\\ConsumosProductoViewModel.cs",
+              "RelativeToolTip": "ViewModels\\OrdenViewModels\\ConsumosProductoViewModel.cs",
+              "ViewState": "AgIAABYAAAAAAAAAAAAswF0BAAASAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-04T01:30:50.64Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 24,
+              "Title": "DatosOrdenView.xaml",
+              "DocumentMoniker": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\Views\\OrdenViews\\DatosOrdenView.xaml",
+              "RelativeDocumentMoniker": "Views\\OrdenViews\\DatosOrdenView.xaml",
+              "ToolTip": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\Views\\OrdenViews\\DatosOrdenView.xaml",
+              "RelativeToolTip": "Views\\OrdenViews\\DatosOrdenView.xaml",
+              "ViewState": "AgIAAEwBAAAAAAAAAAAAwFEBAAAQAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-01-04T01:00:39.761Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 27,
+              "Title": "ProductoIngredienteLocal.cs",
+              "DocumentMoniker": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\Models\\ProductoIngredienteLocal.cs",
+              "RelativeDocumentMoniker": "Models\\ProductoIngredienteLocal.cs",
+              "ToolTip": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\Models\\ProductoIngredienteLocal.cs",
+              "RelativeToolTip": "Models\\ProductoIngredienteLocal.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAswAgAAAAkAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-03T23:22:30.758Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 30,
+              "Title": "AdministracionProductosView.xaml",
+              "DocumentMoniker": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\Views\\ProductoVierws\\AdministracionProductosView.xaml",
+              "RelativeDocumentMoniker": "Views\\ProductoVierws\\AdministracionProductosView.xaml",
+              "ToolTip": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\Views\\ProductoVierws\\AdministracionProductosView.xaml",
+              "RelativeToolTip": "Views\\ProductoVierws\\AdministracionProductosView.xaml",
+              "ViewState": "AgIAALoCAAAAAAAAAAAswMICAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-01-03T03:52:20.856Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 26,
+              "Title": "AdministracionProductosViewModel.cs",
+              "DocumentMoniker": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\ViewModels\\ProductoViewModels\\AdministracionProductosViewModel.cs",
+              "RelativeDocumentMoniker": "ViewModels\\ProductoViewModels\\AdministracionProductosViewModel.cs",
+              "ToolTip": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\ViewModels\\ProductoViewModels\\AdministracionProductosViewModel.cs",
+              "RelativeToolTip": "ViewModels\\ProductoViewModels\\AdministracionProductosViewModel.cs",
+              "ViewState": "AgIAAFMAAAAAAAAAAAAswFsAAAAxAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-03T03:52:29.791Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 25,
+              "Title": "ProductoSectionViewModel.cs",
+              "DocumentMoniker": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\ViewModels\\ProductoViewModels\\ProductoSectionViewModel.cs",
+              "RelativeDocumentMoniker": "ViewModels\\ProductoViewModels\\ProductoSectionViewModel.cs",
+              "ToolTip": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\ViewModels\\ProductoViewModels\\ProductoSectionViewModel.cs",
+              "RelativeToolTip": "ViewModels\\ProductoViewModels\\ProductoSectionViewModel.cs",
+              "ViewState": "AgIAAHgAAAAAAAAAAAAswIQAAAAqAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-03T04:01:54.222Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 28,
+              "Title": "ProductoIngrediente.cs",
+              "DocumentMoniker": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\Models\\ProductoIngrediente.cs",
+              "RelativeDocumentMoniker": "Models\\ProductoIngrediente.cs",
+              "ToolTip": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\Models\\ProductoIngrediente.cs",
+              "RelativeToolTip": "Models\\ProductoIngrediente.cs",
+              "ViewState": "AgIAAAEAAAAAAAAAAAAAwAYAAAAmAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-03T03:16:28.111Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 29,
+              "Title": "Producto.cs",
+              "DocumentMoniker": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\Models\\Producto.cs",
+              "RelativeDocumentMoniker": "Models\\Producto.cs",
+              "ToolTip": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\Models\\Producto.cs",
+              "RelativeToolTip": "Models\\Producto.cs",
+              "ViewState": "AgIAAEUAAAAAAAAAAAAkwEsAAABBAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-03T03:14:17.308Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 31,
+              "Title": "DatosProductoViewModel.cs",
+              "DocumentMoniker": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\ViewModels\\ProductoViewModels\\DatosProductoViewModel.cs",
+              "RelativeDocumentMoniker": "ViewModels\\ProductoViewModels\\DatosProductoViewModel.cs",
+              "ToolTip": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\ViewModels\\ProductoViewModels\\DatosProductoViewModel.cs",
+              "RelativeToolTip": "ViewModels\\ProductoViewModels\\DatosProductoViewModel.cs",
+              "ViewState": "AgIAACkDAAAAAAAAAAAAADADAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-03T03:09:09.361Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 32,
+              "Title": "DatosProductoView.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\Views\\ProductoVierws\\DatosProductoView.xaml.cs",
+              "RelativeDocumentMoniker": "Views\\ProductoVierws\\DatosProductoView.xaml.cs",
+              "ToolTip": "C:\\Users\\solej\\Documents\\Proyectos_Maui\\R4\\OLGARCH\\AppGestorVentas\\Views\\ProductoVierws\\DatosProductoView.xaml.cs",
+              "RelativeToolTip": "Views\\ProductoVierws\\DatosProductoView.xaml.cs",
+              "ViewState": "AgIAADQAAAAAAAAAAAAkwD0AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-03T03:25:11.395Z"
             }
           ]
         }

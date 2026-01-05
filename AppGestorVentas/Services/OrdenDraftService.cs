@@ -144,6 +144,7 @@ namespace AppGestorVentas.Services
                                     sIdMongo = prod.sIdMongo,
                                     sIdOrdenLocal = OrdenActual.sIdLocal,
                                     sIdOrdenMongoDB = OrdenActual.sIdMongoDB,
+                                    sIdProductoMongoDB = prod.sIdProductoMongoDB,
                                     sNombre = prod.sNombre,
                                     iCostoReal = prod.iCostoReal,
                                     iCostoPublico = prod.iCostoPublico,
@@ -272,6 +273,7 @@ namespace AppGestorVentas.Services
                 sIdLocal = Guid.NewGuid().ToString(),
                 sIdOrdenLocal = OrdenActual.sIdLocal,
                 sIdOrdenMongoDB = OrdenActual.sIdMongoDB,
+                sIdProductoMongoDB = producto.sIdMongo ?? string.Empty,
                 sNombre = producto.sNombre,
                 iCostoReal = producto.iCostoReal,
                 iCostoPublico = producto.iCostoPublico,
@@ -679,6 +681,7 @@ namespace AppGestorVentas.Services
                         var productoData = new
                         {
                             sIdOrdenMongoDB = OrdenActual.sIdMongoDB,
+                            sIdProductoMongoDB = producto.sIdProductoMongoDB,
                             sNombre = producto.sNombre,
                             iCostoReal = producto.iCostoReal,
                             iCostoPublico = producto.iCostoPublico,
@@ -781,6 +784,7 @@ namespace AppGestorVentas.Services
                     var productoData = new
                     {
                         sIdOrdenMongoDB = OrdenActual.sIdMongoDB,
+                        sIdProductoMongoDB = producto.sIdProductoMongoDB,
                         sNombre = producto.sNombre,
                         iCostoReal = producto.iCostoReal,
                         iCostoPublico = producto.iCostoPublico,
